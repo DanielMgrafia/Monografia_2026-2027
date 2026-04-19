@@ -1,0 +1,12 @@
+# Archivos locales con cadenas de conexión o secretos
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+.env
+secrets.json
+
+# Archivos generados
+.vs/
+bin/
+obj/
+node_modules/

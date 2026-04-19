@@ -1,0 +1,6 @@
+@RepositorioAcademico.Server_HostAddress = http://localhost:5291
+
+GET {{RepositorioAcademico.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

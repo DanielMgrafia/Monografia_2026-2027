@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="repositorioacademico.client/repositorioacademico.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="RepositorioAcademico.Server/RepositorioAcademico.Server.csproj" />
+</Solution>
