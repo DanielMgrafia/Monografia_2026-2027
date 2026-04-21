@@ -1,0 +1,55 @@
+<div class="repositorio-container">
+  <div class="repositorio-card">
+    <div class="repositorio-header">
+      <div>
+        <h2>Repositorio Académico</h2>
+        <p>Consulta y visualiza los documentos registrados en la plataforma.</p>
+      </div>
+    </div>
+
+    <div class="tabla-wrapper">
+      <table class="tabla-documentos">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Tipo</th>
+            <th>Categoría</th>
+            <th>Estado</th>
+            <th class="text-center">Acción</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let doc of documentos">
+            <td class="titulo-doc">{{ doc.titulo }}</td>
+            <td>{{ doc.autor }}</td>
+            <td>{{ doc.tipo }}</td>
+            <td>{{ doc.categoria }}</td>
+            <td>
+              <span class="estado-badge"
+                    [ngClass]="{
+                  'estado-pendiente': doc.estado === 'Pendiente',
+                  'estado-aprobado': doc.estado === 'Aprobado',
+                  'estado-rechazado': doc.estado === 'Rechazado'
+                }">
+                {{ doc.estado }}
+              </span>
+            </td>
+            <td class="text-center">
+              <button class="btn-ver" (click)="verArchivo(doc.rutaDocumento)">
+                Ver PDF
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="!documentos || documentos.length === 0">
+            <td colspan="6" class="sin-registros">
+              No hay documentos disponibles en este momento.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -49,6 +49,95 @@ namespace RepositorioAcademico.Server.Controllers
 
             return CreatedAtAction(nameof(GetDocumento), new { id = documento.Id }, documento);
         }
+        [HttpPost("upload")]
+        public async Task<IActionResult> SubirDocumento(
+        IFormFile archivo,
+        [FromForm] string titulo,
+        [FromForm] string autor,
+        [FromForm] string tipo,
+        [FromForm] string categoria,
+        [FromForm] int usuarioId)
+        {
 
+            if (archivo == null || archivo.Length == 0)
+                return BadRequest("Archivo inválido");
+
+            var nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(archivo.FileName);
+
+            var ruta = Path.Combine(Directory.GetCurrentDirectory(), "storage", nombreArchivo);
+
+            using (var stream = new FileStream(ruta, FileMode.Create))
+            {
+                await archivo.CopyToAsync(stream);
+            }
+
+            var documento = new Documento
+            {
+                Titulo = titulo,
+                Autor = autor,
+                Tipo = tipo,
+                Categoria = categoria,
+                RutaDocumento = nombreArchivo,
+                FechaSubida = DateTime.Now,
+                Estado = "Pendiente",
+                UsuarioId = usuarioId
+            };
+
+            _context.Documentos.Add(documento);
+            await _context.SaveChangesAsync();
+
+            return Ok(documento);
+        }
+
+        [HttpGet("archivo/{nombre}")]
+        public IActionResult ObtenerArchivo(string nombre)
+        {
+            var ruta = Path.Combine(Directory.GetCurrentDirectory(), "storage", nombre);
+
+            if (!System.IO.File.Exists(ruta))
+            {
+                return NotFound();
+            }
+
+            var mime = "application/pdf";
+
+            return PhysicalFile(ruta, mime, nombre);
+        }
+
+        [HttpGet("buscar")]
+        public async Task<ActionResult<IEnumerable<Documento>>> Buscar(
+        string? titulo,
+        string? autor,
+        string? categoria)
+        {
+            var query = _context.Documentos.AsQueryable();
+
+            if (!string.IsNullOrEmpty(titulo))
+            {
+                query = query.Where(d => d.Titulo.Contains(titulo));
+            }
+
+            if (!string.IsNullOrEmpty(autor))
+            {
+                query = query.Where(d => d.Autor.Contains(autor));
+            }
+
+            if (!string.IsNullOrEmpty(categoria))
+            {
+                query = query.Where(d => d.Categoria.Contains(categoria));
+            }
+
+            return await query.ToListAsync();
+        }
+
+        [HttpGet("lista")]
+        public async Task<ActionResult<IEnumerable<Documento>>> Lista(int pagina = 1, int tamano = 10)
+        {
+            return await _context.Documentos
+                .OrderByDescending(d => d.FechaSubida)
+                .Skip((pagina - 1) * tamano)
+                .Take(tamano)
+                .ToListAsync();
+        }
     }
 }
