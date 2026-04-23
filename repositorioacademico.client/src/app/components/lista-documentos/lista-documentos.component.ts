@@ -1,18 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { Documento } from '../../models/documento';
 import { DocumentosService } from '../../services/documentos.service';
 
 @Component({
   selector: 'app-lista-documentos',
   templateUrl: './lista-documentos.component.html',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule],
   styleUrls: ['./lista-documentos.component.css']
 })
 export class ListaDocumentosComponent implements OnInit {
 
   documentos: Documento[] = [];
-
-  constructor(private documentosService: DocumentosService) { }
+  private readonly documentosService = inject(DocumentosService);
 
   ngOnInit(): void {
     this.cargarDocumentos();
