@@ -24,7 +24,7 @@
                  name="autor"
                  [(ngModel)]="autor"
                  required
-                 placeholder="Ej. Denis López" />
+                 placeholder="Ej. Daniel Sanchez" />
         </div>
 
         <div class="form-group">
@@ -50,10 +50,10 @@
         </div>
 
         <div class="form-group form-group-full">
-          <label for="archivo">Archivo PDF</label>
+          <label for="archivo">Archivo</label>
           <input type="file"
                  id="archivo"
-                 accept="application/pdf"
+                 accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                  (change)="seleccionarArchivo($event)"
                  required />
         </div>

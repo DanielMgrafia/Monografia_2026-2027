@@ -30,8 +30,12 @@ export class SubirDocumentoComponent {
     if (input.files && input.files.length > 0) {
       const archivo = input.files[0];
 
-      if (archivo.type !== 'application/pdf') {
-        this.error = 'Solo se permiten archivos PDF.';
+      if (
+          archivo.type !== 'application/pdf' &&
+          archivo.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+         ) {
+       
+        this.error = 'Solo se permiten archivos PDF y Word.';
         this.archivoSeleccionado = null;
         return;
       }
@@ -51,7 +55,7 @@ export class SubirDocumentoComponent {
     }
 
     if (!this.archivoSeleccionado) {
-      this.error = 'Debes seleccionar un archivo PDF.';
+      this.error = 'Debes seleccionar un archivo.';
       return;
     }
 

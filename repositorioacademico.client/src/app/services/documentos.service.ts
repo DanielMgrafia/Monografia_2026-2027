@@ -8,8 +8,7 @@ import { Documento } from '../models/documento';
 })
 export class DocumentosService {
 
-  private apiUrl = 'https://localhost:7225/api/documentos'; // ajusta el puerto
-
+  private apiUrl = 'https://localhost:7225/api/documentos';
   constructor(private http: HttpClient) { }
 
   // LISTAR
