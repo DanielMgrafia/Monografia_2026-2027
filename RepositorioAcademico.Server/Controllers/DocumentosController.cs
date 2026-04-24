@@ -54,8 +54,8 @@ namespace RepositorioAcademico.Server.Controllers
         IFormFile archivo,
         [FromForm] string titulo,
         [FromForm] string autor,
-        [FromForm] string tipo,
-        [FromForm] string categoria,
+        [FromForm] int tipoDocumentoId,
+        [FromForm] int facultadId,
         [FromForm] int usuarioId)
         {
 
@@ -75,8 +75,8 @@ namespace RepositorioAcademico.Server.Controllers
             {
                 Titulo = titulo,
                 Autor = autor,
-                Tipo = tipo,
-                Categoria = categoria,
+                TipoDocumentoId = tipoDocumentoId,
+                FacultadId = facultadId,
                 RutaDocumento = nombreArchivo,
                 FechaSubida = DateTime.Now,
                 Estado = "Pendiente",
@@ -122,10 +122,6 @@ namespace RepositorioAcademico.Server.Controllers
                 query = query.Where(d => d.Autor.Contains(autor));
             }
 
-            if (!string.IsNullOrEmpty(categoria))
-            {
-                query = query.Where(d => d.Categoria.Contains(categoria));
-            }
 
             return await query.ToListAsync();
         }

@@ -2,8 +2,8 @@ export interface Documento {
   id: number;
   titulo?: string;
   autor?: string;
-  tipo?: string;
-  categoria?: string;
+  tipoId?: string;
+  facultadId?: string;
   rutaDocumento?: string;
   fechaSubida: Date;
   estado?: string;

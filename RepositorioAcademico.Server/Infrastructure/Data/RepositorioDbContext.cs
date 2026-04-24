@@ -11,5 +11,9 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
         }
 
         public DbSet<Documento> Documentos { get; set; }
+
+        public DbSet<TipoDocumento> TiposDocumento { get; set; }
+
+        public DbSet<Facultad> Facultades { get; set; }
     }
 }

@@ -8,9 +8,9 @@
 
         public string? Autor { get; set; }
 
-        public string? Tipo { get; set; }
+        public int TipoDocumentoId { get; set; }
 
-        public string? Categoria { get; set; }
+        public int FacultadId { get; set; }
 
         public string? RutaDocumento { get; set; }
 
