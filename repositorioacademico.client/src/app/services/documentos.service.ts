@@ -7,37 +7,38 @@ import { Documento } from '../models/documento';
   providedIn: 'root'
 })
 export class DocumentosService {
+  private readonly apiUrl = 'https://localhost:7225/api/documentos';
 
-  private apiUrl = 'https://localhost:7225/api/documentos';
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) {}
 
-  // LISTAR
   getDocumentos(): Observable<Documento[]> {
     return this.http.get<Documento[]>(this.apiUrl);
   }
 
-  // OBTENER UNO
   getDocumento(id: number): Observable<Documento> {
     return this.http.get<Documento>(`${this.apiUrl}/${id}`);
   }
 
-  // SUBIR ARCHIVO + DATA
-  subirDocumento(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/upload`, formData);
+  subirDocumento(formData: FormData): Observable<Documento> {
+    return this.http.post<Documento>(`${this.apiUrl}/upload`, formData);
   }
 
-  // BUSCAR
-  buscar(titulo?: string, autor?: string, categoria?: string): Observable<Documento[]> {
-    let params: any = {};
+  buscar(
+    titulo?: string,
+    autor?: string,
+    tipoDocumentoId?: number,
+    facultadId?: number
+  ): Observable<Documento[]> {
+    const params: Record<string, string | number> = {};
 
-    if (titulo) params.titulo = titulo;
-    if (autor) params.autor = autor;
-    if (categoria) params.categoria = categoria;
+    if (titulo) params['titulo'] = titulo;
+    if (autor) params['autor'] = autor;
+    if (tipoDocumentoId != null) params['tipoDocumentoId'] = tipoDocumentoId;
+    if (facultadId != null) params['facultadId'] = facultadId;
 
     return this.http.get<Documento[]>(`${this.apiUrl}/buscar`, { params });
   }
 
-  // URL PARA VER PDF
   getArchivoUrl(nombre: string): string {
     return `${this.apiUrl}/archivo/${nombre}`;
   }

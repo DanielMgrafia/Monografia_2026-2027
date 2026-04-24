@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
-import { DocumentosService } from '../../services/documentos.service';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
+import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
+import { Catalogo } from '../../models/catalogo';
+import { CatalogosService } from '../../services/catalogos.service';
+import { DocumentosService } from '../../services/documentos.service';
 
 @Component({
   selector: 'app-subir-documento',
@@ -11,46 +13,93 @@ import { CommonModule } from '@angular/common';
   templateUrl: './subir-documento.component.html',
   styleUrls: ['./subir-documento.component.css']
 })
-export class SubirDocumentoComponent {
-  titulo: string = '';
-  autor: string = '';
-  tipo: string = '';
-  categoria: string = '';
+export class SubirDocumentoComponent implements OnInit {
+  titulo = '';
+  autor = '';
+  tipoDocumentoId: number | null = null;
+  facultadId: number | null = null;
   archivoSeleccionado: File | null = null;
 
-  cargando: boolean = false;
-  mensaje: string = '';
-  error: string = '';
+  tiposDocumento: Catalogo[] = [];
+  facultades: Catalogo[] = [];
 
-  constructor(private documentosService: DocumentosService) { }
+  cargando = false;
+  cargandoCatalogos = false;
+  mensaje = '';
+  error = '';
+
+  private readonly documentosService = inject(DocumentosService);
+  private readonly catalogosService = inject(CatalogosService);
+
+  ngOnInit(): void {
+    this.cargarCatalogos();
+  }
+
+  cargarCatalogos(): void {
+    this.cargandoCatalogos = true;
+    this.error = '';
+
+    forkJoin({
+      tiposDocumento: this.catalogosService.getTiposDocumento(),
+      facultades: this.catalogosService.getFacultades()
+    }).subscribe({
+      next: ({ tiposDocumento, facultades }) => {
+        this.tiposDocumento = tiposDocumento;
+        this.facultades = facultades;
+
+        if (this.tipoDocumentoId == null && tiposDocumento.length === 1) {
+          this.tipoDocumentoId = tiposDocumento[0].id;
+        }
+
+        if (this.facultadId == null && facultades.length === 1) {
+          this.facultadId = facultades[0].id;
+        }
+
+        this.cargandoCatalogos = false;
+      },
+      error: () => {
+        this.error = 'No se pudieron cargar los catalogos.';
+        this.cargandoCatalogos = false;
+      }
+    });
+  }
 
   seleccionarArchivo(event: Event): void {
     const input = event.target as HTMLInputElement;
 
-    if (input.files && input.files.length > 0) {
-      const archivo = input.files[0];
-
-      if (
-          archivo.type !== 'application/pdf' &&
-          archivo.type !== 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-         ) {
-       
-        this.error = 'Solo se permiten archivos PDF y Word.';
-        this.archivoSeleccionado = null;
-        return;
-      }
-
-      this.archivoSeleccionado = archivo;
-      this.error = '';
+    if (!input.files || input.files.length === 0) {
+      this.archivoSeleccionado = null;
+      return;
     }
+
+    const archivo = input.files[0];
+    const extension = archivo.name.split('.').pop()?.toLowerCase();
+    const esPdf = archivo.type === 'application/pdf' || extension === 'pdf';
+    const esDocx =
+      archivo.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+      extension === 'docx';
+
+    if (!esPdf && !esDocx) {
+      this.error = 'Solo se permiten archivos PDF y Word.';
+      this.archivoSeleccionado = null;
+      return;
+    }
+
+    this.archivoSeleccionado = archivo;
+    this.error = '';
   }
 
   guardarDocumento(): void {
     this.mensaje = '';
     this.error = '';
 
-    if (!this.titulo || !this.autor || !this.tipo || !this.categoria) {
-      this.error = 'Completa todos los campos.';
+    if (
+      !this.titulo.trim() ||
+      !this.autor.trim() ||
+      this.tipoDocumentoId == null ||
+      this.facultadId == null
+    ) {
+      this.error = 'Completa todos los campos obligatorios.';
       return;
     }
 
@@ -61,10 +110,10 @@ export class SubirDocumentoComponent {
 
     const formData = new FormData();
     formData.append('archivo', this.archivoSeleccionado);
-    formData.append('titulo', this.titulo);
-    formData.append('autor', this.autor);
-    formData.append('tipo', this.tipo);
-    formData.append('categoria', this.categoria);
+    formData.append('titulo', this.titulo.trim());
+    formData.append('autor', this.autor.trim());
+    formData.append('tipoDocumentoId', this.tipoDocumentoId.toString());
+    formData.append('facultadId', this.facultadId.toString());
     formData.append('usuarioId', '1');
 
     this.cargando = true;
@@ -76,7 +125,7 @@ export class SubirDocumentoComponent {
         this.cargando = false;
       },
       error: () => {
-        this.error = 'Ocurrió un error al subir el documento.';
+        this.error = 'Ocurrio un error al subir el documento.';
         this.cargando = false;
       }
     });
@@ -85,8 +134,6 @@ export class SubirDocumentoComponent {
   limpiarFormulario(): void {
     this.titulo = '';
     this.autor = '';
-    this.tipo = '';
-    this.categoria = '';
     this.archivoSeleccionado = null;
   }
 }

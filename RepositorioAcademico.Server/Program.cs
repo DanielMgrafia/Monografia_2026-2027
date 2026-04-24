@@ -30,6 +30,10 @@ app.MapStaticAssets();
 // Pipeline
 if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<RepositorioDbContext>();
+    dbContext.Database.Migrate();
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }

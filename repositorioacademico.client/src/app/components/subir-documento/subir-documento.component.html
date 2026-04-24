@@ -2,19 +2,19 @@
   <div class="upload-card">
     <div class="upload-header">
       <h2>Subir documento</h2>
-      <p>Registra tesis, ensayos, artículos o revistas en el repositorio.</p>
+      <p>Registra documentos usando los catalogos oficiales del sistema.</p>
     </div>
 
     <form (ngSubmit)="guardarDocumento()" #formDocumento="ngForm" class="upload-form">
       <div class="form-grid">
         <div class="form-group">
-          <label for="titulo">Título</label>
+          <label for="titulo">Titulo</label>
           <input type="text"
                  id="titulo"
                  name="titulo"
                  [(ngModel)]="titulo"
                  required
-                 placeholder="Ej. Sistema de gestión documental universitario" />
+                 placeholder="Ej. Sistema de gestion documental universitario" />
         </div>
 
         <div class="form-group">
@@ -28,29 +28,35 @@
         </div>
 
         <div class="form-group">
-          <label for="tipo">Tipo</label>
-          <select id="tipo" name="tipo" [(ngModel)]="tipo" required>
-            <option value="">Seleccione</option>
-            <option value="Tesis">Tesis</option>
-            <option value="Ensayo">Ensayo</option>
-            <option value="Artículo">Artículo</option>
-            <option value="Revista">Revista</option>
-            <option value="Investigación">Investigación</option>
+          <label for="tipoDocumentoId">Tipo de documento</label>
+          <select id="tipoDocumentoId"
+                  name="tipoDocumentoId"
+                  [(ngModel)]="tipoDocumentoId"
+                  [disabled]="cargandoCatalogos || tiposDocumento.length === 0"
+                  required>
+            <option [ngValue]="null">Seleccione</option>
+            <option *ngFor="let tipoDocumento of tiposDocumento" [ngValue]="tipoDocumento.id">
+              {{ tipoDocumento.descripcion }}
+            </option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="categoria">Categoría</label>
-          <input type="text"
-                 id="categoria"
-                 name="categoria"
-                 [(ngModel)]="categoria"
-                 required
-                 placeholder="Ej. Ingeniería de Sistemas" />
+          <label for="facultadId">Facultad</label>
+          <select id="facultadId"
+                  name="facultadId"
+                  [(ngModel)]="facultadId"
+                  [disabled]="cargandoCatalogos || facultades.length === 0"
+                  required>
+            <option [ngValue]="null">Seleccione</option>
+            <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
+              {{ facultad.descripcion }}
+            </option>
+          </select>
         </div>
 
         <div class="form-group form-group-full">
-          <label for="archivo">Archivo</label>
+          <label for="archivo">Archivo (PDF o Word)</label>
           <input type="file"
                  id="archivo"
                  accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -60,10 +66,22 @@
       </div>
 
       <div class="acciones">
-        <button type="submit" class="btn-subir" [disabled]="cargando">
+        <button type="submit"
+                class="btn-subir"
+                [disabled]="cargando || cargandoCatalogos || tiposDocumento.length === 0 || facultades.length === 0">
           {{ cargando ? 'Subiendo...' : 'Guardar documento' }}
         </button>
       </div>
+
+      <p *ngIf="cargandoCatalogos && !error">Cargando catalogos...</p>
+
+      <p *ngIf="!cargandoCatalogos && tiposDocumento.length === 0">
+        No hay tipos de documento disponibles.
+      </p>
+
+      <p *ngIf="!cargandoCatalogos && facultades.length === 0">
+        No hay facultades disponibles.
+      </p>
 
       <div *ngIf="mensaje" class="mensaje-exito">
         {{ mensaje }}

@@ -2,7 +2,7 @@
   <div class="repositorio-card">
     <div class="repositorio-header">
       <div>
-        <h2>Repositorio Académico</h2>
+        <h2>Repositorio Academico</h2>
         <p>Consulta y visualiza los documentos registrados en la plataforma.</p>
       </div>
     </div>
@@ -11,12 +11,12 @@
       <table class="tabla-documentos">
         <thead>
           <tr>
-            <th>Título</th>
+            <th>Titulo</th>
             <th>Autor</th>
             <th>Tipo</th>
-            <th>Categoría</th>
+            <th>Facultad</th>
             <th>Estado</th>
-            <th class="text-center">Acción</th>
+            <th class="text-center">Accion</th>
           </tr>
         </thead>
 
@@ -24,21 +24,21 @@
           <tr *ngFor="let doc of documentos">
             <td class="titulo-doc">{{ doc.titulo }}</td>
             <td>{{ doc.autor }}</td>
-            <td>{{ doc.tipo }}</td>
-            <td>{{ doc.categoria }}</td>
+            <td>{{ doc.tipoDocumento }}</td>
+            <td>{{ doc.facultad }}</td>
             <td>
               <span class="estado-badge"
                     [ngClass]="{
-                  'estado-pendiente': doc.estado === 'Pendiente',
-                  'estado-aprobado': doc.estado === 'Aprobado',
-                  'estado-rechazado': doc.estado === 'Rechazado'
-                }">
+                      'estado-pendiente': doc.estado === 'Pendiente',
+                      'estado-aprobado': doc.estado === 'Aprobado',
+                      'estado-rechazado': doc.estado === 'Rechazado'
+                    }">
                 {{ doc.estado }}
               </span>
             </td>
             <td class="text-center">
               <button class="btn-ver" (click)="verArchivo(doc.rutaDocumento)">
-                Ver PDF
+                Ver archivo
               </button>
             </td>
           </tr>

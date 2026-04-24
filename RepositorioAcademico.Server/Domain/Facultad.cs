@@ -1,11 +1,13 @@
-﻿namespace RepositorioAcademico.Server.Domain
+namespace RepositorioAcademico.Server.Domain
 {
     public class Facultad
     {
         public int Id { get; set; }
 
-        public string? Descripcion { get; set; }
+        public string Descripcion { get; set; } = string.Empty;
 
         public string? Estado { get; set; }
+
+        public ICollection<Documento> Documentos { get; set; } = [];
     }
 }

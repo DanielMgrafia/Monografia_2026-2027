@@ -1,6 +1,6 @@
-namespace RepositorioAcademico.Server.Domain
+namespace RepositorioAcademico.Server.Contracts
 {
-    public class Documento
+    public class DocumentoDto
     {
         public int Id { get; set; }
 
@@ -10,11 +10,11 @@ namespace RepositorioAcademico.Server.Domain
 
         public int TipoDocumentoId { get; set; }
 
-        public TipoDocumento? TipoDocumento { get; set; }
+        public string? TipoDocumento { get; set; }
 
         public int FacultadId { get; set; }
 
-        public Facultad? Facultad { get; set; }
+        public string? Facultad { get; set; }
 
         public string? RutaDocumento { get; set; }
 
