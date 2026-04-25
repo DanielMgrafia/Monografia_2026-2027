@@ -1,73 +1,83 @@
 <section class="facultades-card">
-  <div class="facultades-header">
-    <div>
-      <p class="eyebrow">Catalogo academico</p>
-      <h2>Gestion de facultades</h2>
-      <p class="descripcion">
-        Crea las facultades que luego estaran disponibles al registrar documentos.
-      </p>
-    </div>
 
-    <div class="contador">
-      <span class="contador-valor">{{ facultades.length }}</span>
-      <span class="contador-label">facultades activas</span>
-    </div>
-  </div>
+  <div class="facultades-content">
 
-  <div class="facultades-layout">
-    <form class="facultad-form" (ngSubmit)="guardarFacultad()" #formFacultad="ngForm">
-      <label for="descripcion">Nombre de la facultad</label>
-      <input type="text"
-             id="descripcion"
-             name="descripcion"
-             [(ngModel)]="descripcion"
-             maxlength="150"
-             placeholder="Ej. Facultad de Ingenieria y Arquitectura"
-             required />
+    <!-- FORMULARIO -->
+    <form class="facultad-form"
+          (ngSubmit)="guardarFacultad()"
+          #formFacultad="ngForm">
 
-      <button type="submit" class="btn-guardar" [disabled]="guardando">
+      <h3>Nueva facultad</h3>
+
+      <div class="form-group">
+        <label for="descripcion">Nombre de la facultad</label>
+
+        <input type="text"
+               id="descripcion"
+               name="descripcion"
+               [(ngModel)]="descripcion"
+               maxlength="150"
+               placeholder="Ej. Facultad de Ingeniería y Arquitectura"
+               required />
+      </div>
+
+      <button type="submit"
+              class="btn-guardar"
+              [disabled]="guardando || formFacultad.invalid">
         {{ guardando ? 'Guardando...' : 'Guardar facultad' }}
       </button>
 
-      <div *ngIf="mensaje" class="mensaje mensaje-exito">
+      <div *ngIf="mensaje" class="mensaje exito">
         {{ mensaje }}
       </div>
 
-      <div *ngIf="error" class="mensaje mensaje-error">
+      <div *ngIf="error" class="mensaje error">
         {{ error }}
       </div>
+
     </form>
 
+    <!-- LISTA -->
     <div class="facultades-lista">
+
       <div class="lista-header">
         <div>
           <h3>Facultades registradas</h3>
-          <p>Este listado alimenta el catalogo del formulario de documentos.</p>
+          <p>Listado utilizado en el registro de documentos.</p>
         </div>
 
         <button type="button"
-                class="btn-secundario"
+                class="btn-actualizar"
                 (click)="cargarFacultades()"
                 [disabled]="cargando">
           {{ cargando ? 'Actualizando...' : 'Actualizar' }}
         </button>
       </div>
 
-      <p *ngIf="cargando" class="estado-lista">Cargando facultades...</p>
+      <p *ngIf="cargando" class="estado-lista">
+        Cargando facultades...
+      </p>
 
-      <ul *ngIf="!cargando && facultades.length > 0" class="lista-facultades">
+      <ul *ngIf="!cargando && facultades.length > 0" class="lista">
         <li *ngFor="let facultad of facultades; index as indice">
-          <span class="indice">{{ indice + 1 }}</span>
-          <div>
+          <span class="numero">{{ indice + 1 }}</span>
+
+          <div class="facultad-info">
             <strong>{{ facultad.descripcion }}</strong>
-            <small>Disponible para documentos</small>
+            <small>Disponible para documentos académicos</small>
           </div>
+
+          <span class="estado activo">Activo</span>
         </li>
       </ul>
 
-      <p *ngIf="!cargando && facultades.length === 0" class="estado-lista vacio">
-        Aun no hay facultades registradas.
-      </p>
+      <div *ngIf="!cargando && facultades.length === 0" class="lista-vacia">
+        <strong>No hay facultades registradas</strong>
+        <p>Agrega una nueva facultad para iniciar el catálogo académico.</p>
+      </div>
+
     </div>
+
   </div>
+
 </section>
