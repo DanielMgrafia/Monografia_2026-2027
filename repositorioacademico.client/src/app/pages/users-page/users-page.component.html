@@ -1,0 +1,114 @@
+<section class="page-grid">
+  <article class="page-card form-card">
+    <div class="card-header">
+      <div>
+        <h3>Nuevo usuario</h3>
+        <p>Crea cuentas y define sus roles desde el inicio.</p>
+      </div>
+    </div>
+
+    <form class="form-grid" (ngSubmit)="guardarUsuario()">
+      <label>
+        Nombres
+        <input type="text" [(ngModel)]="nuevoUsuario.nombres" name="nombres" />
+      </label>
+
+      <label>
+        Apellidos
+        <input type="text" [(ngModel)]="nuevoUsuario.apellidos" name="apellidos" />
+      </label>
+
+      <label>
+        Correo
+        <input type="email" [(ngModel)]="nuevoUsuario.correo" name="correo" />
+      </label>
+
+      <label>
+        Carnet
+        <input type="text" [(ngModel)]="nuevoUsuario.carnet" name="carnet" />
+      </label>
+
+      <label class="full">
+        Contrasena
+        <input type="password" [(ngModel)]="nuevoUsuario.password" name="password" />
+      </label>
+
+      <div class="full selection-box">
+        <strong>Roles asignados</strong>
+        <div class="check-grid">
+          <label class="check-item" *ngFor="let rol of roles">
+            <input type="checkbox"
+                   [checked]="nuevoUsuario.rolIds.includes(rol.id)"
+                   (change)="toggleNuevoRol(rol.id, $any($event.target).checked)" />
+            <span>{{ rol.nombre }}</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="primary-button" [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : 'Crear usuario' }}
+      </button>
+    </form>
+  </article>
+
+  <article class="page-card list-card">
+    <div class="card-header">
+      <div>
+        <h3>Usuarios registrados</h3>
+        <p>Administra los roles visibles para cada usuario.</p>
+      </div>
+      <button type="button" class="secondary-button" (click)="cargarDatos()" [disabled]="cargando">
+        {{ cargando ? 'Actualizando...' : 'Recargar' }}
+      </button>
+    </div>
+
+    <div *ngIf="mensaje" class="message success">{{ mensaje }}</div>
+    <div *ngIf="error" class="message error">{{ error }}</div>
+
+    <div class="user-list" *ngIf="usuarios.length > 0; else emptyState">
+      <div class="user-card" *ngFor="let usuario of usuarios">
+        <div class="user-header">
+          <div>
+            <strong>{{ usuario.nombres }} {{ usuario.apellidos }}</strong>
+            <span>{{ usuario.correo }} · {{ usuario.carnet }}</span>
+          </div>
+
+          <span class="state">{{ usuario.estado }}</span>
+        </div>
+
+        <div class="role-badges">
+          <span class="badge" *ngFor="let rol of usuario.roles">{{ rol.nombre }}</span>
+        </div>
+
+        <div class="selection-box">
+          <strong>Actualizar roles</strong>
+          <div class="check-grid">
+            <label class="check-item" *ngFor="let rol of roles">
+              <input type="checkbox"
+                     [checked]="hasRoleSelected(usuario.id, rol.id)"
+                     (change)="toggleRolUsuario(usuario.id, rol.id, $any($event.target).checked)" />
+              <span>{{ rol.nombre }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="user-footer">
+          <small>{{ usuario.permisos.length }} permisos efectivos</small>
+          <button type="button"
+                  class="primary-button"
+                  [disabled]="actualizandoUsuarioId === usuario.id"
+                  (click)="actualizarRoles(usuario)">
+            {{ actualizandoUsuarioId === usuario.id ? 'Guardando...' : 'Guardar roles' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<ng-template #emptyState>
+  <div class="empty-state">
+    <strong>No hay usuarios registrados.</strong>
+    <p>Crea el primer usuario desde el formulario lateral.</p>
+  </div>
+</ng-template>

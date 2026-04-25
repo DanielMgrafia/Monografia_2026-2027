@@ -1,38 +1,41 @@
-.repositorio-container {
-  padding: 0;
-  background: transparent;
-  min-height: auto;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
 .repositorio-card {
-  max-width: 1200px;
-  margin: 0 auto;
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
   overflow: hidden;
   border: 1px solid #e5e7eb;
+  padding: 24px;
 }
 
-.repositorio-header {
-  padding: 28px 32px;
-  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+.repositorio-toolbar {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.search-box {
+  flex: 1;
+}
+
+.search-box input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #d8e0ec;
+  border-radius: 12px;
+  padding: 0 14px;
+  outline: none;
+}
+
+.refresh-button {
+  min-width: 132px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #083b91;
   color: #ffffff;
+  font-weight: 800;
 }
-
-  .repositorio-header h2 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-  }
-
-  .repositorio-header p {
-    margin: 8px 0 0;
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.85);
-  }
 
 .tabla-wrapper {
   overflow-x: auto;
@@ -41,37 +44,34 @@
 .tabla-documentos {
   width: 100%;
   border-collapse: collapse;
+  min-width: 820px;
 }
 
-  .tabla-documentos thead {
-    background: #f8fafc;
-  }
+.tabla-documentos thead {
+  background: #f8fafc;
+}
 
-  .tabla-documentos th {
-    text-align: left;
-    padding: 18px 20px;
-    font-size: 14px;
-    font-weight: 700;
-    color: #334155;
-    border-bottom: 1px solid #e2e8f0;
-    white-space: nowrap;
-  }
+.tabla-documentos th {
+  text-align: left;
+  padding: 18px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
 
-  .tabla-documentos td {
-    padding: 18px 20px;
-    font-size: 14px;
-    color: #475569;
-    border-bottom: 1px solid #edf2f7;
-    vertical-align: middle;
-  }
+.tabla-documentos td {
+  padding: 18px 20px;
+  font-size: 14px;
+  color: #475569;
+  border-bottom: 1px solid #edf2f7;
+  vertical-align: middle;
+}
 
-  .tabla-documentos tbody tr {
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-
-    .tabla-documentos tbody tr:hover {
-      background-color: #f8fbff;
-    }
+.tabla-documentos tbody tr:hover {
+  background-color: #f8fbff;
+}
 
 .titulo-doc {
   font-weight: 600;
@@ -92,9 +92,14 @@
   color: #c2410c;
 }
 
-.estado-aprobado {
+.estado-publicado {
   background: #ecfdf5;
   color: #047857;
+}
+
+.estado-observado {
+  background: #eef5ff;
+  color: #0a54db;
 }
 
 .estado-rechazado {
@@ -111,27 +116,42 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
 }
-
-  .btn-ver:hover {
-    transform: translateY(-1px);
-    background: linear-gradient(135deg, #1d4ed8, #1e40af);
-    box-shadow: 0 8px 18px rgba(29, 78, 216, 0.3);
-  }
-
-  .btn-ver:active {
-    transform: scale(0.98);
-  }
 
 .text-center {
   text-align: center;
 }
 
-.sin-registros {
-  text-align: center;
-  padding: 30px;
-  color: #64748b;
-  font-style: italic;
+.message.error,
+.empty-state {
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.message.error {
+  background: #ffe9e7;
+  color: #c8332b;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.empty-state {
+  background: #ffffff;
+  color: #52627e;
+}
+
+.empty-state strong {
+  display: block;
+  color: #061b4e;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 720px) {
+  .repositorio-toolbar {
+    flex-direction: column;
+  }
+
+  .refresh-button {
+    width: 100%;
+  }
 }

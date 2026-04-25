@@ -1,0 +1,176 @@
+<ng-container *ngIf="!loading(); else loadingState">
+  <div *ngIf="error()" class="message error">{{ error() }}</div>
+
+  <section class="summary-grid">
+    <article class="summary-card urgent">
+      <div>
+        <span class="label">Pendientes de revision</span>
+        <h3>{{ summary().pendientes }}</h3>
+        <p>Documentos esperando autorizacion</p>
+      </div>
+      <div class="summary-icon">PD</div>
+    </article>
+
+    <article class="summary-card success">
+      <div>
+        <span class="label">Publicados</span>
+        <h3>{{ summary().publicados }}</h3>
+        <p>Documentos visibles en el repositorio</p>
+      </div>
+      <div class="summary-icon">OK</div>
+    </article>
+
+    <article class="summary-card warning">
+      <div>
+        <span class="label">Observados</span>
+        <h3>{{ summary().observados }}</h3>
+        <p>Requieren correcciones antes de publicar</p>
+      </div>
+      <div class="summary-icon">RV</div>
+    </article>
+
+    <article class="summary-card info">
+      <div>
+        <span class="label">Catalogos activos</span>
+        <h3>{{ summary().catalogosActivos }}</h3>
+        <p>Tipos y facultades disponibles</p>
+      </div>
+      <div class="summary-icon">CT</div>
+    </article>
+  </section>
+
+  <section class="quick-actions" *ngIf="quickActions().length > 0">
+    <article class="action-card" *ngFor="let action of quickActions()">
+      <div class="action-icon" [ngClass]="action.accent">{{ action.icon }}</div>
+      <div>
+        <h3>{{ action.title }}</h3>
+        <p>{{ action.description }}</p>
+      </div>
+      <button type="button" (click)="goTo(action.route)">Ir</button>
+    </article>
+  </section>
+
+  <section class="content-grid">
+    <article class="card documents-card">
+      <div class="card-header">
+        <div>
+          <h3>Documentos recientes para revision</h3>
+          <p>Solicitudes nuevas o observadas que requieren seguimiento.</p>
+        </div>
+        <a routerLink="/revision-documental" *ngIf="pendingDocuments().length > 0">Ver todos</a>
+      </div>
+
+      <div class="table-wrapper" *ngIf="pendingDocuments().length > 0; else noPending">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Autor</th>
+              <th>Tipo</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th class="text-right">Accion</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let documento of pendingDocuments()">
+              <td>
+                <strong>{{ documento.titulo }}</strong>
+                <span>{{ documento.facultad }}</span>
+              </td>
+              <td>{{ documento.autor }}</td>
+              <td>{{ documento.tipoDocumento }}</td>
+              <td>{{ documento.fechaSubida | date:'dd MMM yyyy' }}</td>
+              <td>
+                <span class="badge" [ngClass]="getStatusClass(documento.estado)">
+                  {{ documento.estado }}
+                </span>
+              </td>
+              <td class="actions">
+                <button class="btn outline" type="button" (click)="goTo('/revision-documental')">
+                  Revisar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <aside class="card side-panel">
+      <div class="card-header simple">
+        <h3>Catalogos disponibles</h3>
+        <span class="mini-badge">Activo</span>
+      </div>
+
+      <div class="catalog-list">
+        <div class="catalog-item" *ngFor="let tipoDocumento of tiposDocumento().slice(0, 4)">
+          <div>
+            <strong>{{ tipoDocumento.descripcion }}</strong>
+            <span>Tipo de documento habilitado</span>
+          </div>
+          <span class="status active">Activo</span>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="catalog-grid">
+    <article class="card">
+      <div class="card-header">
+        <div>
+          <h3>Facultades activas</h3>
+          <p>Catalogo de facultades usado al clasificar documentos.</p>
+        </div>
+        <button class="new-btn"
+                type="button"
+                *ngIf="authService.hasPermission('CATALOGO.GESTIONAR')"
+                (click)="goTo('/facultades')">
+          Gestionar
+        </button>
+      </div>
+
+      <div class="catalog-list">
+        <div class="catalog-item" *ngFor="let facultad of facultades().slice(0, 4)">
+          <div>
+            <strong>{{ facultad.descripcion }}</strong>
+            <span>Visible al registrar documentos</span>
+          </div>
+          <span class="status active">Activo</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card activity-card">
+      <div class="card-header">
+        <div>
+          <h3>Actividad reciente</h3>
+          <p>Ultimos movimientos dentro del repositorio.</p>
+        </div>
+      </div>
+
+      <div class="activity-list">
+        <div class="activity-item" *ngFor="let documento of recentActivity()">
+          <span class="dot" [ngClass]="getStatusClass(documento.estado)"></span>
+          <div>
+            <strong>{{ documento.titulo }}</strong>
+            <p>{{ documento.autor }} registro un documento en estado {{ documento.estado?.toLowerCase() }}.</p>
+          </div>
+          <small>{{ documento.fechaSubida | date:'dd MMM' }}</small>
+        </div>
+      </div>
+    </article>
+  </section>
+</ng-container>
+
+<ng-template #loadingState>
+  <div class="loading-state">Cargando panel...</div>
+</ng-template>
+
+<ng-template #noPending>
+  <div class="empty-state">
+    <strong>No hay documentos pendientes.</strong>
+    <p>Cuando entren nuevas solicitudes apareceran aqui para su revision.</p>
+  </div>
+</ng-template>

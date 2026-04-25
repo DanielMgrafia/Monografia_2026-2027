@@ -23,6 +23,10 @@ export class DocumentosService {
     return this.http.post<Documento>(`${this.apiUrl}/upload`, formData);
   }
 
+  actualizarEstado(id: number, estado: string): Observable<Documento> {
+    return this.http.put<Documento>(`${this.apiUrl}/${id}/estado`, { estado });
+  }
+
   buscar(
     titulo?: string,
     autor?: string,

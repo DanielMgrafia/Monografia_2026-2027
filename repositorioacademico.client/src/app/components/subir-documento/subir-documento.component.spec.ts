@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Subject, of } from 'rxjs';
 import { Catalogo } from '../../models/catalogo';
+import { Usuario } from '../../models/usuario';
+import { AuthService } from '../../services/auth.service';
 import { CatalogosService } from '../../services/catalogos.service';
 import { DocumentosService } from '../../services/documentos.service';
 import { SubirDocumentoComponent } from './subir-documento.component';
@@ -10,8 +12,21 @@ describe('SubirDocumentoComponent', () => {
   let fixture: ComponentFixture<SubirDocumentoComponent>;
   let catalogosServiceSpy: jasmine.SpyObj<CatalogosService>;
   let documentosServiceSpy: jasmine.SpyObj<DocumentosService>;
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
   let tipoDocumentoCreado$: Subject<Catalogo>;
   let facultadCreada$: Subject<Catalogo>;
+
+  const mockUsuario: Usuario = {
+    id: 99,
+    nombres: 'Admin',
+    apellidos: 'Sistema',
+    correo: 'admin@universidad.edu',
+    carnet: 'ADMIN-001',
+    estado: 'Activo',
+    fechaCreacion: new Date().toISOString(),
+    roles: [],
+    permisos: []
+  };
 
   const mockTiposDocumento: Catalogo[] = [
     { id: 1, descripcion: 'Tesis' }
@@ -35,9 +50,11 @@ describe('SubirDocumentoComponent', () => {
       'DocumentosService',
       ['subirDocumento']
     );
+    authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', ['currentUser']);
 
     catalogosServiceSpy.getTiposDocumento.and.returnValue(of(mockTiposDocumento));
     catalogosServiceSpy.getFacultades.and.returnValue(of(mockFacultades));
+    authServiceSpy.currentUser.and.returnValue(mockUsuario);
     documentosServiceSpy.subirDocumento.and.returnValue(of({
       id: 1,
       titulo: 'Documento',
@@ -51,6 +68,7 @@ describe('SubirDocumentoComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SubirDocumentoComponent],
       providers: [
+        { provide: AuthService, useValue: authServiceSpy },
         { provide: CatalogosService, useValue: catalogosServiceSpy },
         { provide: DocumentosService, useValue: documentosServiceSpy }
       ]
@@ -68,6 +86,7 @@ describe('SubirDocumentoComponent', () => {
   it('should load catalogs on init', () => {
     expect(catalogosServiceSpy.getTiposDocumento).toHaveBeenCalled();
     expect(catalogosServiceSpy.getFacultades).toHaveBeenCalled();
+    expect(component.autor).toBe('Admin Sistema');
     expect(component.tiposDocumento).toEqual(mockTiposDocumento);
     expect(component.facultades).toEqual(mockFacultades);
   });

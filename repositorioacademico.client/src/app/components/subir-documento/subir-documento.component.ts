@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { Catalogo } from '../../models/catalogo';
+import { AuthService } from '../../services/auth.service';
 import { CatalogosService } from '../../services/catalogos.service';
 import { DocumentosService } from '../../services/documentos.service';
 
@@ -30,10 +31,16 @@ export class SubirDocumentoComponent implements OnInit {
   error = '';
 
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
   private readonly documentosService = inject(DocumentosService);
   private readonly catalogosService = inject(CatalogosService);
 
   ngOnInit(): void {
+    const currentUser = this.authService.currentUser();
+    if (currentUser && !this.autor.trim()) {
+      this.autor = `${currentUser.nombres} ${currentUser.apellidos}`.trim();
+    }
+
     this.cargarCatalogos();
     this.catalogosService.tipoDocumentoCreado$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -148,13 +155,19 @@ export class SubirDocumentoComponent implements OnInit {
       return;
     }
 
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) {
+      this.error = 'No se encontro una sesion activa.';
+      return;
+    }
+
     const formData = new FormData();
     formData.append('archivo', this.archivoSeleccionado);
     formData.append('titulo', this.titulo.trim());
     formData.append('autor', this.autor.trim());
     formData.append('tipoDocumentoId', this.tipoDocumentoId.toString());
     formData.append('facultadId', this.facultadId.toString());
-    formData.append('usuarioId', '1');
+    formData.append('usuarioId', currentUser.id.toString());
 
     this.cargando = true;
 
@@ -173,7 +186,8 @@ export class SubirDocumentoComponent implements OnInit {
 
   limpiarFormulario(): void {
     this.titulo = '';
-    this.autor = '';
+    const currentUser = this.authService.currentUser();
+    this.autor = currentUser ? `${currentUser.nombres} ${currentUser.apellidos}`.trim() : '';
     this.archivoSeleccionado = null;
   }
 }

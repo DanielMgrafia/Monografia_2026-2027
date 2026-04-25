@@ -1,0 +1,99 @@
+<section class="page-grid">
+  <article class="page-card form-card">
+    <div class="card-header">
+      <div>
+        <h3>Nuevo rol</h3>
+        <p>Define cargos del sistema a partir de permisos concretos.</p>
+      </div>
+    </div>
+
+    <form class="form-grid" (ngSubmit)="guardarRol()">
+      <label class="full">
+        Nombre del rol
+        <input type="text" [(ngModel)]="nuevoRol.nombre" name="nombreRol" />
+      </label>
+
+      <label class="full">
+        Descripcion
+        <input type="text" [(ngModel)]="nuevoRol.descripcion" name="descripcionRol" />
+      </label>
+
+      <div class="full selection-box">
+        <strong>Permisos incluidos</strong>
+        <div class="check-grid">
+          <label class="check-item" *ngFor="let permiso of permisos">
+            <input type="checkbox"
+                   [checked]="nuevoRol.permisoIds.includes(permiso.id)"
+                   (change)="toggleNuevoPermiso(permiso.id, $any($event.target).checked)" />
+            <span>{{ permiso.codigo }}</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="primary-button" [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : 'Crear rol' }}
+      </button>
+    </form>
+  </article>
+
+  <article class="page-card list-card">
+    <div class="card-header">
+      <div>
+        <h3>Roles del sistema</h3>
+        <p>Ajusta permisos segun el dashboard o modulo que cada rol puede ver.</p>
+      </div>
+      <button type="button" class="secondary-button" (click)="cargarDatos()" [disabled]="cargando">
+        {{ cargando ? 'Actualizando...' : 'Recargar' }}
+      </button>
+    </div>
+
+    <div *ngIf="mensaje" class="message success">{{ mensaje }}</div>
+    <div *ngIf="error" class="message error">{{ error }}</div>
+
+    <div class="role-list" *ngIf="roles.length > 0; else emptyState">
+      <div class="role-card" *ngFor="let rol of roles">
+        <div class="role-header">
+          <div>
+            <strong>{{ rol.nombre }}</strong>
+            <span>{{ rol.descripcion || 'Sin descripcion adicional' }}</span>
+          </div>
+
+          <span class="state">{{ rol.estado }}</span>
+        </div>
+
+        <div class="permission-badges">
+          <span class="badge" *ngFor="let permiso of rol.permisos">{{ permiso.codigo }}</span>
+        </div>
+
+        <div class="selection-box">
+          <strong>Actualizar permisos</strong>
+          <div class="check-grid">
+            <label class="check-item" *ngFor="let permiso of permisos">
+              <input type="checkbox"
+                     [checked]="hasPermissionSelected(rol.id, permiso.id)"
+                     (change)="togglePermisoRol(rol.id, permiso.id, $any($event.target).checked)" />
+              <span>{{ permiso.codigo }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="role-footer">
+          <small>{{ rol.permisos.length }} permisos activos</small>
+          <button type="button"
+                  class="primary-button"
+                  [disabled]="actualizandoRolId === rol.id"
+                  (click)="actualizarPermisos(rol)">
+            {{ actualizandoRolId === rol.id ? 'Guardando...' : 'Guardar permisos' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<ng-template #emptyState>
+  <div class="empty-state">
+    <strong>No hay roles registrados.</strong>
+    <p>Crea el primer rol usando el formulario lateral.</p>
+  </div>
+</ng-template>

@@ -11,6 +11,7 @@ namespace RepositorioAcademico.Server.Controllers
     public class DocumentosController : ControllerBase
     {
         private static readonly string[] ExtensionesPermitidas = [".pdf", ".docx"];
+        private static readonly string[] EstadosPermitidos = ["Pendiente", "Publicado", "Observado", "Rechazado", "Aprobado"];
 
         private readonly RepositorioDbContext _context;
 
@@ -182,6 +183,30 @@ namespace RepositorioAcademico.Server.Controllers
                 .Skip((pagina - 1) * tamano)
                 .Take(tamano)
                 .ToListAsync();
+        }
+
+        [HttpPut("{id:int}/estado")]
+        public async Task<ActionResult<DocumentoDto>> ActualizarEstado(int id, [FromBody] ActualizarEstadoDocumentoRequest request)
+        {
+            var estado = request.Estado?.Trim() ?? string.Empty;
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var documento = await _context.Documentos.FirstOrDefaultAsync(item => item.Id == id);
+            if (documento == null)
+            {
+                return NotFound();
+            }
+
+            documento.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            var actualizado = await ConstruirConsultaDocumentos()
+                .FirstAsync(item => item.Id == id);
+
+            return Ok(actualizado);
         }
 
         private IQueryable<DocumentoDto> ConstruirConsultaDocumentos()

@@ -1,0 +1,70 @@
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="logo-box">
+      <div class="logo-icon">RA</div>
+      <div>
+        <h1>Repositorio</h1>
+        <span>Dashboard</span>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a *ngFor="let item of menuItems()"
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         class="menu-item">
+        <span class="icon">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+        <small *ngIf="item.badge != null && item.badge > 0">{{ item.badge }}</small>
+      </a>
+    </nav>
+
+    <div class="admin-card">
+      <div class="admin-card-icon">GO</div>
+      <h3>Accion rapida</h3>
+      <p>Accede a la tarea principal permitida por tu perfil actual.</p>
+      <button type="button" [routerLink]="getPrimaryActionRoute()">
+        {{ getPrimaryActionLabel() }}
+      </button>
+    </div>
+
+    <div class="sidebar-footer" *ngIf="currentUser() as user">
+      <div class="footer-icon">{{ getInitials() }}</div>
+      <div>
+        <strong>{{ user.nombres }} {{ user.apellidos }}</strong>
+        <span>{{ user.roles.length > 0 ? user.roles[0].nombre : 'Usuario' }}</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <div class="page-title">
+        <h2>{{ pageTitle() }}</h2>
+        <p>{{ pageDescription() }}</p>
+      </div>
+
+      <div class="topbar-right">
+        <form class="search-box" (ngSubmit)="submitSearch()">
+          <input type="text"
+                 [(ngModel)]="search"
+                 name="search"
+                 placeholder="Buscar documentos, autores o catalogos..." />
+          <button type="submit" class="search-button">IR</button>
+        </form>
+
+        <button class="icon-button" type="button" (click)="logout()">LX</button>
+
+        <div class="account" *ngIf="currentUser() as user">
+          <div class="avatar">{{ getInitials() }}</div>
+          <div>
+            <strong>{{ user.roles.length > 0 ? user.roles[0].nombre : 'Perfil' }}</strong>
+            <span>{{ user.correo }}</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -16,9 +16,22 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
 
         public DbSet<Facultad> Facultades { get; set; }
 
+        public DbSet<Usuario> Usuarios { get; set; }
+
+        public DbSet<Rol> Roles { get; set; }
+
+        public DbSet<Permiso> Permisos { get; set; }
+
+        public DbSet<UsuarioRol> UsuarioRoles { get; set; }
+
+        public DbSet<RolPermiso> RolPermisos { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            var fechaSemilla = new DateTime(2026, 4, 25, 4, 30, 0, DateTimeKind.Utc);
+            const string passwordHashSemilla = "100000.pXNersvxrQkQJwCgdjOmBw==.R3lKdXVfKoq45g4VJKg0ZswpiAHqMqrq7VqFvBKyvyA=";
 
             modelBuilder.Entity<TipoDocumento>(entity =>
             {
@@ -64,6 +77,211 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                     .HasForeignKey(item => item.FacultadId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
+
+            modelBuilder.Entity<Usuario>(entity =>
+            {
+                entity.Property(item => item.Nombres)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(item => item.Apellidos)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(item => item.Correo)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(item => item.Carnet)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(item => item.PasswordHash)
+                    .HasMaxLength(500)
+                    .IsRequired();
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.HasIndex(item => item.Correo)
+                    .IsUnique();
+
+                entity.HasIndex(item => item.Carnet)
+                    .IsUnique();
+            });
+
+            modelBuilder.Entity<Rol>(entity =>
+            {
+                entity.Property(item => item.Nombre)
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                entity.Property(item => item.Descripcion)
+                    .HasMaxLength(200);
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.HasIndex(item => item.Nombre)
+                    .IsUnique();
+            });
+
+            modelBuilder.Entity<Permiso>(entity =>
+            {
+                entity.Property(item => item.Codigo)
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                entity.Property(item => item.Descripcion)
+                    .HasMaxLength(200)
+                    .IsRequired();
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.HasIndex(item => item.Codigo)
+                    .IsUnique();
+            });
+
+            modelBuilder.Entity<UsuarioRol>(entity =>
+            {
+                entity.HasKey(item => new { item.UsuarioId, item.RolId });
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.HasOne(item => item.Usuario)
+                    .WithMany(item => item.UsuarioRoles)
+                    .HasForeignKey(item => item.UsuarioId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(item => item.Rol)
+                    .WithMany(item => item.UsuarioRoles)
+                    .HasForeignKey(item => item.RolId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<RolPermiso>(entity =>
+            {
+                entity.HasKey(item => new { item.RolId, item.PermisoId });
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.HasOne(item => item.Rol)
+                    .WithMany(item => item.RolPermisos)
+                    .HasForeignKey(item => item.RolId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(item => item.Permiso)
+                    .WithMany(item => item.RolPermisos)
+                    .HasForeignKey(item => item.PermisoId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Permiso>().HasData(
+                new Permiso { Id = 1, Codigo = "DASHBOARD.VER", Descripcion = "Visualizar panel principal", Estado = "Activo" },
+                new Permiso { Id = 2, Codigo = "REPOSITORIO.VER", Descripcion = "Visualizar el repositorio academico", Estado = "Activo" },
+                new Permiso { Id = 3, Codigo = "DOCUMENTO.SUBIR", Descripcion = "Subir nuevos documentos", Estado = "Activo" },
+                new Permiso { Id = 4, Codigo = "DOCUMENTO.PUBLICAR", Descripcion = "Publicar o revisar documentos pendientes", Estado = "Activo" },
+                new Permiso { Id = 5, Codigo = "CATALOGO.GESTIONAR", Descripcion = "Gestionar facultades y tipos de documento", Estado = "Activo" },
+                new Permiso { Id = 6, Codigo = "USUARIO.GESTIONAR", Descripcion = "Crear y administrar usuarios", Estado = "Activo" },
+                new Permiso { Id = 7, Codigo = "ROL.GESTIONAR", Descripcion = "Crear y administrar roles", Estado = "Activo" }
+            );
+
+            modelBuilder.Entity<Rol>().HasData(
+                new Rol { Id = 1, Nombre = "Administrador", Descripcion = "Acceso total al sistema", Estado = "Activo" },
+                new Rol { Id = 2, Nombre = "Profesor", Descripcion = "Puede ver repositorio y subir documentos", Estado = "Activo" },
+                new Rol { Id = 3, Nombre = "Estudiante", Descripcion = "Solo consulta el repositorio", Estado = "Activo" },
+                new Rol { Id = 4, Nombre = "Decano", Descripcion = "Puede revisar y publicar documentos", Estado = "Activo" },
+                new Rol { Id = 5, Nombre = "Director", Descripcion = "Puede revisar y publicar documentos", Estado = "Activo" }
+            );
+
+            modelBuilder.Entity<RolPermiso>().HasData(
+                new RolPermiso { RolId = 1, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 1, PermisoId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 1, PermisoId = 3, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 1, PermisoId = 4, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 1, PermisoId = 5, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 1, PermisoId = 6, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 1, PermisoId = 7, Estado = "Activo", FechaAsignacion = fechaSemilla },
+
+                new RolPermiso { RolId = 2, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 2, PermisoId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 2, PermisoId = 3, Estado = "Activo", FechaAsignacion = fechaSemilla },
+
+                new RolPermiso { RolId = 3, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 3, PermisoId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },
+
+                new RolPermiso { RolId = 4, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 4, PermisoId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 4, PermisoId = 3, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 4, PermisoId = 4, Estado = "Activo", FechaAsignacion = fechaSemilla },
+
+                new RolPermiso { RolId = 5, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 5, PermisoId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 5, PermisoId = 3, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 5, PermisoId = 4, Estado = "Activo", FechaAsignacion = fechaSemilla }
+            );
+
+            modelBuilder.Entity<Usuario>().HasData(
+                new Usuario
+                {
+                    Id = 1,
+                    Nombres = "Admin",
+                    Apellidos = "Sistema",
+                    Correo = "admin@universidad.edu",
+                    Carnet = "ADMIN-001",
+                    PasswordHash = passwordHashSemilla,
+                    Estado = "Activo",
+                    FechaCreacion = fechaSemilla
+                },
+                new Usuario
+                {
+                    Id = 2,
+                    Nombres = "Paula",
+                    Apellidos = "Docente",
+                    Correo = "profesor@universidad.edu",
+                    Carnet = "PROF-001",
+                    PasswordHash = passwordHashSemilla,
+                    Estado = "Activo",
+                    FechaCreacion = fechaSemilla
+                },
+                new Usuario
+                {
+                    Id = 3,
+                    Nombres = "Luis",
+                    Apellidos = "Estudiante",
+                    Correo = "estudiante@universidad.edu",
+                    Carnet = "EST-001",
+                    PasswordHash = passwordHashSemilla,
+                    Estado = "Activo",
+                    FechaCreacion = fechaSemilla
+                },
+                new Usuario
+                {
+                    Id = 4,
+                    Nombres = "Marta",
+                    Apellidos = "Decano",
+                    Correo = "decano@universidad.edu",
+                    Carnet = "DEC-001",
+                    PasswordHash = passwordHashSemilla,
+                    Estado = "Activo",
+                    FechaCreacion = fechaSemilla
+                }
+            );
+
+            modelBuilder.Entity<UsuarioRol>().HasData(
+                new UsuarioRol { UsuarioId = 1, RolId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new UsuarioRol { UsuarioId = 2, RolId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new UsuarioRol { UsuarioId = 3, RolId = 3, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new UsuarioRol { UsuarioId = 4, RolId = 4, Estado = "Activo", FechaAsignacion = fechaSemilla }
+            );
         }
     }
 }

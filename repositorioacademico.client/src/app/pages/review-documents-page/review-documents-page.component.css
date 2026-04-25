@@ -1,0 +1,181 @@
+.review-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+}
+
+.review-toolbar {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.search-box {
+  flex: 1;
+}
+
+.search-box input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #d8e0ec;
+  border-radius: 12px;
+  padding: 0 14px;
+  outline: none;
+}
+
+.refresh-button {
+  min-width: 132px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #083b91;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.message {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.message.success {
+  background: #e8f7f2;
+  color: #157b68;
+}
+
+.message.error {
+  background: #ffe9e7;
+  color: #c8332b;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+}
+
+.review-table th {
+  background: #f7f9fc;
+  color: #52627e;
+  font-size: 12px;
+  text-align: left;
+  padding: 12px;
+  text-transform: uppercase;
+}
+
+.review-table td {
+  border-bottom: 1px solid #e9edf4;
+  padding: 14px 12px;
+  font-size: 13px;
+  color: #263b66;
+  vertical-align: middle;
+}
+
+.review-table td strong,
+.review-table td span {
+  display: block;
+}
+
+.review-table td strong {
+  color: #061b4e;
+  margin-bottom: 4px;
+}
+
+.review-table td span {
+  color: #52627e;
+  font-size: 12px;
+}
+
+.actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.btn {
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0 12px;
+  margin-left: 6px;
+}
+
+.btn.publish {
+  background: #157b68;
+  color: #ffffff;
+}
+
+.btn.observe {
+  background: #eef5ff;
+  color: #0a54db;
+}
+
+.btn.reject {
+  background: #f04438;
+  color: #ffffff;
+}
+
+.badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 90px;
+  height: 28px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0 10px;
+}
+
+.badge.pending {
+  background: #fff5d8;
+  color: #9a6700;
+}
+
+.badge.published {
+  background: #e8f7f2;
+  color: #157b68;
+}
+
+.badge.observed {
+  background: #eef5ff;
+  color: #0a54db;
+}
+
+.badge.rejected {
+  background: #ffe9e7;
+  color: #c8332b;
+}
+
+.empty-state {
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 18px 0 6px;
+  color: #52627e;
+}
+
+.empty-state strong {
+  display: block;
+  color: #061b4e;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 720px) {
+  .review-toolbar {
+    flex-direction: column;
+  }
+
+  .refresh-button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,75 @@
+<section class="review-card">
+  <div class="review-toolbar">
+    <div class="search-box">
+      <input type="text"
+             [(ngModel)]="filtro"
+             placeholder="Filtrar por documento, autor, facultad o estado..." />
+    </div>
+
+    <button type="button" class="refresh-button" (click)="cargarDocumentos()" [disabled]="cargando">
+      {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+    </button>
+  </div>
+
+  <div *ngIf="mensaje" class="message success">{{ mensaje }}</div>
+  <div *ngIf="error" class="message error">{{ error }}</div>
+
+  <div class="table-wrapper" *ngIf="documentosFiltrados.length > 0; else emptyState">
+    <table class="review-table">
+      <thead>
+        <tr>
+          <th>Documento</th>
+          <th>Autor</th>
+          <th>Tipo</th>
+          <th>Facultad</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th class="text-right">Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let documento of documentosFiltrados">
+          <td>
+            <strong>{{ documento.titulo }}</strong>
+            <span>{{ documento.rutaDocumento }}</span>
+          </td>
+          <td>{{ documento.autor }}</td>
+          <td>{{ documento.tipoDocumento }}</td>
+          <td>{{ documento.facultad }}</td>
+          <td>{{ documento.fechaSubida | date:'dd MMM yyyy' }}</td>
+          <td>
+            <span class="badge" [ngClass]="getStatusClass(documento.estado)">{{ documento.estado }}</span>
+          </td>
+          <td class="actions">
+            <button type="button"
+                    class="btn publish"
+                    [disabled]="procesandoId === documento.id"
+                    (click)="cambiarEstado(documento, 'Publicado')">
+              Publicar
+            </button>
+            <button type="button"
+                    class="btn observe"
+                    [disabled]="procesandoId === documento.id"
+                    (click)="cambiarEstado(documento, 'Observado')">
+              Observar
+            </button>
+            <button type="button"
+                    class="btn reject"
+                    [disabled]="procesandoId === documento.id"
+                    (click)="cambiarEstado(documento, 'Rechazado')">
+              Rechazar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<ng-template #emptyState>
+  <div class="empty-state">
+    <strong>No hay documentos pendientes de revision.</strong>
+    <p>Los documentos observados o pendientes apareceran aqui.</p>
+  </div>
+</ng-template>

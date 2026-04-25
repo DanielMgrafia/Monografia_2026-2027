@@ -1,0 +1,58 @@
+<main class="login-page">
+  <section class="login-hero">
+    <p class="eyebrow">Repositorio academico</p>
+    <h1>Acceso por roles y permisos</h1>
+    <p class="hero-copy">
+      En Angular, el dashboard se suele manejar con un componente layout que contiene
+      el menu lateral, la barra superior y un <code>router-outlet</code> para cargar
+      las pantallas segun el rol del usuario.
+    </p>
+
+    <div class="demo-card">
+      <h2>Cuentas de prueba</h2>
+      <p>Usa cualquiera de estas cuentas con la contrasena <strong>Acceso123*</strong>.</p>
+
+      <div class="demo-list">
+        <button *ngFor="let account of demoAccounts"
+                type="button"
+                class="demo-item"
+                (click)="fillDemo(account.login)">
+          <strong>{{ account.label }}</strong>
+          <span>{{ account.login }}</span>
+          <small>{{ account.role }}</small>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="login-panel">
+    <div class="panel-header">
+      <h2>Iniciar sesion</h2>
+      <p>Ingresa con correo institucional o numero de carnet.</p>
+    </div>
+
+    <form class="login-form" (ngSubmit)="submit()">
+      <label>
+        Correo o carnet
+        <input type="text"
+               [(ngModel)]="login"
+               name="login"
+               placeholder="Ej. admin@universidad.edu o ADMIN-001" />
+      </label>
+
+      <label>
+        Contrasena
+        <input type="password"
+               [(ngModel)]="password"
+               name="password"
+               placeholder="Ingresa tu contrasena" />
+      </label>
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Ingresando...' : 'Entrar al dashboard' }}
+      </button>
+
+      <p *ngIf="error" class="error">{{ error }}</p>
+    </form>
+  </section>
+</main>

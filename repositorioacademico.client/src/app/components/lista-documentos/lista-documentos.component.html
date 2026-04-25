@@ -1,55 +1,56 @@
-<div class="repositorio-container">
-  <div class="repositorio-card">
-    <div class="repositorio-header">
-      <div>
-        <h2>Repositorio Academico</h2>
-        <p>Consulta y visualiza los documentos registrados en la plataforma.</p>
-      </div>
+<section class="repositorio-card">
+  <div class="repositorio-toolbar">
+    <div class="search-box">
+      <input type="text"
+             [(ngModel)]="filtro"
+             placeholder="Filtrar por titulo, autor, facultad, tipo o estado..." />
     </div>
 
-    <div class="tabla-wrapper">
-      <table class="tabla-documentos">
-        <thead>
-          <tr>
-            <th>Titulo</th>
-            <th>Autor</th>
-            <th>Tipo</th>
-            <th>Facultad</th>
-            <th>Estado</th>
-            <th class="text-center">Accion</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let doc of documentos">
-            <td class="titulo-doc">{{ doc.titulo }}</td>
-            <td>{{ doc.autor }}</td>
-            <td>{{ doc.tipoDocumento }}</td>
-            <td>{{ doc.facultad }}</td>
-            <td>
-              <span class="estado-badge"
-                    [ngClass]="{
-                      'estado-pendiente': doc.estado === 'Pendiente',
-                      'estado-aprobado': doc.estado === 'Aprobado',
-                      'estado-rechazado': doc.estado === 'Rechazado'
-                    }">
-                {{ doc.estado }}
-              </span>
-            </td>
-            <td class="text-center">
-              <button class="btn-ver" (click)="verArchivo(doc.rutaDocumento)">
-                Ver archivo
-              </button>
-            </td>
-          </tr>
-
-          <tr *ngIf="!documentos || documentos.length === 0">
-            <td colspan="6" class="sin-registros">
-              No hay documentos disponibles en este momento.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <button type="button" class="refresh-button" (click)="cargarDocumentos()" [disabled]="cargando">
+      {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+    </button>
   </div>
-</div>
+
+  <div *ngIf="error" class="message error">{{ error }}</div>
+
+  <div class="tabla-wrapper" *ngIf="documentosFiltrados.length > 0; else emptyState">
+    <table class="tabla-documentos">
+      <thead>
+        <tr>
+          <th>Titulo</th>
+          <th>Autor</th>
+          <th>Tipo</th>
+          <th>Facultad</th>
+          <th>Estado</th>
+          <th class="text-center">Accion</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let doc of documentosFiltrados">
+          <td class="titulo-doc">{{ doc.titulo }}</td>
+          <td>{{ doc.autor }}</td>
+          <td>{{ doc.tipoDocumento }}</td>
+          <td>{{ doc.facultad }}</td>
+          <td>
+            <span class="estado-badge" [ngClass]="getStatusClass(doc.estado)">
+              {{ doc.estado }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button class="btn-ver" (click)="verArchivo(doc.rutaDocumento)">
+              Ver archivo
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<ng-template #emptyState>
+  <div class="empty-state">
+    <strong>No se encontraron documentos.</strong>
+    <p>Ajusta el filtro o espera nuevas publicaciones en el repositorio.</p>
+  </div>
+</ng-template>

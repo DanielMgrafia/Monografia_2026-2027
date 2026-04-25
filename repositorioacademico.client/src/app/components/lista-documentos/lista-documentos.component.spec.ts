@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { convertToParamMap, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { Documento } from '../../models/documento';
 import { DocumentosService } from '../../services/documentos.service';
@@ -37,6 +38,12 @@ describe('ListaDocumentosComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ListaDocumentosComponent],
       providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParamMap: of(convertToParamMap({}))
+          }
+        },
         { provide: DocumentosService, useValue: documentosServiceSpy }
       ]
     }).compileComponents();
