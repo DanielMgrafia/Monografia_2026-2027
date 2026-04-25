@@ -1,0 +1,73 @@
+<section class="tipos-card">
+  <div class="tipos-content">
+    <form class="tipo-form"
+          (ngSubmit)="guardarTipoDocumento()"
+          #formTipoDocumento="ngForm">
+      <h3>Nuevo tipo de documento</h3>
+
+      <div class="form-group">
+        <label for="descripcionTipoDocumento">Nombre del tipo</label>
+
+        <input type="text"
+               id="descripcionTipoDocumento"
+               name="descripcionTipoDocumento"
+               [(ngModel)]="descripcion"
+               maxlength="150"
+               placeholder="Ej. Tesis, Monografia, Informe tecnico"
+               required />
+      </div>
+
+      <button type="submit"
+              class="btn-guardar"
+              [disabled]="guardando || formTipoDocumento.invalid">
+        {{ guardando ? 'Guardando...' : 'Guardar tipo de documento' }}
+      </button>
+
+      <div *ngIf="mensaje" class="mensaje exito">
+        {{ mensaje }}
+      </div>
+
+      <div *ngIf="error" class="mensaje error">
+        {{ error }}
+      </div>
+    </form>
+
+    <div class="tipos-lista">
+      <div class="lista-header">
+        <div>
+          <h3>Tipos registrados</h3>
+          <p>Listado utilizado en formularios y clasificacion del repositorio.</p>
+        </div>
+
+        <button type="button"
+                class="btn-actualizar"
+                (click)="cargarTiposDocumento()"
+                [disabled]="cargando">
+          {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+      </div>
+
+      <p *ngIf="cargando" class="estado-lista">
+        Cargando tipos de documento...
+      </p>
+
+      <ul *ngIf="!cargando && tiposDocumento.length > 0" class="lista">
+        <li *ngFor="let tipoDocumento of tiposDocumento; index as indice">
+          <span class="numero">{{ indice + 1 }}</span>
+
+          <div class="tipo-info">
+            <strong>{{ tipoDocumento.descripcion }}</strong>
+            <small>Disponible para clasificar documentos academicos</small>
+          </div>
+
+          <span class="estado activo">Activo</span>
+        </li>
+      </ul>
+
+      <div *ngIf="!cargando && tiposDocumento.length === 0" class="lista-vacia">
+        <strong>No hay tipos de documento registrados</strong>
+        <p>Agrega un nuevo tipo para ampliar el catalogo del sistema.</p>
+      </div>
+    </div>
+  </div>
+</section>

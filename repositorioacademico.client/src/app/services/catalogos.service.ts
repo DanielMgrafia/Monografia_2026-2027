@@ -7,20 +7,28 @@ import { Catalogo } from '../models/catalogo';
   providedIn: 'root'
 })
 export class CatalogosService {
-  private readonly catalogosApiUrl = 'https://localhost:7225/api/catalogos';
+  private readonly tiposDocumentoApiUrl = 'https://localhost:7225/api/tipos-documento';
   private readonly facultadesApiUrl = 'https://localhost:7225/api/facultades';
+  private readonly tipoDocumentoCreadoSource = new Subject<Catalogo>();
   private readonly facultadCreadaSource = new Subject<Catalogo>();
 
+  readonly tipoDocumentoCreado$ = this.tipoDocumentoCreadoSource.asObservable();
   readonly facultadCreada$ = this.facultadCreadaSource.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 
   getTiposDocumento(): Observable<Catalogo[]> {
-    return this.http.get<Catalogo[]>(`${this.catalogosApiUrl}/tipos-documento`);
+    return this.http.get<Catalogo[]>(this.tiposDocumentoApiUrl);
   }
 
   getFacultades(): Observable<Catalogo[]> {
     return this.http.get<Catalogo[]>(this.facultadesApiUrl);
+  }
+
+  crearTipoDocumento(descripcion: string): Observable<Catalogo> {
+    return this.http
+      .post<Catalogo>(this.tiposDocumentoApiUrl, { descripcion })
+      .pipe(tap((tipoDocumento) => this.tipoDocumentoCreadoSource.next(tipoDocumento)));
   }
 
   crearFacultad(descripcion: string): Observable<Catalogo> {

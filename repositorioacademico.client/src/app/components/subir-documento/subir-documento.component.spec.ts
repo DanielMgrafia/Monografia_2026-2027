@@ -10,6 +10,7 @@ describe('SubirDocumentoComponent', () => {
   let fixture: ComponentFixture<SubirDocumentoComponent>;
   let catalogosServiceSpy: jasmine.SpyObj<CatalogosService>;
   let documentosServiceSpy: jasmine.SpyObj<DocumentosService>;
+  let tipoDocumentoCreado$: Subject<Catalogo>;
   let facultadCreada$: Subject<Catalogo>;
 
   const mockTiposDocumento: Catalogo[] = [
@@ -21,12 +22,13 @@ describe('SubirDocumentoComponent', () => {
   ];
 
   beforeEach(async () => {
+    tipoDocumentoCreado$ = new Subject<Catalogo>();
     facultadCreada$ = new Subject<Catalogo>();
 
     catalogosServiceSpy = jasmine.createSpyObj<CatalogosService>(
       'CatalogosService',
-      ['getTiposDocumento', 'getFacultades', 'crearFacultad'],
-      { facultadCreada$ }
+      ['getTiposDocumento', 'getFacultades', 'crearFacultad', 'crearTipoDocumento'],
+      { tipoDocumentoCreado$, facultadCreada$ }
     );
 
     documentosServiceSpy = jasmine.createSpyObj<DocumentosService>(
@@ -34,17 +36,8 @@ describe('SubirDocumentoComponent', () => {
       ['subirDocumento']
     );
 
-    catalogosServiceSpy.getTiposDocumento.and.returnValues(
-      of(mockTiposDocumento),
-      of(mockTiposDocumento)
-    );
-    catalogosServiceSpy.getFacultades.and.returnValues(
-      of(mockFacultades),
-      of([
-        ...mockFacultades,
-        { id: 3, descripcion: 'Medicina' }
-      ])
-    );
+    catalogosServiceSpy.getTiposDocumento.and.returnValue(of(mockTiposDocumento));
+    catalogosServiceSpy.getFacultades.and.returnValue(of(mockFacultades));
     documentosServiceSpy.subirDocumento.and.returnValue(of({
       id: 1,
       titulo: 'Documento',
@@ -80,6 +73,11 @@ describe('SubirDocumentoComponent', () => {
   });
 
   it('should refresh faculties when a new faculty is created', () => {
+    catalogosServiceSpy.getFacultades.and.returnValue(of([
+      ...mockFacultades,
+      { id: 3, descripcion: 'Medicina' }
+    ]));
+
     facultadCreada$.next({ id: 3, descripcion: 'Medicina' });
 
     expect(catalogosServiceSpy.getFacultades).toHaveBeenCalledTimes(2);
@@ -88,5 +86,21 @@ describe('SubirDocumentoComponent', () => {
       { id: 3, descripcion: 'Medicina' }
     ]);
     expect(component.facultadId).toBe(3);
+  });
+
+  it('should refresh document types when a new type is created', () => {
+    catalogosServiceSpy.getTiposDocumento.and.returnValue(of([
+      ...mockTiposDocumento,
+      { id: 3, descripcion: 'Monografia' }
+    ]));
+
+    tipoDocumentoCreado$.next({ id: 3, descripcion: 'Monografia' });
+
+    expect(catalogosServiceSpy.getTiposDocumento).toHaveBeenCalledTimes(2);
+    expect(component.tiposDocumento).toEqual([
+      { id: 1, descripcion: 'Tesis' },
+      { id: 3, descripcion: 'Monografia' }
+    ]);
+    expect(component.tipoDocumentoId).toBe(3);
   });
 });

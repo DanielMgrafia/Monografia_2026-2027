@@ -66,13 +66,20 @@
   white-space: nowrap;
 }
 
-.panel-grid {
+.catalog-grid {
   max-width: 1200px;
   margin: 0 auto 28px;
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
   align-items: start;
+}
+
+.content-stack {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 28px;
 }
 
 @media (max-width: 980px) {
@@ -80,7 +87,7 @@
     flex-direction: column;
   }
 
-  .panel-grid {
+  .catalog-grid {
     grid-template-columns: 1fr;
   }
 

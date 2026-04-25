@@ -35,14 +35,23 @@ export class SubirDocumentoComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarCatalogos();
+    this.catalogosService.tipoDocumentoCreado$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((tipoDocumento) => {
+        this.cargarCatalogos({ tipoDocumentoSugeridoId: tipoDocumento.id });
+      });
+
     this.catalogosService.facultadCreada$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((facultad) => {
-        this.cargarCatalogos(facultad.id);
+        this.cargarCatalogos({ facultadSugeridaId: facultad.id });
       });
   }
 
-  cargarCatalogos(facultadSugeridaId?: number): void {
+  cargarCatalogos(opciones?: {
+    tipoDocumentoSugeridoId?: number;
+    facultadSugeridaId?: number;
+  }): void {
     this.cargandoCatalogos = true;
     this.error = '';
 
@@ -68,15 +77,20 @@ export class SubirDocumentoComponent implements OnInit {
           this.facultadId = null;
         }
 
-        if (this.tipoDocumentoId == null && tiposDocumento.length === 1) {
+        if (
+          opciones?.tipoDocumentoSugeridoId != null &&
+          tiposDocumento.some((tipoDocumento) => tipoDocumento.id === opciones.tipoDocumentoSugeridoId)
+        ) {
+          this.tipoDocumentoId = opciones.tipoDocumentoSugeridoId;
+        } else if (this.tipoDocumentoId == null && tiposDocumento.length === 1) {
           this.tipoDocumentoId = tiposDocumento[0].id;
         }
 
         if (
-          facultadSugeridaId != null &&
-          facultades.some((facultad) => facultad.id === facultadSugeridaId)
+          opciones?.facultadSugeridaId != null &&
+          facultades.some((facultad) => facultad.id === opciones.facultadSugeridaId)
         ) {
-          this.facultadId = facultadSugeridaId;
+          this.facultadId = opciones.facultadSugeridaId;
         } else if (this.facultadId == null && facultades.length === 1) {
           this.facultadId = facultades[0].id;
         }
