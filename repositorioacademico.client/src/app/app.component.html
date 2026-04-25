@@ -1,2 +1,25 @@
-<app-subir-documento></app-subir-documento>
-<app-lista-documentos></app-lista-documentos>
+<main class="app-shell">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="hero-kicker">Repositorio institucional</p>
+      <h1>Documentos y catalogos en un solo panel</h1>
+      <p>
+        Administra el catalogo de facultades, registra nuevos documentos y consulta el
+        repositorio academico desde una misma vista operativa.
+      </p>
+    </div>
+
+    <div class="hero-highlight">
+      <span class="hero-chip">Catalogos vivos</span>
+      <span class="hero-chip">Carga de archivos</span>
+      <span class="hero-chip">Consulta inmediata</span>
+    </div>
+  </section>
+
+  <section class="panel-grid">
+    <app-crear-facultad></app-crear-facultad>
+    <app-subir-documento></app-subir-documento>
+  </section>
+
+  <app-lista-documentos></app-lista-documentos>
+</main>

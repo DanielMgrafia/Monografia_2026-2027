@@ -1,1 +1,73 @@
-<p>crear-facultad works!</p>
+<section class="facultades-card">
+  <div class="facultades-header">
+    <div>
+      <p class="eyebrow">Catalogo academico</p>
+      <h2>Gestion de facultades</h2>
+      <p class="descripcion">
+        Crea las facultades que luego estaran disponibles al registrar documentos.
+      </p>
+    </div>
+
+    <div class="contador">
+      <span class="contador-valor">{{ facultades.length }}</span>
+      <span class="contador-label">facultades activas</span>
+    </div>
+  </div>
+
+  <div class="facultades-layout">
+    <form class="facultad-form" (ngSubmit)="guardarFacultad()" #formFacultad="ngForm">
+      <label for="descripcion">Nombre de la facultad</label>
+      <input type="text"
+             id="descripcion"
+             name="descripcion"
+             [(ngModel)]="descripcion"
+             maxlength="150"
+             placeholder="Ej. Facultad de Ingenieria y Arquitectura"
+             required />
+
+      <button type="submit" class="btn-guardar" [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : 'Guardar facultad' }}
+      </button>
+
+      <div *ngIf="mensaje" class="mensaje mensaje-exito">
+        {{ mensaje }}
+      </div>
+
+      <div *ngIf="error" class="mensaje mensaje-error">
+        {{ error }}
+      </div>
+    </form>
+
+    <div class="facultades-lista">
+      <div class="lista-header">
+        <div>
+          <h3>Facultades registradas</h3>
+          <p>Este listado alimenta el catalogo del formulario de documentos.</p>
+        </div>
+
+        <button type="button"
+                class="btn-secundario"
+                (click)="cargarFacultades()"
+                [disabled]="cargando">
+          {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+      </div>
+
+      <p *ngIf="cargando" class="estado-lista">Cargando facultades...</p>
+
+      <ul *ngIf="!cargando && facultades.length > 0" class="lista-facultades">
+        <li *ngFor="let facultad of facultades; index as indice">
+          <span class="indice">{{ indice + 1 }}</span>
+          <div>
+            <strong>{{ facultad.descripcion }}</strong>
+            <small>Disponible para documentos</small>
+          </div>
+        </li>
+      </ul>
+
+      <p *ngIf="!cargando && facultades.length === 0" class="estado-lista vacio">
+        Aun no hay facultades registradas.
+      </p>
+    </div>
+  </div>
+</section>

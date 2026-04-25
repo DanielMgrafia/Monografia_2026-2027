@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { Catalogo } from '../../models/catalogo';
@@ -28,14 +29,20 @@ export class SubirDocumentoComponent implements OnInit {
   mensaje = '';
   error = '';
 
+  private readonly destroyRef = inject(DestroyRef);
   private readonly documentosService = inject(DocumentosService);
   private readonly catalogosService = inject(CatalogosService);
 
   ngOnInit(): void {
     this.cargarCatalogos();
+    this.catalogosService.facultadCreada$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((facultad) => {
+        this.cargarCatalogos(facultad.id);
+      });
   }
 
-  cargarCatalogos(): void {
+  cargarCatalogos(facultadSugeridaId?: number): void {
     this.cargandoCatalogos = true;
     this.error = '';
 
@@ -47,11 +54,30 @@ export class SubirDocumentoComponent implements OnInit {
         this.tiposDocumento = tiposDocumento;
         this.facultades = facultades;
 
+        if (
+          this.tipoDocumentoId != null &&
+          !tiposDocumento.some((tipoDocumento) => tipoDocumento.id === this.tipoDocumentoId)
+        ) {
+          this.tipoDocumentoId = null;
+        }
+
+        if (
+          this.facultadId != null &&
+          !facultades.some((facultad) => facultad.id === this.facultadId)
+        ) {
+          this.facultadId = null;
+        }
+
         if (this.tipoDocumentoId == null && tiposDocumento.length === 1) {
           this.tipoDocumentoId = tiposDocumento[0].id;
         }
 
-        if (this.facultadId == null && facultades.length === 1) {
+        if (
+          facultadSugeridaId != null &&
+          facultades.some((facultad) => facultad.id === facultadSugeridaId)
+        ) {
+          this.facultadId = facultadSugeridaId;
+        } else if (this.facultadId == null && facultades.length === 1) {
           this.facultadId = facultades[0].id;
         }
 

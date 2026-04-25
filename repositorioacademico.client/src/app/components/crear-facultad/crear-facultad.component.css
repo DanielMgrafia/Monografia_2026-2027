@@ -1,0 +1,246 @@
+.facultades-card {
+  width: 100%;
+  background:
+    radial-gradient(circle at top right, rgba(251, 191, 36, 0.22), transparent 32%),
+    linear-gradient(145deg, #ffffff, #f8fafc);
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  padding: 28px;
+}
+
+.facultades-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #b45309;
+}
+
+.facultades-header h2 {
+  margin: 0;
+  font-size: 30px;
+  color: #0f172a;
+}
+
+.descripcion {
+  margin: 10px 0 0;
+  max-width: 560px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.contador {
+  min-width: 160px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #0f172a;
+  color: #ffffff;
+  text-align: center;
+}
+
+.contador-valor {
+  display: block;
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.contador-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.facultades-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: 24px;
+}
+
+.facultad-form,
+.facultades-lista {
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.facultad-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+}
+
+.facultad-form label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.facultad-form input {
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #0f172a;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.facultad-form input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.16);
+}
+
+.btn-guardar,
+.btn-secundario {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-guardar {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(217, 119, 6, 0.24);
+}
+
+.btn-secundario {
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
+.btn-guardar:hover,
+.btn-secundario:hover {
+  transform: translateY(-1px);
+}
+
+.btn-guardar:disabled,
+.btn-secundario:disabled {
+  transform: none;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+}
+
+.mensaje {
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.mensaje-exito {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.mensaje-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.facultades-lista {
+  padding: 24px;
+}
+
+.lista-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.lista-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.lista-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.lista-facultades {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.lista-facultades li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.lista-facultades strong {
+  display: block;
+  color: #0f172a;
+}
+
+.lista-facultades small {
+  color: #64748b;
+}
+
+.indice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #c2410c;
+  font-weight: 800;
+}
+
+.estado-lista {
+  margin: 0;
+  padding: 22px 0;
+  color: #64748b;
+}
+
+.vacio {
+  font-style: italic;
+}
+
+@media (max-width: 900px) {
+  .facultades-card {
+    padding: 22px;
+  }
+
+  .facultades-header,
+  .lista-header {
+    flex-direction: column;
+  }
+
+  .facultades-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .contador {
+    width: 100%;
+    min-width: unset;
+  }
+}

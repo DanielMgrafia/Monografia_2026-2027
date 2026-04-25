@@ -1,7 +1,7 @@
 .repositorio-container {
-  padding: 32px;
-  background: linear-gradient(180deg, #f4f7fb 0%, #eef2f7 100%);
-  min-height: 100vh;
+  padding: 0;
+  background: transparent;
+  min-height: auto;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CrearFacultadComponent } from './components/crear-facultad/crear-facultad.component';
 import { ListaDocumentosComponent } from './components/lista-documentos/lista-documentos.component';
 import { SubirDocumentoComponent } from './components/subir-documento/subir-documento.component';
 
@@ -6,7 +7,7 @@ import { SubirDocumentoComponent } from './components/subir-documento/subir-docu
   selector: 'app-root',
   templateUrl: './app.component.html',
   standalone: true,
-  imports: [SubirDocumentoComponent, ListaDocumentosComponent],
+  imports: [CrearFacultadComponent, SubirDocumentoComponent, ListaDocumentosComponent],
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
