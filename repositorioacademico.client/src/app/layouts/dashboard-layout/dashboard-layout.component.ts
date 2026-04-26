@@ -3,7 +3,7 @@ import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angula
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, merge, of, switchMap } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { DocumentosService } from '../../services/documentos.service';
 
@@ -23,6 +23,8 @@ interface MenuItem {
   styleUrls: ['./dashboard-layout.component.css']
 })
 export class DashboardLayoutComponent implements OnInit {
+  private static readonly SIDEBAR_STORAGE_KEY = 'repositorio-dashboard-sidebar-collapsed';
+
   search = '';
 
   private readonly destroyRef = inject(DestroyRef);
@@ -32,6 +34,7 @@ export class DashboardLayoutComponent implements OnInit {
   private readonly documentosService = inject(DocumentosService);
 
   readonly currentUser = this.authService.currentUser;
+  readonly sidebarCollapsed = signal(this.readSidebarState());
   readonly pendingCount = signal(0);
   readonly pageTitle = signal('Panel administrativo');
   readonly pageDescription = signal('Gestion centralizada del repositorio academico.');
@@ -67,8 +70,11 @@ export class DashboardLayoutComponent implements OnInit {
       .subscribe(() => this.syncPageMetadata());
 
     if (this.authService.hasPermission('DOCUMENTO.PUBLICAR')) {
-      this.documentosService.getDocumentos()
-        .pipe(takeUntilDestroyed(this.destroyRef))
+      merge(of(void 0), this.documentosService.documentosActualizados$)
+        .pipe(
+          switchMap(() => this.documentosService.getDocumentos()),
+          takeUntilDestroyed(this.destroyRef)
+        )
         .subscribe({
           next: (documentos) => {
             this.pendingCount.set(
@@ -77,6 +83,12 @@ export class DashboardLayoutComponent implements OnInit {
           }
         });
     }
+  }
+
+  toggleSidebar(): void {
+    const collapsed = !this.sidebarCollapsed();
+    this.sidebarCollapsed.set(collapsed);
+    localStorage.setItem(DashboardLayoutComponent.SIDEBAR_STORAGE_KEY, String(collapsed));
   }
 
   submitSearch(): void {
@@ -137,5 +149,10 @@ export class DashboardLayoutComponent implements OnInit {
     this.pageDescription.set(
       route?.snapshot.data['description'] ?? 'Gestion centralizada del repositorio academico.'
     );
+  }
+
+  private readSidebarState(): boolean {
+    const storedValue = localStorage.getItem(DashboardLayoutComponent.SIDEBAR_STORAGE_KEY);
+    return storedValue === 'true';
   }
 }

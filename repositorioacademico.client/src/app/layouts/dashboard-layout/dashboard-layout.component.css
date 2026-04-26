@@ -2,6 +2,7 @@
   min-height: 100vh;
   display: flex;
   background: linear-gradient(180deg, #f4f7fb 0%, #edf2fb 100%);
+  transition: background 0.28s ease;
 }
 
 .sidebar {
@@ -13,12 +14,20 @@
   display: flex;
   flex-direction: column;
   gap: 28px;
+  transition: width 0.28s ease, padding 0.28s ease, box-shadow 0.28s ease;
 }
 
 .logo-box {
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.logo-text,
+.item-label,
+.admin-card-content,
+.footer-text {
+  transition: opacity 0.2s ease, transform 0.2s ease, max-width 0.28s ease;
 }
 
 .logo-icon,
@@ -184,6 +193,7 @@
   flex: 1;
   padding: 24px;
   overflow: hidden;
+  transition: padding 0.28s ease;
 }
 
 .topbar {
@@ -201,9 +211,38 @@
   margin-bottom: 5px;
 }
 
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.page-title-copy {
+  min-width: 0;
+}
+
 .page-title p {
   color: #52627e;
   font-size: 14px;
+}
+
+.collapse-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #dbe4f0;
+  background: #ffffff;
+  color: #06265c;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.collapse-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.1);
 }
 
 .topbar-right {
@@ -275,6 +314,49 @@
   padding: 8px 12px;
 }
 
+.admin-layout.is-collapsed .sidebar {
+  width: 108px;
+  padding-inline: 12px;
+}
+
+.admin-layout.is-collapsed .logo-box {
+  justify-content: center;
+}
+
+.admin-layout.is-collapsed .logo-text,
+.admin-layout.is-collapsed .item-label,
+.admin-layout.is-collapsed .admin-card-content,
+.admin-layout.is-collapsed .footer-text {
+  opacity: 0;
+  transform: translateX(-8px);
+  max-width: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.admin-layout.is-collapsed .menu-item {
+  justify-content: center;
+  padding-inline: 0;
+  position: relative;
+}
+
+.admin-layout.is-collapsed .menu-item small {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  margin-left: 0;
+}
+
+.admin-layout.is-collapsed .admin-card {
+  padding: 14px 0;
+  display: grid;
+  place-items: center;
+}
+
+.admin-layout.is-collapsed .sidebar-footer {
+  justify-content: center;
+}
+
 @media (max-width: 980px) {
   .admin-layout {
     flex-direction: column;
@@ -288,6 +370,10 @@
   .topbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .page-title {
+    width: 100%;
   }
 
   .topbar-right {

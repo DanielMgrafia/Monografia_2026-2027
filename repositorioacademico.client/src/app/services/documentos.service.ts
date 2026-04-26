@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject, tap } from 'rxjs';
 import { Documento } from '../models/documento';
 
 @Injectable({
@@ -8,6 +8,9 @@ import { Documento } from '../models/documento';
 })
 export class DocumentosService {
   private readonly apiUrl = 'https://localhost:7225/api/documentos';
+  private readonly documentosActualizadosSource = new Subject<void>();
+
+  readonly documentosActualizados$ = this.documentosActualizadosSource.asObservable();
 
   constructor(private readonly http: HttpClient) {}
 
@@ -20,11 +23,15 @@ export class DocumentosService {
   }
 
   subirDocumento(formData: FormData): Observable<Documento> {
-    return this.http.post<Documento>(`${this.apiUrl}/upload`, formData);
+    return this.http
+      .post<Documento>(`${this.apiUrl}/upload`, formData)
+      .pipe(tap(() => this.documentosActualizadosSource.next()));
   }
 
   actualizarEstado(id: number, estado: string): Observable<Documento> {
-    return this.http.put<Documento>(`${this.apiUrl}/${id}/estado`, { estado });
+    return this.http
+      .put<Documento>(`${this.apiUrl}/${id}/estado`, { estado })
+      .pipe(tap(() => this.documentosActualizadosSource.next()));
   }
 
   actualizarDocumento(id: number, documento: {
@@ -35,11 +42,15 @@ export class DocumentosService {
     estado: string;
     sePuedeDescargar: boolean;
   }): Observable<Documento> {
-    return this.http.put<Documento>(`${this.apiUrl}/${id}`, documento);
+    return this.http
+      .put<Documento>(`${this.apiUrl}/${id}`, documento)
+      .pipe(tap(() => this.documentosActualizadosSource.next()));
   }
 
   actualizarDescarga(id: number, sePuedeDescargar: boolean): Observable<Documento> {
-    return this.http.put<Documento>(`${this.apiUrl}/${id}/descarga`, { sePuedeDescargar });
+    return this.http
+      .put<Documento>(`${this.apiUrl}/${id}/descarga`, { sePuedeDescargar })
+      .pipe(tap(() => this.documentosActualizadosSource.next()));
   }
 
   visualizarDocumento(id: number): Observable<Blob> {

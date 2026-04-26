@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
@@ -16,6 +16,8 @@ import { DocumentosService } from '../../services/documentos.service';
   styleUrls: ['./subir-documento.component.css']
 })
 export class SubirDocumentoComponent implements OnInit {
+  @ViewChild('archivoInput') archivoInput?: ElementRef<HTMLInputElement>;
+
   titulo = '';
   autor = '';
   tipoDocumentoId: number | null = null;
@@ -188,9 +190,13 @@ export class SubirDocumentoComponent implements OnInit {
 
   limpiarFormulario(): void {
     this.titulo = '';
+    this.autor = '';
+    this.tipoDocumentoId = null;
+    this.facultadId = null;
     this.sePuedeDescargar = true;
-    const currentUser = this.authService.currentUser();
-    this.autor = currentUser ? `${currentUser.nombres} ${currentUser.apellidos}`.trim() : '';
     this.archivoSeleccionado = null;
+    if (this.archivoInput) {
+      this.archivoInput.nativeElement.value = '';
+    }
   }
 }

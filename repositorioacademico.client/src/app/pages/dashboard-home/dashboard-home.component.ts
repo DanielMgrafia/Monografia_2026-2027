@@ -1,7 +1,8 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { forkJoin, switchMap } from 'rxjs';
 import { Catalogo } from '../../models/catalogo';
 import { Documento } from '../../models/documento';
 import { AuthService } from '../../services/auth.service';
@@ -31,6 +32,7 @@ export class DashboardHomeComponent implements OnInit {
   readonly tiposDocumento = signal<Catalogo[]>([]);
   readonly facultades = signal<Catalogo[]>([]);
 
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   readonly authService = inject(AuthService);
   private readonly documentosService = inject(DocumentosService);
@@ -94,22 +96,16 @@ export class DashboardHomeComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    forkJoin({
-      documentos: this.documentosService.getDocumentos(),
-      tiposDocumento: this.catalogosService.getTiposDocumento(),
-      facultades: this.catalogosService.getFacultades()
-    }).subscribe({
-      next: ({ documentos, tiposDocumento, facultades }) => {
-        this.documentos.set(documentos);
-        this.tiposDocumento.set(tiposDocumento);
-        this.facultades.set(facultades);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.error.set('No se pudo cargar la informacion del panel.');
-        this.loading.set(false);
-      }
-    });
+    this.loadDashboardData();
+
+    this.documentosService.documentosActualizados$
+      .pipe(
+        switchMap(() => this.documentosService.getDocumentos()),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: (documentos) => this.documentos.set(documentos)
+      });
   }
 
   goTo(route: string): void {
@@ -128,5 +124,24 @@ export class DashboardHomeComponent implements OnInit {
       default:
         return 'pending';
     }
+  }
+
+  private loadDashboardData(): void {
+    forkJoin({
+      documentos: this.documentosService.getDocumentos(),
+      tiposDocumento: this.catalogosService.getTiposDocumento(),
+      facultades: this.catalogosService.getFacultades()
+    }).subscribe({
+      next: ({ documentos, tiposDocumento, facultades }) => {
+        this.documentos.set(documentos);
+        this.tiposDocumento.set(tiposDocumento);
+        this.facultades.set(facultades);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('No se pudo cargar la informacion del panel.');
+        this.loading.set(false);
+      }
+    });
   }
 }

@@ -123,4 +123,22 @@ describe('SubirDocumentoComponent', () => {
     ]);
     expect(component.tipoDocumentoId).toBe(3);
   });
+
+  it('should clear the form fields after cleanup', () => {
+    component.titulo = 'Documento de prueba';
+    component.autor = 'Autor Temporal';
+    component.tipoDocumentoId = 1;
+    component.facultadId = 2;
+    component.sePuedeDescargar = false;
+    component.archivoSeleccionado = new File(['contenido'], 'demo.pdf', { type: 'application/pdf' });
+
+    component.limpiarFormulario();
+
+    expect(component.titulo).toBe('');
+    expect(component.autor).toBe('');
+    expect(component.tipoDocumentoId).toBeNull();
+    expect(component.facultadId).toBeNull();
+    expect(component.sePuedeDescargar).toBeTrue();
+    expect(component.archivoSeleccionado).toBeNull();
+  });
 });

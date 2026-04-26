@@ -58,6 +58,7 @@
         <div class="form-group form-group-full">
           <label for="archivo">Archivo (PDF o Word)</label>
           <input type="file"
+                 #archivoInput
                  id="archivo"
                  accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                  (change)="seleccionarArchivo($event)"

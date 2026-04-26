@@ -1,8 +1,8 @@
-<div class="admin-layout">
+<div class="admin-layout" [class.is-collapsed]="sidebarCollapsed()">
   <aside class="sidebar">
     <div class="logo-box">
       <div class="logo-icon">RA</div>
-      <div>
+      <div class="logo-text">
         <h1>Repositorio</h1>
         <span>Dashboard</span>
       </div>
@@ -14,23 +14,25 @@
          routerLinkActive="active"
          class="menu-item">
         <span class="icon">{{ item.icon }}</span>
-        <span>{{ item.label }}</span>
+        <span class="item-label">{{ item.label }}</span>
         <small *ngIf="item.badge != null && item.badge > 0">{{ item.badge }}</small>
       </a>
     </nav>
 
     <div class="admin-card">
       <div class="admin-card-icon">GO</div>
-      <h3>Accion rapida</h3>
-      <p>Accede a la tarea principal permitida por tu perfil actual.</p>
-      <button type="button" [routerLink]="getPrimaryActionRoute()">
-        {{ getPrimaryActionLabel() }}
-      </button>
+      <div class="admin-card-content">
+        <h3>Accion rapida</h3>
+        <p>Accede a la tarea principal permitida por tu perfil actual.</p>
+        <button type="button" [routerLink]="getPrimaryActionRoute()">
+          {{ getPrimaryActionLabel() }}
+        </button>
+      </div>
     </div>
 
     <div class="sidebar-footer" *ngIf="currentUser() as user">
       <div class="footer-icon">{{ getInitials() }}</div>
-      <div>
+      <div class="footer-text">
         <strong>{{ user.nombres }} {{ user.apellidos }}</strong>
         <span>{{ user.roles.length > 0 ? user.roles[0].nombre : 'Usuario' }}</span>
       </div>
@@ -40,8 +42,17 @@
   <main class="main-content">
     <header class="topbar">
       <div class="page-title">
-        <h2>{{ pageTitle() }}</h2>
-        <p>{{ pageDescription() }}</p>
+        <button class="collapse-button"
+                type="button"
+                (click)="toggleSidebar()"
+                [attr.aria-label]="sidebarCollapsed() ? 'Mostrar menu lateral' : 'Ocultar menu lateral'">
+          {{ sidebarCollapsed() ? '>>' : '<<' }}
+        </button>
+
+        <div class="page-title-copy">
+          <h2>{{ pageTitle() }}</h2>
+          <p>{{ pageDescription() }}</p>
+        </div>
       </div>
 
       <div class="topbar-right">
