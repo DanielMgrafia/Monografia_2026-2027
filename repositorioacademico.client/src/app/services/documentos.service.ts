@@ -27,6 +27,17 @@ export class DocumentosService {
     return this.http.put<Documento>(`${this.apiUrl}/${id}/estado`, { estado });
   }
 
+  actualizarDocumento(id: number, documento: {
+    titulo: string;
+    autor: string;
+    tipoDocumentoId: number;
+    facultadId: number;
+    estado: string;
+    sePuedeDescargar: boolean;
+  }): Observable<Documento> {
+    return this.http.put<Documento>(`${this.apiUrl}/${id}`, documento);
+  }
+
   actualizarDescarga(id: number, sePuedeDescargar: boolean): Observable<Documento> {
     return this.http.put<Documento>(`${this.apiUrl}/${id}/descarga`, { sePuedeDescargar });
   }
@@ -46,7 +57,10 @@ export class DocumentosService {
     titulo?: string,
     autor?: string,
     tipoDocumentoId?: number,
-    facultadId?: number
+    facultadId?: number,
+    estado?: string,
+    fechaDesde?: string,
+    fechaHasta?: string
   ): Observable<Documento[]> {
     const params: Record<string, string | number> = {};
 
@@ -54,6 +68,9 @@ export class DocumentosService {
     if (autor) params['autor'] = autor;
     if (tipoDocumentoId != null) params['tipoDocumentoId'] = tipoDocumentoId;
     if (facultadId != null) params['facultadId'] = facultadId;
+    if (estado) params['estado'] = estado;
+    if (fechaDesde) params['fechaDesde'] = fechaDesde;
+    if (fechaHasta) params['fechaHasta'] = fechaHasta;
 
     return this.http.get<Documento[]>(`${this.apiUrl}/buscar`, { params });
   }

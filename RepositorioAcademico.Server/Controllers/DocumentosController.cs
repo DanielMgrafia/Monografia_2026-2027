@@ -213,7 +213,10 @@ namespace RepositorioAcademico.Server.Controllers
             string? titulo,
             string? autor,
             int? tipoDocumentoId,
-            int? facultadId)
+            int? facultadId,
+            string? estado,
+            DateTime? fechaDesde,
+            DateTime? fechaHasta)
         {
             if (!PuedeConsultarDocumentos())
             {
@@ -244,6 +247,23 @@ namespace RepositorioAcademico.Server.Controllers
             if (facultadId.HasValue)
             {
                 query = query.Where(documento => documento.FacultadId == facultadId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(estado))
+            {
+                query = query.Where(documento => documento.Estado == estado);
+            }
+
+            if (fechaDesde.HasValue)
+            {
+                var fechaInicio = fechaDesde.Value.Date;
+                query = query.Where(documento => documento.FechaSubida >= fechaInicio);
+            }
+
+            if (fechaHasta.HasValue)
+            {
+                var fechaFinExclusiva = fechaHasta.Value.Date.AddDays(1);
+                query = query.Where(documento => documento.FechaSubida < fechaFinExclusiva);
             }
 
             return await query
@@ -287,6 +307,59 @@ namespace RepositorioAcademico.Server.Controllers
             }
 
             documento.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            var actualizado = await ConstruirConsultaDocumentos()
+                .FirstAsync(item => item.Id == id);
+
+            return Ok(actualizado);
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<DocumentoDto>> ActualizarDocumento(int id, [FromBody] ActualizarDocumentoRequest request)
+        {
+            if (!TienePermiso(PermisoPublicarDocumento))
+            {
+                return Forbid();
+            }
+
+            var titulo = request.Titulo?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(titulo))
+            {
+                return BadRequest("El titulo es obligatorio.");
+            }
+
+            var autor = request.Autor?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(autor))
+            {
+                return BadRequest("El autor es obligatorio.");
+            }
+
+            var estado = request.Estado?.Trim() ?? string.Empty;
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var validacionCatalogos = await ValidarCatalogosAsync(request.TipoDocumentoId, request.FacultadId);
+            if (validacionCatalogos is not null)
+            {
+                return validacionCatalogos;
+            }
+
+            var documento = await _context.Documentos.FirstOrDefaultAsync(item => item.Id == id);
+            if (documento == null)
+            {
+                return NotFound();
+            }
+
+            documento.Titulo = titulo;
+            documento.Autor = autor;
+            documento.TipoDocumentoId = request.TipoDocumentoId;
+            documento.FacultadId = request.FacultadId;
+            documento.Estado = estado;
+            documento.SePuedeDescargar = request.SePuedeDescargar;
+
             await _context.SaveChangesAsync();
 
             var actualizado = await ConstruirConsultaDocumentos()
