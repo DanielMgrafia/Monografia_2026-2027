@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DocumentViewerModalComponent } from '../../components/document-viewer-modal/document-viewer-modal.component';
+import { Router } from '@angular/router';
 import { Documento } from '../../models/documento';
 import { AuthService } from '../../services/auth.service';
 import { DocumentosService } from '../../services/documentos.service';
@@ -9,13 +9,12 @@ import { DocumentosService } from '../../services/documentos.service';
 @Component({
   selector: 'app-review-documents-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, DocumentViewerModalComponent],
+  imports: [CommonModule, FormsModule, DatePipe],
   templateUrl: './review-documents-page.component.html',
   styleUrls: ['./review-documents-page.component.css']
 })
 export class ReviewDocumentsPageComponent implements OnInit {
   documentos: Documento[] = [];
-  documentoSeleccionado: Documento | null = null;
   filtro = '';
   cargando = false;
   procesandoId: number | null = null;
@@ -23,6 +22,7 @@ export class ReviewDocumentsPageComponent implements OnInit {
   mensaje = '';
   error = '';
 
+  private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly documentosService = inject(DocumentosService);
 
@@ -68,11 +68,19 @@ export class ReviewDocumentsPageComponent implements OnInit {
   }
 
   abrirVisor(documento: Documento): void {
-    this.documentoSeleccionado = documento;
-  }
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree(['/visor-documento', documento.id])
+    );
+    const features = [
+      'popup=yes',
+      'noopener',
+      `width=${Math.max(window.screen.availWidth - 40, 1280)}`,
+      `height=${Math.max(window.screen.availHeight - 80, 760)}`,
+      'left=0',
+      'top=0'
+    ].join(',');
 
-  cerrarVisor(): void {
-    this.documentoSeleccionado = null;
+    window.open(url, '_blank', features);
   }
 
   alternarDescarga(documento: Documento): void {
@@ -86,10 +94,6 @@ export class ReviewDocumentsPageComponent implements OnInit {
         this.documentos = this.documentos.map((item) =>
           item.id === actualizado.id ? actualizado : item
         );
-
-        if (this.documentoSeleccionado?.id === actualizado.id) {
-          this.documentoSeleccionado = actualizado;
-        }
 
         this.mensaje = actualizado.sePuedeDescargar === false
           ? 'La descarga del documento fue bloqueada.'

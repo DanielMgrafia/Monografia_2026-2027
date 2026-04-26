@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Documento } from '../../models/documento';
-import { DocumentViewerModalComponent } from '../document-viewer-modal/document-viewer-modal.component';
 import { AuthService } from '../../services/auth.service';
 import { DocumentosService } from '../../services/documentos.service';
 
@@ -11,17 +10,17 @@ import { DocumentosService } from '../../services/documentos.service';
   selector: 'app-lista-documentos',
   templateUrl: './lista-documentos.component.html',
   standalone: true,
-  imports: [CommonModule, FormsModule, DocumentViewerModalComponent],
+  imports: [CommonModule, FormsModule],
   styleUrls: ['./lista-documentos.component.css']
 })
 export class ListaDocumentosComponent implements OnInit {
   documentos: Documento[] = [];
-  documentoSeleccionado: Documento | null = null;
   filtro = '';
   cargando = false;
   error = '';
 
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly documentosService = inject(DocumentosService);
 
@@ -67,11 +66,19 @@ export class ListaDocumentosComponent implements OnInit {
   }
 
   abrirVisor(documento: Documento): void {
-    this.documentoSeleccionado = documento;
-  }
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree(['/visor-documento', documento.id])
+    );
+    const features = [
+      'popup=yes',
+      'noopener',
+      `width=${Math.max(window.screen.availWidth - 40, 1280)}`,
+      `height=${Math.max(window.screen.availHeight - 80, 760)}`,
+      'left=0',
+      'top=0'
+    ].join(',');
 
-  cerrarVisor(): void {
-    this.documentoSeleccionado = null;
+    window.open(url, '_blank', features);
   }
 
   puedeDescargar(documento: Documento): boolean {

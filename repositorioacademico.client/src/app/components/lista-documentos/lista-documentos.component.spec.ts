@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { convertToParamMap, ActivatedRoute } from '@angular/router';
+import { convertToParamMap, ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 import { Documento } from '../../models/documento';
 import { AuthService } from '../../services/auth.service';
@@ -9,6 +9,7 @@ import { ListaDocumentosComponent } from './lista-documentos.component';
 describe('ListaDocumentosComponent', () => {
   let documentosServiceSpy: jasmine.SpyObj<DocumentosService>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
+  let routerSpy: jasmine.SpyObj<Router>;
 
   const mockDocumentos: Documento[] = [
     {
@@ -29,6 +30,7 @@ describe('ListaDocumentosComponent', () => {
 
   beforeEach(async () => {
     authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', ['hasPermission']);
+    routerSpy = jasmine.createSpyObj<Router>('Router', ['createUrlTree', 'serializeUrl']);
     documentosServiceSpy = jasmine.createSpyObj<DocumentosService>(
       'DocumentosService',
       ['getDocumentos']
@@ -36,6 +38,8 @@ describe('ListaDocumentosComponent', () => {
 
     documentosServiceSpy.getDocumentos.and.returnValue(of(mockDocumentos));
     authServiceSpy.hasPermission.and.returnValue(true);
+    routerSpy.createUrlTree.and.returnValue({} as never);
+    routerSpy.serializeUrl.and.returnValue('/visor-documento/1');
 
     await TestBed.configureTestingModule({
       imports: [ListaDocumentosComponent],
@@ -47,6 +51,7 @@ describe('ListaDocumentosComponent', () => {
           }
         },
         { provide: AuthService, useValue: authServiceSpy },
+        { provide: Router, useValue: routerSpy },
         { provide: DocumentosService, useValue: documentosServiceSpy }
       ]
     }).compileComponents();
@@ -62,12 +67,15 @@ describe('ListaDocumentosComponent', () => {
     expect(component.documentos).toEqual(mockDocumentos);
   });
 
-  it('should select the document to open the viewer modal', () => {
+  it('should open the viewer in a new window', () => {
     const fixture = TestBed.createComponent(ListaDocumentosComponent);
     const component = fixture.componentInstance;
+    const openSpy = spyOn(window, 'open');
 
     component.abrirVisor(mockDocumentos[0]);
 
-    expect(component.documentoSeleccionado).toEqual(mockDocumentos[0]);
+    expect(routerSpy.createUrlTree).toHaveBeenCalledWith(['/visor-documento', 1]);
+    expect(routerSpy.serializeUrl).toHaveBeenCalled();
+    expect(openSpy).toHaveBeenCalled();
   });
 });

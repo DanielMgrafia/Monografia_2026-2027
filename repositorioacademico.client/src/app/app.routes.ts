@@ -8,6 +8,7 @@ import { CrearTipoDocumentoComponent } from './components/crear-tipo-documento/c
 import { ListaDocumentosComponent } from './components/lista-documentos/lista-documentos.component';
 import { SubirDocumentoComponent } from './components/subir-documento/subir-documento.component';
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
+import { DocumentViewerPageComponent } from './pages/document-viewer-page/document-viewer-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { ReviewDocumentsPageComponent } from './pages/review-documents-page/review-documents-page.component';
 import { RolesPageComponent } from './pages/roles-page/roles-page.component';
@@ -18,6 +19,14 @@ export const appRoutes: Routes = [
     path: 'login',
     component: LoginPageComponent,
     canActivate: [guestGuard]
+  },
+  {
+    path: 'visor-documento/:id',
+    component: DocumentViewerPageComponent,
+    canActivate: [authGuard, permissionGuard],
+    data: {
+      permissions: ['REPOSITORIO.VER', 'DOCUMENTO.SUBIR', 'DOCUMENTO.PUBLICAR']
+    }
   },
   {
     path: '',

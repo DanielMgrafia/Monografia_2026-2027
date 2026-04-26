@@ -60,9 +60,3 @@
     <p>Ajusta el filtro o espera nuevas publicaciones en el repositorio.</p>
   </div>
 </ng-template>
-
-<app-document-viewer-modal *ngIf="documentoSeleccionado as documentoSeleccionado"
-                           [documento]="documentoSeleccionado"
-                           [canDownload]="puedeDescargar(documentoSeleccionado)"
-                           (closeRequested)="cerrarVisor()">
-</app-document-viewer-modal>

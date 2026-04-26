@@ -1,0 +1,59 @@
+<section class="viewer-page">
+  <header class="viewer-header">
+    <div class="viewer-heading">
+      <p class="eyebrow">Visualizador academico</p>
+      <h1>{{ documento?.titulo || 'Documento sin titulo' }}</h1>
+      <p class="viewer-author">{{ documento?.autor || 'Autor no disponible' }}</p>
+    </div>
+
+    <div class="viewer-actions">
+      <button *ngIf="isDownloadEnabled()"
+              type="button"
+              class="download-button"
+              [disabled]="downloading"
+              (click)="descargar()">
+        {{ downloading ? 'Descargando...' : 'Descargar archivo' }}
+      </button>
+
+      <button type="button" class="close-button" (click)="closeWindow()">
+        Cerrar ventana
+      </button>
+    </div>
+  </header>
+
+  <div class="viewer-toolbar">
+    <div class="meta-group">
+      <span class="meta-pill">{{ documento?.tipoDocumento || 'Tipo no definido' }}</span>
+      <span class="meta-pill">{{ documento?.facultad || 'Facultad no definida' }}</span>
+      <span class="meta-pill" [class.meta-pill-restricted]="!isDownloadEnabled()">
+        {{ getDownloadStatusLabel() }}
+      </span>
+    </div>
+  </div>
+
+  <div class="viewer-body">
+    <div *ngIf="loading" class="viewer-message">
+      <strong>Cargando vista previa...</strong>
+      <p>Estamos preparando el PDF para mostrarlo con mas espacio en esta ventana.</p>
+    </div>
+
+    <div *ngIf="error" class="viewer-message viewer-error">
+      <strong>No se pudo abrir el archivo.</strong>
+      <p>{{ error }}</p>
+    </div>
+
+    <iframe *ngIf="!loading && !error && isPdfDocument() && previewUrl"
+            class="pdf-frame"
+            [src]="previewUrl"
+            title="Vista previa del documento PDF">
+    </iframe>
+
+    <div *ngIf="!loading && !error && !isPdfDocument()" class="viewer-message viewer-note">
+      <strong>Vista previa disponible solo para PDF.</strong>
+      <p>
+        Este archivo esta almacenado como Word. Desde esta ventana puedes mantener la lectura centralizada
+        y descargarlo solo si el rol y el documento lo permiten.
+      </p>
+    </div>
+  </div>
+</section>

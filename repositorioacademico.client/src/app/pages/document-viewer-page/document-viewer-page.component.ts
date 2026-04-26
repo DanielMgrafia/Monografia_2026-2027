@@ -1,42 +1,63 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Documento } from '../../models/documento';
+import { AuthService } from '../../services/auth.service';
 import { DocumentosService } from '../../services/documentos.service';
 
 @Component({
-  selector: 'app-document-viewer-modal',
+  selector: 'app-document-viewer-page',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './document-viewer-modal.component.html',
-  styleUrls: ['./document-viewer-modal.component.css']
+  templateUrl: './document-viewer-page.component.html',
+  styleUrls: ['./document-viewer-page.component.css']
 })
-export class DocumentViewerModalComponent implements OnChanges, OnDestroy {
-  @Input() documento: Documento | null = null;
-  @Input() canDownload = false;
-  @Output() closeRequested = new EventEmitter<void>();
-
-  loading = false;
+export class DocumentViewerPageComponent implements OnInit, OnDestroy {
+  documento: Documento | null = null;
+  loading = true;
   downloading = false;
   error = '';
   previewUrl: SafeResourceUrl | null = null;
 
   private rawPreviewUrl: string | null = null;
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly authService = inject(AuthService);
   private readonly documentosService = inject(DocumentosService);
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if ('documento' in changes) {
-      this.loadPreview();
+  ngOnInit(): void {
+    const documentId = Number(this.route.snapshot.paramMap.get('id'));
+    if (!Number.isInteger(documentId) || documentId <= 0) {
+      this.error = 'El documento solicitado no es valido.';
+      this.loading = false;
+      return;
     }
+
+    this.documentosService.getDocumento(documentId).subscribe({
+      next: (documento) => {
+        this.documento = documento;
+        this.loadPreview();
+      },
+      error: () => {
+        this.error = 'No se pudo cargar la informacion del documento.';
+        this.loading = false;
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.revokePreviewUrl();
   }
 
-  close(): void {
-    this.closeRequested.emit();
+  closeWindow(): void {
+    if (window.opener) {
+      window.close();
+      return;
+    }
+
+    this.router.navigate(['/repositorio']);
   }
 
   descargar(): void {
@@ -78,7 +99,7 @@ export class DocumentViewerModalComponent implements OnChanges, OnDestroy {
   }
 
   isDownloadEnabled(): boolean {
-    return this.canDownload && this.documento?.sePuedeDescargar !== false;
+    return this.authService.hasPermission('DOCUMENTO.DESCARGAR') && this.documento?.sePuedeDescargar !== false;
   }
 
   getDownloadStatusLabel(): string {
@@ -86,7 +107,7 @@ export class DocumentViewerModalComponent implements OnChanges, OnDestroy {
       return 'Documento solo para visualizacion';
     }
 
-    if (!this.canDownload) {
+    if (!this.authService.hasPermission('DOCUMENTO.DESCARGAR')) {
       return 'Tu rol no tiene permiso para descargar';
     }
 
@@ -108,7 +129,7 @@ export class DocumentViewerModalComponent implements OnChanges, OnDestroy {
         const previewUrl = URL.createObjectURL(blob);
         this.rawPreviewUrl = previewUrl;
         this.previewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-          `${previewUrl}#toolbar=0&navpanes=0&scrollbar=1`
+          `${previewUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`
         );
         this.loading = false;
       },
