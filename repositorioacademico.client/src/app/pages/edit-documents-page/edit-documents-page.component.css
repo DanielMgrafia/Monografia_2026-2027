@@ -32,7 +32,6 @@
 
 .review-toolbar,
 .editor-header,
-.quick-filters,
 .editor-actions {
   display: flex;
   align-items: center;
@@ -80,7 +79,7 @@
 .primary-button,
 .secondary-button,
 .close-editor,
-.chip-button {
+.clear-filters-button {
   border: none;
   border-radius: 12px;
   font-weight: 800;
@@ -97,6 +96,13 @@
 .close-editor {
   min-width: 132px;
   height: 44px;
+}
+
+.clear-filters-button {
+  min-width: 148px;
+  height: 44px;
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 .close-editor,
@@ -175,25 +181,11 @@
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
-.quick-filters {
-  margin-top: 16px;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+.filter-actions {
+  display: flex;
+  align-items: flex-end;
 }
 
-.chip-button {
-  min-height: 36px;
-  padding: 0 14px;
-  background: #0f766e;
-  color: #ffffff;
-}
-
-.chip-button-light {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-.results-pill,
 .file-pill {
   display: inline-flex;
   align-items: center;
@@ -422,6 +414,7 @@
   }
 
   .refresh-button,
+  .clear-filters-button,
   .primary-button,
   .secondary-button,
   .close-editor {

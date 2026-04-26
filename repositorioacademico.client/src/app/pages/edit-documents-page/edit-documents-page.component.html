@@ -59,13 +59,10 @@
         <label for="filtroFechaHastaEdicion">Hasta</label>
         <input id="filtroFechaHastaEdicion" type="date" [(ngModel)]="filtroFechaHasta" name="filtroFechaHastaEdicion" />
       </div>
-    </div>
 
-    <div class="quick-filters">
-      <button type="button" class="chip-button" (click)="setFiltroHoy()">Hoy</button>
-      <button type="button" class="chip-button" (click)="setFiltroAyer()">Ayer</button>
-      <button type="button" class="chip-button chip-button-light" (click)="limpiarFiltros()">Limpiar filtros</button>
-      <span class="results-pill">{{ documentosFiltrados.length }} documento(s)</span>
+      <div class="filter-actions">
+        <button type="button" class="clear-filters-button" (click)="limpiarFiltros()">Limpiar filtros</button>
+      </div>
     </div>
   </div>
 

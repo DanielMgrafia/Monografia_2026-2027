@@ -17,14 +17,11 @@ import { DocumentosService } from '../../services/documentos.service';
   styleUrls: ['./lista-documentos.component.css']
 })
 export class ListaDocumentosComponent implements OnInit {
-  readonly estadosDisponibles = ['Pendiente', 'Publicado', 'Observado', 'Rechazado'];
-
   documentos: Documento[] = [];
   tiposDocumento: Catalogo[] = [];
   facultades: Catalogo[] = [];
 
   filtroTexto = '';
-  filtroEstado = '';
   filtroTipoDocumentoId: number | null = null;
   filtroFacultadId: number | null = null;
   filtroFechaDesde = '';
@@ -45,23 +42,19 @@ export class ListaDocumentosComponent implements OnInit {
     const fechaHasta = this.filtroFechaHasta ? new Date(`${this.filtroFechaHasta}T23:59:59.999`) : null;
 
     return this.documentos
+      .filter((documento) => (documento.estado ?? '') === 'Publicado' || (documento.estado ?? '') === 'Aprobado')
       .filter((documento) => {
         if (filtroTexto) {
           const coincideTexto = [
             documento.titulo,
             documento.autor,
             documento.tipoDocumento,
-            documento.facultad,
-            documento.estado
+            documento.facultad
           ].some((valor) => valor?.toLowerCase().includes(filtroTexto));
 
           if (!coincideTexto) {
             return false;
           }
-        }
-
-        if (this.filtroEstado && documento.estado !== this.filtroEstado) {
-          return false;
         }
 
         if (this.filtroTipoDocumentoId != null && documento.tipoDocumentoId !== this.filtroTipoDocumentoId) {
@@ -117,7 +110,6 @@ export class ListaDocumentosComponent implements OnInit {
 
   limpiarFiltros(): void {
     this.filtroTexto = '';
-    this.filtroEstado = '';
     this.filtroTipoDocumentoId = null;
     this.filtroFacultadId = null;
     this.filtroFechaDesde = '';
@@ -146,19 +138,5 @@ export class ListaDocumentosComponent implements OnInit {
     }
 
     return 'Descargable';
-  }
-
-  getStatusClass(status?: string): string {
-    switch (status) {
-      case 'Publicado':
-      case 'Aprobado':
-        return 'published';
-      case 'Observado':
-        return 'observed';
-      case 'Rechazado':
-        return 'rejected';
-      default:
-        return 'pending';
-    }
   }
 }

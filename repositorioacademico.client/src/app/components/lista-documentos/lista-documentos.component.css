@@ -106,7 +106,7 @@
 .tabla-documentos {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1100px;
+  min-width: 980px;
 }
 
 .tabla-documentos th {
@@ -160,24 +160,9 @@
   text-align: center;
 }
 
-.badge.pending {
-  background: #fff7ed;
-  color: #c2410c;
-}
-
 .badge.published {
   background: #e8f7f2;
   color: #157b68;
-}
-
-.badge.observed {
-  background: #eef5ff;
-  color: #0a54db;
-}
-
-.badge.rejected {
-  background: #ffe9e7;
-  color: #c8332b;
 }
 
 .badge.restricted {
