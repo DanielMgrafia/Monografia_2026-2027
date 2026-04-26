@@ -67,7 +67,7 @@ describe('ListaDocumentosComponent', () => {
     expect(component.documentos).toEqual(mockDocumentos);
   });
 
-  it('should open the viewer in a new window', () => {
+  it('should open the viewer in a new tab', () => {
     const fixture = TestBed.createComponent(ListaDocumentosComponent);
     const component = fixture.componentInstance;
     const openSpy = spyOn(window, 'open');
@@ -76,6 +76,6 @@ describe('ListaDocumentosComponent', () => {
 
     expect(routerSpy.createUrlTree).toHaveBeenCalledWith(['/visor-documento', 1]);
     expect(routerSpy.serializeUrl).toHaveBeenCalled();
-    expect(openSpy).toHaveBeenCalled();
+    expect(openSpy).toHaveBeenCalledWith('/visor-documento/1', '_blank');
   });
 });

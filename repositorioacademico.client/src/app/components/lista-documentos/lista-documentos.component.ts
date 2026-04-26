@@ -69,16 +69,8 @@ export class ListaDocumentosComponent implements OnInit {
     const url = this.router.serializeUrl(
       this.router.createUrlTree(['/visor-documento', documento.id])
     );
-    const features = [
-      'popup=yes',
-      'noopener',
-      `width=${Math.max(window.screen.availWidth - 40, 1280)}`,
-      `height=${Math.max(window.screen.availHeight - 80, 760)}`,
-      'left=0',
-      'top=0'
-    ].join(',');
 
-    window.open(url, '_blank', features);
+    window.open(url, '_blank');
   }
 
   puedeDescargar(documento: Documento): boolean {
