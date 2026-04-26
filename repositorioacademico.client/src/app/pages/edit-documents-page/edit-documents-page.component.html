@@ -81,8 +81,8 @@
           <th>Tipo</th>
           <th>Facultad</th>
           <th>Fecha</th>
-          <th>Estado</th>
           <th>Descarga</th>
+          <th>Estado</th>
           <th class="text-right">Acciones</th>
         </tr>
       </thead>
@@ -98,12 +98,12 @@
           <td>{{ documento.facultad }}</td>
           <td>{{ documento.fechaSubida | date:"dd 'de' MMMM 'de' y" }}</td>
           <td>
-            <span class="badge" [ngClass]="getStatusClass(documento.estado)">{{ documento.estado }}</span>
-          </td>
-          <td>
             <span class="badge" [ngClass]="getDownloadStatusClass(documento)">
               {{ getDownloadStatusLabel(documento) }}
             </span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="getStatusClass(documento.estado)">{{ documento.estado }}</span>
           </td>
           <td class="actions">
             <button type="button" class="btn view" [disabled]="guardandoEdicion" (click)="abrirVisor(documento)">
@@ -119,84 +119,86 @@
   </div>
 </section>
 
-<section class="editor-card" *ngIf="documentoEnEdicion as documento">
-  <div class="editor-header">
-    <div>
-      <p class="editor-eyebrow">Edicion documental</p>
-      <h3>{{ documento.titulo }}</h3>
-      <span>Modifica datos, recupera estados o ajusta la visualizacion del archivo.</span>
+<section class="editor-modal-backdrop" *ngIf="documentoEnEdicion as documento" (click)="cancelarEdicion()">
+  <div class="editor-modal" (click)="$event.stopPropagation()">
+    <div class="editor-header">
+      <div>
+        <p class="editor-eyebrow">Edicion documental</p>
+        <h3>{{ documento.titulo }}</h3>
+        <span>Modifica datos, recupera estados o ajusta la visualizacion del archivo.</span>
+      </div>
+
+      <button type="button" class="close-editor" (click)="cancelarEdicion()">Cerrar</button>
     </div>
 
-    <button type="button" class="close-editor" (click)="cancelarEdicion()">Cerrar</button>
+    <form class="editor-form" (ngSubmit)="guardarEdicion()">
+      <div class="editor-grid">
+        <div class="editor-group">
+          <label for="editTitulo">Titulo</label>
+          <input id="editTitulo" type="text" [(ngModel)]="editModel.titulo" name="editTitulo" required />
+        </div>
+
+        <div class="editor-group">
+          <label for="editAutor">Autor</label>
+          <input id="editAutor" type="text" [(ngModel)]="editModel.autor" name="editAutor" required />
+        </div>
+
+        <div class="editor-group">
+          <label for="editTipo">Tipo de documento</label>
+          <select id="editTipo" [(ngModel)]="editModel.tipoDocumentoId" name="editTipoDocumentoId" required>
+            <option [ngValue]="null">Seleccione</option>
+            <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
+              {{ tipo.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="editor-group">
+          <label for="editFacultad">Facultad</label>
+          <select id="editFacultad" [(ngModel)]="editModel.facultadId" name="editFacultadId" required>
+            <option [ngValue]="null">Seleccione</option>
+            <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
+              {{ facultad.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="editor-group">
+          <label>Archivo actual</label>
+          <div class="file-pill">{{ documento.rutaDocumento || 'Sin archivo asociado' }}</div>
+        </div>
+
+        <label class="download-policy-card" for="editSePuedeDescargar">
+          <input type="checkbox"
+                 id="editSePuedeDescargar"
+                 name="editSePuedeDescargar"
+                 [(ngModel)]="editModel.sePuedeDescargar" />
+          <span>
+            <strong>Permitir descarga de este documento</strong>
+            <small>Si se desactiva, el archivo seguira visible, pero nadie podra descargarlo.</small>
+          </span>
+        </label>
+
+        <div class="editor-group">
+          <label for="editEstado">Estado</label>
+          <select id="editEstado" [(ngModel)]="editModel.estado" name="editEstado" required>
+            <option *ngFor="let estado of estadosDisponibles" [ngValue]="estado">
+              {{ estado }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="editor-actions">
+        <button type="button" class="secondary-button" (click)="cancelarEdicion()" [disabled]="guardandoEdicion">
+          Cancelar
+        </button>
+        <button type="submit" class="primary-button" [disabled]="guardandoEdicion">
+          {{ guardandoEdicion ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
   </div>
-
-  <form class="editor-form" (ngSubmit)="guardarEdicion()">
-    <div class="editor-grid">
-      <div class="editor-group">
-        <label for="editTitulo">Titulo</label>
-        <input id="editTitulo" type="text" [(ngModel)]="editModel.titulo" name="editTitulo" required />
-      </div>
-
-      <div class="editor-group">
-        <label for="editAutor">Autor</label>
-        <input id="editAutor" type="text" [(ngModel)]="editModel.autor" name="editAutor" required />
-      </div>
-
-      <div class="editor-group">
-        <label for="editTipo">Tipo de documento</label>
-        <select id="editTipo" [(ngModel)]="editModel.tipoDocumentoId" name="editTipoDocumentoId" required>
-          <option [ngValue]="null">Seleccione</option>
-          <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
-            {{ tipo.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="editor-group">
-        <label for="editFacultad">Facultad</label>
-        <select id="editFacultad" [(ngModel)]="editModel.facultadId" name="editFacultadId" required>
-          <option [ngValue]="null">Seleccione</option>
-          <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
-            {{ facultad.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="editor-group">
-        <label for="editEstado">Estado</label>
-        <select id="editEstado" [(ngModel)]="editModel.estado" name="editEstado" required>
-          <option *ngFor="let estado of estadosDisponibles" [ngValue]="estado">
-            {{ estado }}
-          </option>
-        </select>
-      </div>
-
-      <div class="editor-group">
-        <label>Archivo actual</label>
-        <div class="file-pill">{{ documento.rutaDocumento || 'Sin archivo asociado' }}</div>
-      </div>
-
-      <label class="download-policy-card" for="editSePuedeDescargar">
-        <input type="checkbox"
-               id="editSePuedeDescargar"
-               name="editSePuedeDescargar"
-               [(ngModel)]="editModel.sePuedeDescargar" />
-        <span>
-          <strong>Permitir descarga de este documento</strong>
-          <small>Si se desactiva, el archivo seguira visible, pero nadie podra descargarlo.</small>
-        </span>
-      </label>
-    </div>
-
-    <div class="editor-actions">
-      <button type="button" class="secondary-button" (click)="cancelarEdicion()" [disabled]="guardandoEdicion">
-        Cancelar
-      </button>
-      <button type="submit" class="primary-button" [disabled]="guardandoEdicion">
-        {{ guardandoEdicion ? 'Guardando...' : 'Guardar cambios' }}
-      </button>
-    </div>
-  </form>
 </section>
 
 <ng-template #emptyState>

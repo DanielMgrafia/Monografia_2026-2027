@@ -6,8 +6,7 @@
   padding: 24px;
 }
 
-.review-toolbar,
-.quick-filters {
+.review-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -29,7 +28,7 @@
 }
 
 .refresh-button,
-.chip-button {
+.clear-filters-button {
   border: none;
   border-radius: 12px;
   font-weight: 800;
@@ -41,6 +40,13 @@
   height: 44px;
   background: #083b91;
   color: #ffffff;
+}
+
+.clear-filters-button {
+  min-width: 148px;
+  height: 44px;
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 .filters-card {
@@ -92,35 +98,9 @@
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
-.quick-filters {
-  margin-top: 16px;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-
-.chip-button {
-  min-height: 36px;
-  padding: 0 14px;
-  background: #0f766e;
-  color: #ffffff;
-}
-
-.chip-button-light {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-.results-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
-  font-size: 12px;
-  font-weight: 800;
+.filter-actions {
+  display: flex;
+  align-items: flex-end;
 }
 
 .message {
@@ -279,7 +259,8 @@
     grid-template-columns: 1fr;
   }
 
-  .refresh-button {
+  .refresh-button,
+  .clear-filters-button {
     width: 100%;
   }
 }

@@ -1,68 +1,127 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
+import { Catalogo } from '../../models/catalogo';
 import { Documento } from '../../models/documento';
 import { AuthService } from '../../services/auth.service';
+import { CatalogosService } from '../../services/catalogos.service';
 import { DocumentosService } from '../../services/documentos.service';
 
 @Component({
   selector: 'app-lista-documentos',
   templateUrl: './lista-documentos.component.html',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DatePipe],
   styleUrls: ['./lista-documentos.component.css']
 })
 export class ListaDocumentosComponent implements OnInit {
+  readonly estadosDisponibles = ['Pendiente', 'Publicado', 'Observado', 'Rechazado'];
+
   documentos: Documento[] = [];
-  filtro = '';
+  tiposDocumento: Catalogo[] = [];
+  facultades: Catalogo[] = [];
+
+  filtroTexto = '';
+  filtroEstado = '';
+  filtroTipoDocumentoId: number | null = null;
+  filtroFacultadId: number | null = null;
+  filtroFechaDesde = '';
+  filtroFechaHasta = '';
+
   cargando = false;
   error = '';
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly catalogosService = inject(CatalogosService);
   private readonly documentosService = inject(DocumentosService);
 
   get documentosFiltrados(): Documento[] {
-    const filtro = this.filtro.trim().toLowerCase();
-    if (!filtro) {
-      return this.documentos;
-    }
+    const filtroTexto = this.filtroTexto.trim().toLowerCase();
+    const fechaDesde = this.filtroFechaDesde ? new Date(`${this.filtroFechaDesde}T00:00:00`) : null;
+    const fechaHasta = this.filtroFechaHasta ? new Date(`${this.filtroFechaHasta}T23:59:59.999`) : null;
 
-    return this.documentos.filter((documento) =>
-      [
-        documento.titulo,
-        documento.autor,
-        documento.tipoDocumento,
-        documento.facultad,
-        documento.estado
-      ].some((valor) => valor?.toLowerCase().includes(filtro))
-    );
+    return this.documentos
+      .filter((documento) => {
+        if (filtroTexto) {
+          const coincideTexto = [
+            documento.titulo,
+            documento.autor,
+            documento.tipoDocumento,
+            documento.facultad,
+            documento.estado
+          ].some((valor) => valor?.toLowerCase().includes(filtroTexto));
+
+          if (!coincideTexto) {
+            return false;
+          }
+        }
+
+        if (this.filtroEstado && documento.estado !== this.filtroEstado) {
+          return false;
+        }
+
+        if (this.filtroTipoDocumentoId != null && documento.tipoDocumentoId !== this.filtroTipoDocumentoId) {
+          return false;
+        }
+
+        if (this.filtroFacultadId != null && documento.facultadId !== this.filtroFacultadId) {
+          return false;
+        }
+
+        const fechaDocumento = new Date(documento.fechaSubida);
+        if (fechaDesde && fechaDocumento < fechaDesde) {
+          return false;
+        }
+
+        if (fechaHasta && fechaDocumento > fechaHasta) {
+          return false;
+        }
+
+        return true;
+      })
+      .sort((left, right) => new Date(right.fechaSubida).getTime() - new Date(left.fechaSubida).getTime());
   }
 
   ngOnInit(): void {
-    this.cargarDocumentos();
     this.route.queryParamMap.subscribe((params) => {
-      this.filtro = params.get('q') ?? '';
+      this.filtroTexto = params.get('q') ?? '';
     });
+    this.cargarPantalla();
   }
 
-  cargarDocumentos(): void {
+  cargarPantalla(): void {
     this.cargando = true;
     this.error = '';
 
-    this.documentosService.getDocumentos().subscribe({
-      next: (data) => {
-        this.documentos = data;
+    forkJoin({
+      documentos: this.documentosService.getDocumentos(),
+      tiposDocumento: this.catalogosService.getTiposDocumento(),
+      facultades: this.catalogosService.getFacultades()
+    }).subscribe({
+      next: ({ documentos, tiposDocumento, facultades }) => {
+        this.documentos = documentos;
+        this.tiposDocumento = tiposDocumento;
+        this.facultades = facultades;
         this.cargando = false;
       },
-      error: (error) => {
-        console.error('Error al cargar documentos', error);
-        this.error = 'No se pudieron cargar los documentos.';
+      error: () => {
+        this.error = 'No se pudieron cargar los documentos y catalogos del repositorio.';
         this.cargando = false;
       }
     });
+  }
+
+  limpiarFiltros(): void {
+    this.filtroTexto = '';
+    this.filtroEstado = '';
+    this.filtroTipoDocumentoId = null;
+    this.filtroFacultadId = null;
+    this.filtroFechaDesde = '';
+    this.filtroFechaHasta = '';
   }
 
   abrirVisor(documento: Documento): void {
@@ -93,13 +152,13 @@ export class ListaDocumentosComponent implements OnInit {
     switch (status) {
       case 'Publicado':
       case 'Aprobado':
-        return 'estado-publicado';
+        return 'published';
       case 'Observado':
-        return 'estado-observado';
+        return 'observed';
       case 'Rechazado':
-        return 'estado-rechazado';
+        return 'rejected';
       default:
-        return 'estado-pendiente';
+        return 'pending';
     }
   }
 }

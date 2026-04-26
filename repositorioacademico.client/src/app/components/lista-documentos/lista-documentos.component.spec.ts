@@ -1,13 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { convertToParamMap, ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { Catalogo } from '../../models/catalogo';
 import { Documento } from '../../models/documento';
 import { AuthService } from '../../services/auth.service';
+import { CatalogosService } from '../../services/catalogos.service';
 import { DocumentosService } from '../../services/documentos.service';
 import { ListaDocumentosComponent } from './lista-documentos.component';
 
 describe('ListaDocumentosComponent', () => {
   let documentosServiceSpy: jasmine.SpyObj<DocumentosService>;
+  let catalogosServiceSpy: jasmine.SpyObj<CatalogosService>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
 
@@ -27,16 +30,23 @@ describe('ListaDocumentosComponent', () => {
       usuarioId: 99
     }
   ];
+  const mockCatalogos: Catalogo[] = [{ id: 1, descripcion: 'Tesis' }];
 
   beforeEach(async () => {
     authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', ['hasPermission']);
     routerSpy = jasmine.createSpyObj<Router>('Router', ['createUrlTree', 'serializeUrl']);
+    catalogosServiceSpy = jasmine.createSpyObj<CatalogosService>('CatalogosService', [
+      'getTiposDocumento',
+      'getFacultades'
+    ]);
     documentosServiceSpy = jasmine.createSpyObj<DocumentosService>(
       'DocumentosService',
       ['getDocumentos']
     );
 
     documentosServiceSpy.getDocumentos.and.returnValue(of(mockDocumentos));
+    catalogosServiceSpy.getTiposDocumento.and.returnValue(of(mockCatalogos));
+    catalogosServiceSpy.getFacultades.and.returnValue(of(mockCatalogos));
     authServiceSpy.hasPermission.and.returnValue(true);
     routerSpy.createUrlTree.and.returnValue({} as never);
     routerSpy.serializeUrl.and.returnValue('/visor-documento/1');
@@ -51,6 +61,7 @@ describe('ListaDocumentosComponent', () => {
           }
         },
         { provide: AuthService, useValue: authServiceSpy },
+        { provide: CatalogosService, useValue: catalogosServiceSpy },
         { provide: Router, useValue: routerSpy },
         { provide: DocumentosService, useValue: documentosServiceSpy }
       ]
@@ -64,6 +75,8 @@ describe('ListaDocumentosComponent', () => {
     fixture.detectChanges();
 
     expect(documentosServiceSpy.getDocumentos).toHaveBeenCalled();
+    expect(catalogosServiceSpy.getTiposDocumento).toHaveBeenCalled();
+    expect(catalogosServiceSpy.getFacultades).toHaveBeenCalled();
     expect(component.documentos).toEqual(mockDocumentos);
   });
 

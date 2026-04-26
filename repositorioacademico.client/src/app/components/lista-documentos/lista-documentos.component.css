@@ -1,30 +1,27 @@
 .repositorio-card {
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 22px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  overflow: hidden;
   border: 1px solid #e5e7eb;
   padding: 24px;
 }
 
 .repositorio-toolbar {
   display: flex;
+  align-items: center;
   gap: 14px;
   justify-content: space-between;
   margin-bottom: 18px;
 }
 
-.search-box {
-  flex: 1;
+.repositorio-toolbar h3 {
+  margin: 0;
+  color: #061b4e;
 }
 
-.search-box input {
-  width: 100%;
-  height: 44px;
-  border: 1px solid #d8e0ec;
-  border-radius: 12px;
-  padding: 0 14px;
-  outline: none;
+.repositorio-toolbar p {
+  margin: 6px 0 0;
+  color: #52627e;
 }
 
 .refresh-button {
@@ -37,6 +34,71 @@
   font-weight: 800;
 }
 
+.filters-card {
+  border: 1px solid #dbeafe;
+  border-radius: 18px;
+  padding: 18px;
+  background: linear-gradient(180deg, #f8fbff, #ffffff);
+  margin-bottom: 18px;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group-wide {
+  grid-column: 1 / -1;
+}
+
+.filter-group label {
+  margin-bottom: 6px;
+  color: #263b66;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #d8e0ec;
+  border-radius: 12px;
+  padding: 0 14px;
+  outline: none;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.filter-actions {
+  display: flex;
+  align-items: flex-end;
+}
+
+.clear-filters-button {
+  min-width: 148px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #e2e8f0;
+  color: #0f172a;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .tabla-wrapper {
   overflow-x: auto;
 }
@@ -44,84 +106,81 @@
 .tabla-documentos {
   width: 100%;
   border-collapse: collapse;
-  min-width: 820px;
-}
-
-.tabla-documentos thead {
-  background: #f8fafc;
+  min-width: 1100px;
 }
 
 .tabla-documentos th {
   text-align: left;
-  padding: 18px 20px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #334155;
-  border-bottom: 1px solid #e2e8f0;
-  white-space: nowrap;
+  padding: 12px;
+  background: #f7f9fc;
+  color: #52627e;
+  font-size: 12px;
+  text-transform: uppercase;
 }
 
 .tabla-documentos td {
-  padding: 18px 20px;
-  font-size: 14px;
-  color: #475569;
-  border-bottom: 1px solid #edf2f7;
+  padding: 14px 12px;
+  font-size: 13px;
+  color: #263b66;
+  border-bottom: 1px solid #e9edf4;
   vertical-align: middle;
 }
 
-.tabla-documentos tbody tr:hover {
-  background-color: #f8fbff;
+.document-cell {
+  min-width: 220px;
 }
 
-.titulo-doc {
-  font-weight: 600;
-  color: #0f172a;
+.document-title,
+.document-subtitle {
+  display: block;
 }
 
-.estado-badge {
-  display: inline-block;
-  padding: 7px 14px;
+.document-title {
+  color: #061b4e;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.document-subtitle {
+  color: #52627e;
+  font-size: 12px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  height: 30px;
+  padding: 0 12px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
 }
 
-.estado-pendiente {
+.badge.pending {
   background: #fff7ed;
   color: #c2410c;
 }
 
-.estado-publicado {
-  background: #ecfdf5;
-  color: #047857;
+.badge.published {
+  background: #e8f7f2;
+  color: #157b68;
 }
 
-.estado-observado {
+.badge.observed {
   background: #eef5ff;
   color: #0a54db;
 }
 
-.estado-rechazado {
-  background: #fef2f2;
-  color: #b91c1c;
+.badge.rejected {
+  background: #ffe9e7;
+  color: #c8332b;
 }
 
-.download-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 34px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: #e8f7f2;
-  color: #157b68;
-  font-size: 12px;
-  font-weight: 700;
-  text-align: center;
-}
-
-.download-badge-restricted {
+.badge.restricted {
   background: #fff1f2;
   color: #be123c;
 }
@@ -165,12 +224,24 @@
   margin-bottom: 6px;
 }
 
+@media (max-width: 1080px) {
+  .filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 720px) {
   .repositorio-toolbar {
     flex-direction: column;
+    align-items: stretch;
   }
 
-  .refresh-button {
+  .filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .refresh-button,
+  .clear-filters-button {
     width: 100%;
   }
 }

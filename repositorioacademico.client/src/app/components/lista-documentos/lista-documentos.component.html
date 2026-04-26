@@ -1,14 +1,69 @@
 <section class="repositorio-card">
   <div class="repositorio-toolbar">
-    <div class="search-box">
-      <input type="text"
-             [(ngModel)]="filtro"
-             placeholder="Filtrar por titulo, autor, facultad, tipo o estado..." />
+    <div>
+      <h3>Repositorio academico</h3>
+      <p>Consulta documentos y filtralos por clasificacion, estado o fecha.</p>
     </div>
 
-    <button type="button" class="refresh-button" (click)="cargarDocumentos()" [disabled]="cargando">
+    <button type="button" class="refresh-button" (click)="cargarPantalla()" [disabled]="cargando">
       {{ cargando ? 'Actualizando...' : 'Actualizar' }}
     </button>
+  </div>
+
+  <div class="filters-card">
+    <div class="filter-grid">
+      <div class="filter-group filter-group-wide">
+        <label for="filtroTextoRepositorio">Busqueda general</label>
+        <input id="filtroTextoRepositorio"
+               type="text"
+               [(ngModel)]="filtroTexto"
+               placeholder="Titulo, autor, facultad, tipo o estado..." />
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroEstadoRepositorio">Estado</label>
+        <select id="filtroEstadoRepositorio" [(ngModel)]="filtroEstado" name="filtroEstadoRepositorio">
+          <option value="">Todos</option>
+          <option *ngFor="let estado of estadosDisponibles" [value]="estado">
+            {{ estado }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroTipoRepositorio">Tipo de documento</label>
+        <select id="filtroTipoRepositorio" [(ngModel)]="filtroTipoDocumentoId" name="filtroTipoDocumentoIdRepositorio">
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
+            {{ tipo.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroFacultadRepositorio">Facultad</label>
+        <select id="filtroFacultadRepositorio" [(ngModel)]="filtroFacultadId" name="filtroFacultadIdRepositorio">
+          <option [ngValue]="null">Todas</option>
+          <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
+            {{ facultad.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroFechaDesdeRepositorio">Desde</label>
+        <input id="filtroFechaDesdeRepositorio" type="date" [(ngModel)]="filtroFechaDesde" name="filtroFechaDesdeRepositorio" />
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroFechaHastaRepositorio">Hasta</label>
+        <input id="filtroFechaHastaRepositorio" type="date" [(ngModel)]="filtroFechaHasta" name="filtroFechaHastaRepositorio" />
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" class="clear-filters-button" (click)="limpiarFiltros()">Limpiar filtros</button>
+      </div>
+    </div>
   </div>
 
   <div *ngIf="error" class="message error">{{ error }}</div>
@@ -17,10 +72,11 @@
     <table class="tabla-documentos">
       <thead>
         <tr>
-          <th>Titulo</th>
+          <th>Documento</th>
           <th>Autor</th>
           <th>Tipo</th>
           <th>Facultad</th>
+          <th>Fecha</th>
           <th>Estado</th>
           <th>Descarga</th>
           <th class="text-center">Accion</th>
@@ -29,17 +85,21 @@
 
       <tbody>
         <tr *ngFor="let doc of documentosFiltrados">
-          <td class="titulo-doc">{{ doc.titulo }}</td>
+          <td class="document-cell">
+            <strong class="document-title">{{ doc.titulo }}</strong>
+            <span class="document-subtitle">{{ doc.rutaDocumento }}</span>
+          </td>
           <td>{{ doc.autor }}</td>
           <td>{{ doc.tipoDocumento }}</td>
           <td>{{ doc.facultad }}</td>
+          <td>{{ doc.fechaSubida | date:"dd 'de' MMMM 'de' y" }}</td>
           <td>
-            <span class="estado-badge" [ngClass]="getStatusClass(doc.estado)">
+            <span class="badge" [ngClass]="getStatusClass(doc.estado)">
               {{ doc.estado }}
             </span>
           </td>
           <td>
-            <span class="download-badge" [class.download-badge-restricted]="!puedeDescargar(doc)">
+            <span class="badge" [ngClass]="puedeDescargar(doc) ? 'published' : 'restricted'">
               {{ getDownloadStatusLabel(doc) }}
             </span>
           </td>
@@ -57,6 +117,6 @@
 <ng-template #emptyState>
   <div class="empty-state">
     <strong>No se encontraron documentos.</strong>
-    <p>Ajusta el filtro o espera nuevas publicaciones en el repositorio.</p>
+    <p>Ajusta los filtros o espera nuevas publicaciones en el repositorio.</p>
   </div>
 </ng-template>

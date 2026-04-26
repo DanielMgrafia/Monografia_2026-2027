@@ -134,20 +134,6 @@ export class ReviewDocumentsPageComponent implements OnInit {
     });
   }
 
-  setFiltroHoy(): void {
-    const hoy = this.toDateInputValue(new Date());
-    this.filtroFechaDesde = hoy;
-    this.filtroFechaHasta = hoy;
-  }
-
-  setFiltroAyer(): void {
-    const ayer = new Date();
-    ayer.setDate(ayer.getDate() - 1);
-    const valor = this.toDateInputValue(ayer);
-    this.filtroFechaDesde = valor;
-    this.filtroFechaHasta = valor;
-  }
-
   limpiarFiltros(): void {
     this.filtroTexto = '';
     this.filtroTipoDocumentoId = null;
@@ -166,12 +152,5 @@ export class ReviewDocumentsPageComponent implements OnInit {
       default:
         return 'pending';
     }
-  }
-
-  private toDateInputValue(date: Date): string {
-    const year = date.getFullYear();
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const day = `${date.getDate()}`.padStart(2, '0');
-    return `${year}-${month}-${day}`;
   }
 }
