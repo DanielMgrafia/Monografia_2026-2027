@@ -63,6 +63,22 @@
                  (change)="seleccionarArchivo($event)"
                  required />
         </div>
+
+        <div class="form-group form-group-full">
+          <label class="download-policy-card" for="sePuedeDescargar">
+            <input type="checkbox"
+                   id="sePuedeDescargar"
+                   name="sePuedeDescargar"
+                   [(ngModel)]="sePuedeDescargar" />
+            <span>
+              <strong>Permitir descarga del documento</strong>
+              <small>
+                Si desactivas esta opcion, el archivo se podra visualizar en el sistema,
+                pero el boton de descarga quedara bloqueado para todos los roles.
+              </small>
+            </span>
+          </label>
+        </div>
       </div>
 
       <div class="acciones">

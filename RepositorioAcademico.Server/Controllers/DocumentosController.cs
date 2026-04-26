@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RepositorioAcademico.Server.Contracts;
@@ -6,12 +8,17 @@ using RepositorioAcademico.Server.Infrastructure.Data;
 
 namespace RepositorioAcademico.Server.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class DocumentosController : ControllerBase
     {
         private static readonly string[] ExtensionesPermitidas = [".pdf", ".docx"];
         private static readonly string[] EstadosPermitidos = ["Pendiente", "Publicado", "Observado", "Rechazado", "Aprobado"];
+        private const string PermisoVerRepositorio = "REPOSITORIO.VER";
+        private const string PermisoSubirDocumento = "DOCUMENTO.SUBIR";
+        private const string PermisoPublicarDocumento = "DOCUMENTO.PUBLICAR";
+        private const string PermisoDescargarDocumento = "DOCUMENTO.DESCARGAR";
 
         private readonly RepositorioDbContext _context;
 
@@ -23,6 +30,11 @@ namespace RepositorioAcademico.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DocumentoDto>>> GetDocumentos()
         {
+            if (!PuedeConsultarDocumentos())
+            {
+                return Forbid();
+            }
+
             return await ConstruirConsultaDocumentos()
                 .OrderByDescending(documento => documento.FechaSubida)
                 .ToListAsync();
@@ -31,6 +43,11 @@ namespace RepositorioAcademico.Server.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<DocumentoDto>> GetDocumento(int id)
         {
+            if (!PuedeConsultarDocumentos())
+            {
+                return Forbid();
+            }
+
             var documento = await ConstruirConsultaDocumentos()
                 .FirstOrDefaultAsync(item => item.Id == id);
 
@@ -45,6 +62,17 @@ namespace RepositorioAcademico.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<DocumentoDto>> CrearDocumento([FromBody] CrearDocumentoRequest request)
         {
+            if (!TienePermiso(PermisoSubirDocumento))
+            {
+                return Forbid();
+            }
+
+            var usuarioActualId = ObtenerUsuarioActualId();
+            if (!usuarioActualId.HasValue)
+            {
+                return Unauthorized();
+            }
+
             var validacionCatalogos = await ValidarCatalogosAsync(request.TipoDocumentoId, request.FacultadId);
             if (validacionCatalogos is not null)
             {
@@ -60,7 +88,8 @@ namespace RepositorioAcademico.Server.Controllers
                 RutaDocumento = request.RutaDocumento,
                 FechaSubida = DateTime.UtcNow,
                 Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Pendiente" : request.Estado,
-                UsuarioId = request.UsuarioId
+                SePuedeDescargar = request.SePuedeDescargar ?? true,
+                UsuarioId = usuarioActualId.Value
             };
 
             _context.Documentos.Add(documento);
@@ -75,6 +104,17 @@ namespace RepositorioAcademico.Server.Controllers
         [HttpPost("upload")]
         public async Task<ActionResult<DocumentoDto>> SubirDocumento([FromForm] SubirDocumentoRequest request)
         {
+            if (!TienePermiso(PermisoSubirDocumento))
+            {
+                return Forbid();
+            }
+
+            var usuarioActualId = ObtenerUsuarioActualId();
+            if (!usuarioActualId.HasValue)
+            {
+                return Unauthorized();
+            }
+
             if (request.Archivo == null || request.Archivo.Length == 0)
             {
                 return BadRequest("Archivo invalido.");
@@ -112,7 +152,8 @@ namespace RepositorioAcademico.Server.Controllers
                 RutaDocumento = nombreArchivo,
                 FechaSubida = DateTime.UtcNow,
                 Estado = "Pendiente",
-                UsuarioId = request.UsuarioId
+                SePuedeDescargar = request.SePuedeDescargar ?? true,
+                UsuarioId = usuarioActualId.Value
             };
 
             _context.Documentos.Add(documento);
@@ -124,17 +165,47 @@ namespace RepositorioAcademico.Server.Controllers
             return Ok(creado);
         }
 
-        [HttpGet("archivo/{nombre}")]
-        public IActionResult ObtenerArchivo(string nombre)
+        [HttpGet("{id:int}/visualizar")]
+        public async Task<IActionResult> VisualizarDocumento(int id)
         {
-            var rutaArchivo = Path.Combine(Directory.GetCurrentDirectory(), "Storage", nombre);
+            if (!PuedeConsultarDocumentos())
+            {
+                return Forbid();
+            }
 
-            if (!System.IO.File.Exists(rutaArchivo))
+            var documento = await ConstruirConsultaDocumentosVisiblesEntidad()
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (documento == null)
             {
                 return NotFound();
             }
 
-            return PhysicalFile(rutaArchivo, ObtenerMimeType(nombre), nombre);
+            return ConstruirRespuestaArchivo(documento, forzarDescarga: false);
+        }
+
+        [HttpGet("{id:int}/descargar")]
+        public async Task<IActionResult> DescargarDocumento(int id)
+        {
+            if (!PuedeConsultarDocumentos() || !TienePermiso(PermisoDescargarDocumento))
+            {
+                return Forbid();
+            }
+
+            var documento = await ConstruirConsultaDocumentosVisiblesEntidad()
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (documento == null)
+            {
+                return NotFound();
+            }
+
+            if (!documento.SePuedeDescargar)
+            {
+                return Forbid();
+            }
+
+            return ConstruirRespuestaArchivo(documento, forzarDescarga: true);
         }
 
         [HttpGet("buscar")]
@@ -144,6 +215,11 @@ namespace RepositorioAcademico.Server.Controllers
             int? tipoDocumentoId,
             int? facultadId)
         {
+            if (!PuedeConsultarDocumentos())
+            {
+                return Forbid();
+            }
+
             var query = ConstruirConsultaDocumentos();
 
             if (!string.IsNullOrWhiteSpace(titulo))
@@ -178,6 +254,11 @@ namespace RepositorioAcademico.Server.Controllers
         [HttpGet("lista")]
         public async Task<ActionResult<IEnumerable<DocumentoDto>>> Lista(int pagina = 1, int tamano = 10)
         {
+            if (!PuedeConsultarDocumentos())
+            {
+                return Forbid();
+            }
+
             return await ConstruirConsultaDocumentos()
                 .OrderByDescending(documento => documento.FechaSubida)
                 .Skip((pagina - 1) * tamano)
@@ -188,6 +269,11 @@ namespace RepositorioAcademico.Server.Controllers
         [HttpPut("{id:int}/estado")]
         public async Task<ActionResult<DocumentoDto>> ActualizarEstado(int id, [FromBody] ActualizarEstadoDocumentoRequest request)
         {
+            if (!TienePermiso(PermisoPublicarDocumento))
+            {
+                return Forbid();
+            }
+
             var estado = request.Estado?.Trim() ?? string.Empty;
             if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
             {
@@ -209,10 +295,32 @@ namespace RepositorioAcademico.Server.Controllers
             return Ok(actualizado);
         }
 
+        [HttpPut("{id:int}/descarga")]
+        public async Task<ActionResult<DocumentoDto>> ActualizarDescarga(int id, [FromBody] ActualizarDescargaDocumentoRequest request)
+        {
+            if (!TienePermiso(PermisoPublicarDocumento))
+            {
+                return Forbid();
+            }
+
+            var documento = await _context.Documentos.FirstOrDefaultAsync(item => item.Id == id);
+            if (documento == null)
+            {
+                return NotFound();
+            }
+
+            documento.SePuedeDescargar = request.SePuedeDescargar;
+            await _context.SaveChangesAsync();
+
+            var actualizado = await ConstruirConsultaDocumentos()
+                .FirstAsync(item => item.Id == id);
+
+            return Ok(actualizado);
+        }
+
         private IQueryable<DocumentoDto> ConstruirConsultaDocumentos()
         {
-            return _context.Documentos
-                .AsNoTracking()
+            return ConstruirConsultaDocumentosVisiblesEntidad()
                 .Include(documento => documento.TipoDocumento)
                 .Include(documento => documento.Facultad)
                 .Select(documento => new DocumentoDto
@@ -227,8 +335,32 @@ namespace RepositorioAcademico.Server.Controllers
                     RutaDocumento = documento.RutaDocumento,
                     FechaSubida = documento.FechaSubida,
                     Estado = documento.Estado,
+                    SePuedeDescargar = documento.SePuedeDescargar,
                     UsuarioId = documento.UsuarioId
                 });
+        }
+
+        private IQueryable<Documento> ConstruirConsultaDocumentosVisiblesEntidad()
+        {
+            var query = _context.Documentos.AsNoTracking();
+
+            if (TienePermiso(PermisoPublicarDocumento))
+            {
+                return query;
+            }
+
+            var usuarioActualId = ObtenerUsuarioActualId();
+            if (TienePermiso(PermisoSubirDocumento) && usuarioActualId.HasValue)
+            {
+                return query.Where(documento =>
+                    documento.Estado == "Publicado" ||
+                    documento.Estado == "Aprobado" ||
+                    documento.UsuarioId == usuarioActualId.Value);
+            }
+
+            return query.Where(documento =>
+                documento.Estado == "Publicado" ||
+                documento.Estado == "Aprobado");
         }
 
         private async Task<ActionResult?> ValidarCatalogosAsync(int tipoDocumentoId, int facultadId)
@@ -250,6 +382,46 @@ namespace RepositorioAcademico.Server.Controllers
             }
 
             return null;
+        }
+
+        private IActionResult ConstruirRespuestaArchivo(Documento documento, bool forzarDescarga)
+        {
+            if (string.IsNullOrWhiteSpace(documento.RutaDocumento))
+            {
+                return NotFound();
+            }
+
+            var rutaArchivo = Path.Combine(Directory.GetCurrentDirectory(), "Storage", documento.RutaDocumento);
+            if (!System.IO.File.Exists(rutaArchivo))
+            {
+                return NotFound();
+            }
+
+            return forzarDescarga
+                ? PhysicalFile(rutaArchivo, ObtenerMimeType(documento.RutaDocumento), documento.RutaDocumento)
+                : PhysicalFile(rutaArchivo, ObtenerMimeType(documento.RutaDocumento));
+        }
+
+        private bool PuedeConsultarDocumentos()
+        {
+            return TienePermiso(PermisoVerRepositorio) ||
+                   TienePermiso(PermisoSubirDocumento) ||
+                   TienePermiso(PermisoPublicarDocumento);
+        }
+
+        private bool TienePermiso(string permiso)
+        {
+            return User.Claims.Any(claim =>
+                claim.Type == "permission" &&
+                string.Equals(claim.Value, permiso, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private int? ObtenerUsuarioActualId()
+        {
+            var sub = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("sub");
+
+            return int.TryParse(sub, out var usuarioId) ? usuarioId : null;
         }
 
         private static string ObtenerMimeType(string nombreArchivo)

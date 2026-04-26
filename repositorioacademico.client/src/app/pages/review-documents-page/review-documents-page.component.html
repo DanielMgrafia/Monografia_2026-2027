@@ -24,6 +24,7 @@
           <th>Facultad</th>
           <th>Fecha</th>
           <th>Estado</th>
+          <th>Descarga</th>
           <th class="text-right">Acciones</th>
         </tr>
       </thead>
@@ -41,22 +42,39 @@
           <td>
             <span class="badge" [ngClass]="getStatusClass(documento.estado)">{{ documento.estado }}</span>
           </td>
+          <td>
+            <span class="badge" [ngClass]="getDownloadStatusClass(documento)">
+              {{ getDownloadStatusLabel(documento) }}
+            </span>
+            <button type="button"
+                    class="inline-action"
+                    [disabled]="procesandoDescargaId === documento.id"
+                    (click)="alternarDescarga(documento)">
+              {{ documento.sePuedeDescargar === false ? 'Permitir' : 'Bloquear' }}
+            </button>
+          </td>
           <td class="actions">
             <button type="button"
+                    class="btn view"
+                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id"
+                    (click)="abrirVisor(documento)">
+              Ver
+            </button>
+            <button type="button"
                     class="btn publish"
-                    [disabled]="procesandoId === documento.id"
+                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id"
                     (click)="cambiarEstado(documento, 'Publicado')">
               Publicar
             </button>
             <button type="button"
                     class="btn observe"
-                    [disabled]="procesandoId === documento.id"
+                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id"
                     (click)="cambiarEstado(documento, 'Observado')">
               Observar
             </button>
             <button type="button"
                     class="btn reject"
-                    [disabled]="procesandoId === documento.id"
+                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id"
                     (click)="cambiarEstado(documento, 'Rechazado')">
               Rechazar
             </button>
@@ -73,3 +91,9 @@
     <p>Los documentos observados o pendientes apareceran aqui.</p>
   </div>
 </ng-template>
+
+<app-document-viewer-modal *ngIf="documentoSeleccionado as documentoSeleccionado"
+                           [documento]="documentoSeleccionado"
+                           [canDownload]="puedeDescargar(documentoSeleccionado)"
+                           (closeRequested)="cerrarVisor()">
+</app-document-viewer-modal>

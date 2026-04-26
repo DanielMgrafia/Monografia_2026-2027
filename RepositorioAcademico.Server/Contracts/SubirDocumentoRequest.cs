@@ -14,6 +14,8 @@ namespace RepositorioAcademico.Server.Contracts
 
         public int FacultadId { get; set; }
 
+        public bool? SePuedeDescargar { get; set; }
+
         public int UsuarioId { get; set; }
     }
 }

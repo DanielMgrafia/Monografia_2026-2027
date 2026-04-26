@@ -99,6 +99,10 @@
 .actions {
   text-align: right;
   white-space: nowrap;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .btn {
@@ -108,7 +112,11 @@
   font-size: 12px;
   font-weight: 800;
   padding: 0 12px;
-  margin-left: 6px;
+}
+
+.btn.view {
+  background: #e0f2fe;
+  color: #075985;
 }
 
 .btn.publish {
@@ -155,6 +163,28 @@
 .badge.rejected {
   background: #ffe9e7;
   color: #c8332b;
+}
+
+.badge.restricted {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.inline-action {
+  margin-top: 8px;
+  display: inline-flex;
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0;
+  cursor: pointer;
+}
+
+.inline-action:disabled {
+  color: #94a3b8;
+  cursor: wait;
 }
 
 .empty-state {

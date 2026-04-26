@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Documento } from '../models/documento';
 
@@ -27,6 +27,21 @@ export class DocumentosService {
     return this.http.put<Documento>(`${this.apiUrl}/${id}/estado`, { estado });
   }
 
+  actualizarDescarga(id: number, sePuedeDescargar: boolean): Observable<Documento> {
+    return this.http.put<Documento>(`${this.apiUrl}/${id}/descarga`, { sePuedeDescargar });
+  }
+
+  visualizarDocumento(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/visualizar`, { responseType: 'blob' });
+  }
+
+  descargarDocumento(id: number): Observable<HttpResponse<Blob>> {
+    return this.http.get(`${this.apiUrl}/${id}/descargar`, {
+      observe: 'response',
+      responseType: 'blob'
+    });
+  }
+
   buscar(
     titulo?: string,
     autor?: string,
@@ -41,9 +56,5 @@ export class DocumentosService {
     if (facultadId != null) params['facultadId'] = facultadId;
 
     return this.http.get<Documento[]>(`${this.apiUrl}/buscar`, { params });
-  }
-
-  getArchivoUrl(nombre: string): string {
-    return `${this.apiUrl}/archivo/${nombre}`;
   }
 }

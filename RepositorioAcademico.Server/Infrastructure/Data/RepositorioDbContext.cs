@@ -67,6 +67,9 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 entity.Property(item => item.Estado)
                     .HasMaxLength(50);
 
+                entity.Property(item => item.SePuedeDescargar)
+                    .HasDefaultValue(true);
+
                 entity.HasOne(item => item.TipoDocumento)
                     .WithMany(item => item.Documentos)
                     .HasForeignKey(item => item.TipoDocumentoId)
@@ -191,7 +194,8 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 new Permiso { Id = 4, Codigo = "DOCUMENTO.PUBLICAR", Descripcion = "Publicar o revisar documentos pendientes", Estado = "Activo" },
                 new Permiso { Id = 5, Codigo = "CATALOGO.GESTIONAR", Descripcion = "Gestionar facultades y tipos de documento", Estado = "Activo" },
                 new Permiso { Id = 6, Codigo = "USUARIO.GESTIONAR", Descripcion = "Crear y administrar usuarios", Estado = "Activo" },
-                new Permiso { Id = 7, Codigo = "ROL.GESTIONAR", Descripcion = "Crear y administrar roles", Estado = "Activo" }
+                new Permiso { Id = 7, Codigo = "ROL.GESTIONAR", Descripcion = "Crear y administrar roles", Estado = "Activo" },
+                new Permiso { Id = 8, Codigo = "DOCUMENTO.DESCARGAR", Descripcion = "Descargar documentos autorizados", Estado = "Activo" }
             );
 
             modelBuilder.Entity<Rol>().HasData(
@@ -210,13 +214,16 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 new RolPermiso { RolId = 1, PermisoId = 5, Estado = "Activo", FechaAsignacion = fechaSemilla },
                 new RolPermiso { RolId = 1, PermisoId = 6, Estado = "Activo", FechaAsignacion = fechaSemilla },
                 new RolPermiso { RolId = 1, PermisoId = 7, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 1, PermisoId = 8, Estado = "Activo", FechaAsignacion = fechaSemilla },
 
                 new RolPermiso { RolId = 2, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
                 new RolPermiso { RolId = 2, PermisoId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },
                 new RolPermiso { RolId = 2, PermisoId = 3, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 2, PermisoId = 8, Estado = "Activo", FechaAsignacion = fechaSemilla },
 
                 new RolPermiso { RolId = 3, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
                 new RolPermiso { RolId = 3, PermisoId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 3, PermisoId = 8, Estado = "Activo", FechaAsignacion = fechaSemilla },
 
                 new RolPermiso { RolId = 4, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
                 new RolPermiso { RolId = 4, PermisoId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },

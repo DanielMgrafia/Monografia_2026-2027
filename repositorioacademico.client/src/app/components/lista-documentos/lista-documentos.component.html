@@ -22,6 +22,7 @@
           <th>Tipo</th>
           <th>Facultad</th>
           <th>Estado</th>
+          <th>Descarga</th>
           <th class="text-center">Accion</th>
         </tr>
       </thead>
@@ -37,9 +38,14 @@
               {{ doc.estado }}
             </span>
           </td>
+          <td>
+            <span class="download-badge" [class.download-badge-restricted]="!puedeDescargar(doc)">
+              {{ getDownloadStatusLabel(doc) }}
+            </span>
+          </td>
           <td class="text-center">
-            <button class="btn-ver" (click)="verArchivo(doc.rutaDocumento)">
-              Ver archivo
+            <button class="btn-ver" (click)="abrirVisor(doc)">
+              Ver documento
             </button>
           </td>
         </tr>
@@ -54,3 +60,9 @@
     <p>Ajusta el filtro o espera nuevas publicaciones en el repositorio.</p>
   </div>
 </ng-template>
+
+<app-document-viewer-modal *ngIf="documentoSeleccionado as documentoSeleccionado"
+                           [documento]="documentoSeleccionado"
+                           [canDownload]="puedeDescargar(documentoSeleccionado)"
+                           (closeRequested)="cerrarVisor()">
+</app-document-viewer-modal>

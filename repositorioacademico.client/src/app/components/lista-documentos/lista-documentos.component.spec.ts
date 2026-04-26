@@ -2,11 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { convertToParamMap, ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { Documento } from '../../models/documento';
+import { AuthService } from '../../services/auth.service';
 import { DocumentosService } from '../../services/documentos.service';
 import { ListaDocumentosComponent } from './lista-documentos.component';
 
 describe('ListaDocumentosComponent', () => {
   let documentosServiceSpy: jasmine.SpyObj<DocumentosService>;
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
 
   const mockDocumentos: Documento[] = [
     {
@@ -20,20 +22,20 @@ describe('ListaDocumentosComponent', () => {
       rutaDocumento: 'archivo-demo.pdf',
       fechaSubida: new Date('2026-01-15'),
       estado: 'Aprobado',
+      sePuedeDescargar: true,
       usuarioId: 99
     }
   ];
 
   beforeEach(async () => {
+    authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', ['hasPermission']);
     documentosServiceSpy = jasmine.createSpyObj<DocumentosService>(
       'DocumentosService',
-      ['getDocumentos', 'getArchivoUrl']
+      ['getDocumentos']
     );
 
     documentosServiceSpy.getDocumentos.and.returnValue(of(mockDocumentos));
-    documentosServiceSpy.getArchivoUrl.and.returnValue(
-      'https://localhost:7225/api/documentos/archivo/archivo-demo.pdf'
-    );
+    authServiceSpy.hasPermission.and.returnValue(true);
 
     await TestBed.configureTestingModule({
       imports: [ListaDocumentosComponent],
@@ -44,6 +46,7 @@ describe('ListaDocumentosComponent', () => {
             queryParamMap: of(convertToParamMap({}))
           }
         },
+        { provide: AuthService, useValue: authServiceSpy },
         { provide: DocumentosService, useValue: documentosServiceSpy }
       ]
     }).compileComponents();
@@ -59,17 +62,12 @@ describe('ListaDocumentosComponent', () => {
     expect(component.documentos).toEqual(mockDocumentos);
   });
 
-  it('should open the generated file URL in a new tab', () => {
+  it('should select the document to open the viewer modal', () => {
     const fixture = TestBed.createComponent(ListaDocumentosComponent);
     const component = fixture.componentInstance;
-    const openSpy = spyOn(window, 'open');
 
-    component.verArchivo('archivo-demo.pdf');
+    component.abrirVisor(mockDocumentos[0]);
 
-    expect(documentosServiceSpy.getArchivoUrl).toHaveBeenCalledWith('archivo-demo.pdf');
-    expect(openSpy).toHaveBeenCalledWith(
-      'https://localhost:7225/api/documentos/archivo/archivo-demo.pdf',
-      '_blank'
-    );
+    expect(component.documentoSeleccionado).toEqual(mockDocumentos[0]);
   });
 });

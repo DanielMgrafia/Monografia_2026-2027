@@ -87,6 +87,7 @@ describe('SubirDocumentoComponent', () => {
     expect(catalogosServiceSpy.getTiposDocumento).toHaveBeenCalled();
     expect(catalogosServiceSpy.getFacultades).toHaveBeenCalled();
     expect(component.autor).toBe('Admin Sistema');
+    expect(component.sePuedeDescargar).toBeTrue();
     expect(component.tiposDocumento).toEqual(mockTiposDocumento);
     expect(component.facultades).toEqual(mockFacultades);
   });

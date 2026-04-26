@@ -3,22 +3,26 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Documento } from '../../models/documento';
+import { DocumentViewerModalComponent } from '../document-viewer-modal/document-viewer-modal.component';
+import { AuthService } from '../../services/auth.service';
 import { DocumentosService } from '../../services/documentos.service';
 
 @Component({
   selector: 'app-lista-documentos',
   templateUrl: './lista-documentos.component.html',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DocumentViewerModalComponent],
   styleUrls: ['./lista-documentos.component.css']
 })
 export class ListaDocumentosComponent implements OnInit {
   documentos: Documento[] = [];
+  documentoSeleccionado: Documento | null = null;
   filtro = '';
   cargando = false;
   error = '';
 
   private readonly route = inject(ActivatedRoute);
+  private readonly authService = inject(AuthService);
   private readonly documentosService = inject(DocumentosService);
 
   get documentosFiltrados(): Documento[] {
@@ -62,13 +66,28 @@ export class ListaDocumentosComponent implements OnInit {
     });
   }
 
-  verArchivo(ruta: string | undefined): void {
-    if (!ruta) {
-      return;
+  abrirVisor(documento: Documento): void {
+    this.documentoSeleccionado = documento;
+  }
+
+  cerrarVisor(): void {
+    this.documentoSeleccionado = null;
+  }
+
+  puedeDescargar(documento: Documento): boolean {
+    return this.authService.hasPermission('DOCUMENTO.DESCARGAR') && documento.sePuedeDescargar !== false;
+  }
+
+  getDownloadStatusLabel(documento: Documento): string {
+    if (documento.sePuedeDescargar === false) {
+      return 'Solo visualizacion';
     }
 
-    const url = this.documentosService.getArchivoUrl(ruta);
-    window.open(url, '_blank');
+    if (!this.authService.hasPermission('DOCUMENTO.DESCARGAR')) {
+      return 'Tu rol no descarga';
+    }
+
+    return 'Descargable';
   }
 
   getStatusClass(status?: string): string {

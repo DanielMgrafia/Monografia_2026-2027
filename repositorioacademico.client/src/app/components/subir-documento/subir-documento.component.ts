@@ -20,6 +20,7 @@ export class SubirDocumentoComponent implements OnInit {
   autor = '';
   tipoDocumentoId: number | null = null;
   facultadId: number | null = null;
+  sePuedeDescargar = true;
   archivoSeleccionado: File | null = null;
 
   tiposDocumento: Catalogo[] = [];
@@ -167,6 +168,7 @@ export class SubirDocumentoComponent implements OnInit {
     formData.append('autor', this.autor.trim());
     formData.append('tipoDocumentoId', this.tipoDocumentoId.toString());
     formData.append('facultadId', this.facultadId.toString());
+    formData.append('sePuedeDescargar', String(this.sePuedeDescargar));
     formData.append('usuarioId', currentUser.id.toString());
 
     this.cargando = true;
@@ -186,6 +188,7 @@ export class SubirDocumentoComponent implements OnInit {
 
   limpiarFormulario(): void {
     this.titulo = '';
+    this.sePuedeDescargar = true;
     const currentUser = this.authService.currentUser();
     this.autor = currentUser ? `${currentUser.nombres} ${currentUser.apellidos}`.trim() : '';
     this.archivoSeleccionado = null;

@@ -22,6 +22,8 @@ namespace RepositorioAcademico.Server.Domain
 
         public string? Estado { get; set; }
 
+        public bool SePuedeDescargar { get; set; } = true;
+
         public int UsuarioId { get; set; }
     }
 }

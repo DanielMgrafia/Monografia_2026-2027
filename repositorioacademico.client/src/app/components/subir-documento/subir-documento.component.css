@@ -97,6 +97,38 @@
     color: #94a3b8;
   }
 
+.download-policy-card {
+  display: flex;
+  align-items: start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid #bfdbfe;
+  background: linear-gradient(135deg, rgba(219, 234, 254, 0.7), rgba(239, 246, 255, 0.95));
+  cursor: pointer;
+}
+
+.download-policy-card input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  margin-top: 3px;
+  accent-color: #2563eb;
+}
+
+.download-policy-card span {
+  display: grid;
+  gap: 6px;
+}
+
+.download-policy-card strong {
+  color: #0f172a;
+}
+
+.download-policy-card small {
+  color: #475569;
+  line-height: 1.5;
+}
+
 .acciones {
   width: 100%;
   display: flex;

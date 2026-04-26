@@ -107,6 +107,25 @@
   color: #b91c1c;
 }
 
+.download-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #e8f7f2;
+  color: #157b68;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.download-badge-restricted {
+  background: #fff1f2;
+  color: #be123c;
+}
+
 .btn-ver {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #ffffff;

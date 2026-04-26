@@ -9,5 +9,6 @@ export interface Documento {
   rutaDocumento?: string;
   fechaSubida: string | Date;
   estado?: string;
+  sePuedeDescargar?: boolean;
   usuarioId: number;
 }
