@@ -1,4 +1,5 @@
-.review-card {
+.review-card,
+.editor-card {
   background: #ffffff;
   border-radius: 22px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
@@ -6,8 +7,17 @@
   padding: 24px;
 }
 
+.editor-card {
+  margin-top: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.14), transparent 30%),
+    linear-gradient(145deg, #ffffff, #f8fbff);
+}
+
 .review-toolbar,
-.quick-filters {
+.editor-header,
+.quick-filters,
+.editor-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -18,17 +28,31 @@
   margin-bottom: 18px;
 }
 
-.review-toolbar h3 {
+.review-toolbar h3,
+.editor-header h3 {
   margin: 0;
   color: #061b4e;
 }
 
-.review-toolbar p {
+.review-toolbar p,
+.editor-header span {
   margin: 6px 0 0;
   color: #52627e;
 }
 
+.editor-eyebrow {
+  margin: 0 0 6px;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .refresh-button,
+.primary-button,
+.secondary-button,
+.close-editor,
 .chip-button {
   border: none;
   border-radius: 12px;
@@ -36,11 +60,28 @@
   cursor: pointer;
 }
 
-.refresh-button {
-  min-width: 132px;
-  height: 44px;
+.refresh-button,
+.primary-button {
   background: #083b91;
   color: #ffffff;
+}
+
+.refresh-button,
+.close-editor {
+  min-width: 132px;
+  height: 44px;
+}
+
+.close-editor,
+.secondary-button {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.primary-button,
+.secondary-button {
+  min-width: 146px;
+  height: 44px;
 }
 
 .filters-card {
@@ -51,22 +92,33 @@
   margin-bottom: 18px;
 }
 
-.filter-grid {
+.filter-grid,
+.editor-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 14px;
 }
 
-.filter-group {
+.filter-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.editor-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.filter-group,
+.editor-group {
   display: flex;
   flex-direction: column;
 }
 
-.filter-group-wide {
+.filter-group-wide,
+.download-policy-card {
   grid-column: 1 / -1;
 }
 
-.filter-group label {
+.filter-group label,
+.editor-group label {
   margin-bottom: 6px;
   color: #263b66;
   font-size: 13px;
@@ -74,7 +126,9 @@
 }
 
 .filter-group input,
-.filter-group select {
+.filter-group select,
+.editor-group input,
+.editor-group select {
   width: 100%;
   height: 44px;
   border: 1px solid #d8e0ec;
@@ -87,7 +141,9 @@
 }
 
 .filter-group input:focus,
-.filter-group select:focus {
+.filter-group select:focus,
+.editor-group input:focus,
+.editor-group select:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
@@ -110,7 +166,8 @@
   color: #0f172a;
 }
 
-.results-pill {
+.results-pill,
+.file-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -148,7 +205,7 @@
 .review-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 980px;
+  min-width: 1100px;
 }
 
 .review-table th {
@@ -211,14 +268,9 @@
   color: #075985;
 }
 
-.btn.publish {
-  background: #157b68;
-  color: #ffffff;
-}
-
-.btn.reject {
-  background: #f04438;
-  color: #ffffff;
+.btn.edit {
+  background: #ede9fe;
+  color: #6d28d9;
 }
 
 .badge {
@@ -245,9 +297,60 @@
   color: #157b68;
 }
 
+.badge.observed {
+  background: #eef5ff;
+  color: #0a54db;
+}
+
 .badge.rejected {
   background: #ffe9e7;
   color: #c8332b;
+}
+
+.badge.restricted {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.download-policy-card {
+  display: flex;
+  align-items: start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid #bfdbfe;
+  background: linear-gradient(135deg, rgba(219, 234, 254, 0.7), rgba(239, 246, 255, 0.95));
+  cursor: pointer;
+}
+
+.download-policy-card input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: #2563eb;
+}
+
+.download-policy-card span {
+  display: grid;
+  gap: 5px;
+}
+
+.download-policy-card strong {
+  color: #0f172a;
+}
+
+.download-policy-card small {
+  color: #475569;
+  line-height: 1.5;
+}
+
+.editor-form {
+  margin-top: 18px;
+}
+
+.editor-actions {
+  margin-top: 18px;
+  justify-content: flex-end;
 }
 
 .empty-state {
@@ -270,16 +373,22 @@
 }
 
 @media (max-width: 720px) {
-  .review-toolbar {
+  .review-toolbar,
+  .editor-header,
+  .editor-actions {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .filter-grid {
+  .filter-grid,
+  .editor-grid {
     grid-template-columns: 1fr;
   }
 
-  .refresh-button {
+  .refresh-button,
+  .primary-button,
+  .secondary-button,
+  .close-editor {
     width: 100%;
   }
 }

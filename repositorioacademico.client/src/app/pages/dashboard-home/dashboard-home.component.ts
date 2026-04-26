@@ -40,7 +40,7 @@ export class DashboardHomeComponent implements OnInit {
 
   readonly pendingDocuments = computed(() =>
     this.documentos()
-      .filter((documento) => (documento.estado ?? '') === 'Pendiente' || (documento.estado ?? '') === 'Observado')
+      .filter((documento) => (documento.estado ?? '') === 'Pendiente')
       .sort((left, right) => new Date(right.fechaSubida).getTime() - new Date(left.fechaSubida).getTime())
       .slice(0, 5)
   );

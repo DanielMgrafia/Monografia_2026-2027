@@ -81,7 +81,7 @@
               </td>
               <td>{{ documento.autor }}</td>
               <td>{{ documento.tipoDocumento }}</td>
-              <td>{{ documento.fechaSubida | date:'dd MMM yyyy' }}</td>
+              <td>{{ documento.fechaSubida | date:"dd 'de' MMMM 'de' y" }}</td>
               <td>
                 <span class="badge" [ngClass]="getStatusClass(documento.estado)">
                   {{ documento.estado }}

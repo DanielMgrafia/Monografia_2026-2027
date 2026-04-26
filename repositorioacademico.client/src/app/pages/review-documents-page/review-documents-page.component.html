@@ -1,8 +1,8 @@
 <section class="review-card">
   <div class="review-toolbar">
     <div>
-      <h3>Revision y administracion documental</h3>
-      <p>Filtra documentos, corrige estados y edita su configuracion de visualizacion.</p>
+      <h3>Revision documental</h3>
+      <p>Filtra documentos pendientes y decide si se publican o se rechazan.</p>
     </div>
 
     <button type="button" class="refresh-button" (click)="cargarPantalla()" [disabled]="cargando">
@@ -17,17 +17,7 @@
         <input id="filtroTexto"
                type="text"
                [(ngModel)]="filtroTexto"
-               placeholder="Titulo, autor, facultad, tipo o estado..." />
-      </div>
-
-      <div class="filter-group">
-        <label for="filtroEstado">Estado</label>
-        <select id="filtroEstado" [(ngModel)]="filtroEstado" name="filtroEstado">
-          <option value="">Todos</option>
-          <option *ngFor="let estado of estadosDisponibles" [value]="estado">
-            {{ estado }}
-          </option>
-        </select>
+               placeholder="Titulo, autor, facultad o tipo..." />
       </div>
 
       <div class="filter-group">
@@ -82,70 +72,39 @@
           <th>Facultad</th>
           <th>Fecha</th>
           <th>Estado</th>
-          <th>Descarga</th>
           <th class="text-right">Acciones</th>
         </tr>
       </thead>
 
       <tbody>
         <tr *ngFor="let documento of documentosFiltrados">
-          <td>
-            <strong>{{ documento.titulo }}</strong>
-            <span>{{ documento.rutaDocumento }}</span>
+          <td class="document-cell">
+            <strong class="document-title">{{ documento.titulo }}</strong>
+            <span class="document-subtitle">{{ documento.rutaDocumento }}</span>
           </td>
           <td>{{ documento.autor }}</td>
           <td>{{ documento.tipoDocumento }}</td>
           <td>{{ documento.facultad }}</td>
-          <td>{{ documento.fechaSubida | date:'dd MMM yyyy' }}</td>
+          <td>{{ documento.fechaSubida | date:"dd 'de' MMMM 'de' y" }}</td>
           <td>
             <span class="badge" [ngClass]="getStatusClass(documento.estado)">{{ documento.estado }}</span>
-          </td>
-          <td>
-            <span class="badge" [ngClass]="getDownloadStatusClass(documento)">
-              {{ getDownloadStatusLabel(documento) }}
-            </span>
-            <button type="button"
-                    class="inline-action"
-                    [disabled]="procesandoDescargaId === documento.id"
-                    (click)="alternarDescarga(documento)">
-              {{ documento.sePuedeDescargar === false ? 'Permitir' : 'Bloquear' }}
-            </button>
           </td>
           <td class="actions">
             <button type="button"
                     class="btn view"
-                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id || guardandoEdicion"
+                    [disabled]="procesandoId === documento.id"
                     (click)="abrirVisor(documento)">
               Ver
             </button>
             <button type="button"
-                    class="btn edit"
-                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id || guardandoEdicion"
-                    (click)="abrirEdicion(documento)">
-              Editar
-            </button>
-            <button type="button"
-                    class="btn pending"
-                    *ngIf="documento.estado !== 'Pendiente'"
-                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id || guardandoEdicion"
-                    (click)="cambiarEstado(documento, 'Pendiente')">
-              Pendiente
-            </button>
-            <button type="button"
                     class="btn publish"
-                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id || guardandoEdicion"
+                    [disabled]="procesandoId === documento.id"
                     (click)="cambiarEstado(documento, 'Publicado')">
               Publicar
             </button>
             <button type="button"
-                    class="btn observe"
-                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id || guardandoEdicion"
-                    (click)="cambiarEstado(documento, 'Observado')">
-              Observar
-            </button>
-            <button type="button"
                     class="btn reject"
-                    [disabled]="procesandoId === documento.id || procesandoDescargaId === documento.id || guardandoEdicion"
+                    [disabled]="procesandoId === documento.id"
                     (click)="cambiarEstado(documento, 'Rechazado')">
               Rechazar
             </button>
@@ -156,89 +115,9 @@
   </div>
 </section>
 
-<section class="editor-card" *ngIf="documentoEnEdicion as documento">
-  <div class="editor-header">
-    <div>
-      <p class="editor-eyebrow">Edicion documental</p>
-      <h3>{{ documento.titulo }}</h3>
-      <span>Modifica datos, recupera estados o ajusta la visualizacion del archivo.</span>
-    </div>
-
-    <button type="button" class="close-editor" (click)="cancelarEdicion()">Cerrar</button>
-  </div>
-
-  <form class="editor-form" (ngSubmit)="guardarEdicion()">
-    <div class="editor-grid">
-      <div class="editor-group">
-        <label for="editTitulo">Titulo</label>
-        <input id="editTitulo" type="text" [(ngModel)]="editModel.titulo" name="editTitulo" required />
-      </div>
-
-      <div class="editor-group">
-        <label for="editAutor">Autor</label>
-        <input id="editAutor" type="text" [(ngModel)]="editModel.autor" name="editAutor" required />
-      </div>
-
-      <div class="editor-group">
-        <label for="editTipo">Tipo de documento</label>
-        <select id="editTipo" [(ngModel)]="editModel.tipoDocumentoId" name="editTipoDocumentoId" required>
-          <option [ngValue]="null">Seleccione</option>
-          <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
-            {{ tipo.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="editor-group">
-        <label for="editFacultad">Facultad</label>
-        <select id="editFacultad" [(ngModel)]="editModel.facultadId" name="editFacultadId" required>
-          <option [ngValue]="null">Seleccione</option>
-          <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
-            {{ facultad.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="editor-group">
-        <label for="editEstado">Estado</label>
-        <select id="editEstado" [(ngModel)]="editModel.estado" name="editEstado" required>
-          <option *ngFor="let estado of estadosDisponibles" [ngValue]="estado">
-            {{ estado }}
-          </option>
-        </select>
-      </div>
-
-      <div class="editor-group">
-        <label>Archivo actual</label>
-        <div class="file-pill">{{ documento.rutaDocumento || 'Sin archivo asociado' }}</div>
-      </div>
-
-      <label class="download-policy-card" for="editSePuedeDescargar">
-        <input type="checkbox"
-               id="editSePuedeDescargar"
-               name="editSePuedeDescargar"
-               [(ngModel)]="editModel.sePuedeDescargar" />
-        <span>
-          <strong>Permitir descarga de este documento</strong>
-          <small>Si se desactiva, el archivo seguira visible, pero nadie podra descargarlo.</small>
-        </span>
-      </label>
-    </div>
-
-    <div class="editor-actions">
-      <button type="button" class="secondary-button" (click)="cancelarEdicion()" [disabled]="guardandoEdicion">
-        Cancelar
-      </button>
-      <button type="submit" class="primary-button" [disabled]="guardandoEdicion">
-        {{ guardandoEdicion ? 'Guardando...' : 'Guardar cambios' }}
-      </button>
-    </div>
-  </form>
-</section>
-
 <ng-template #emptyState>
   <div class="empty-state">
-    <strong>No hay documentos que coincidan con los filtros.</strong>
-    <p>Prueba con otro rango de fechas, facultad, tipo o estado.</p>
+    <strong>No hay documentos pendientes que coincidan con los filtros.</strong>
+    <p>Prueba con otro rango de fechas, facultad o tipo de documento.</p>
   </div>
 </ng-template>

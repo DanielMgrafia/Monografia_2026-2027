@@ -17,6 +17,27 @@
         <span class="item-label">{{ item.label }}</span>
         <small *ngIf="item.badge != null && item.badge > 0">{{ item.badge }}</small>
       </a>
+
+      <div class="menu-group" *ngIf="catalogItems().length > 0">
+        <button type="button"
+                class="menu-item menu-group-toggle"
+                [class.active]="isCatalogRouteActive()"
+                (click)="toggleCatalogMenu()">
+          <span class="icon">CT</span>
+          <span class="item-label">Catalogos</span>
+          <span class="group-arrow" *ngIf="!sidebarCollapsed()">{{ catalogMenuOpen() ? 'v' : '>' }}</span>
+        </button>
+
+        <div class="submenu" *ngIf="catalogMenuOpen() && !sidebarCollapsed()">
+          <a *ngFor="let item of catalogItems()"
+             [routerLink]="item.route"
+             routerLinkActive="active"
+             class="submenu-item">
+            <span class="icon">{{ item.icon }}</span>
+            <span>{{ item.label }}</span>
+          </a>
+        </div>
+      </div>
     </nav>
 
     <div class="admin-card">

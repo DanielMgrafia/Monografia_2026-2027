@@ -9,6 +9,7 @@ import { ListaDocumentosComponent } from './components/lista-documentos/lista-do
 import { SubirDocumentoComponent } from './components/subir-documento/subir-documento.component';
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
 import { DocumentViewerPageComponent } from './pages/document-viewer-page/document-viewer-page.component';
+import { EditDocumentsPageComponent } from './pages/edit-documents-page/edit-documents-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { ReviewDocumentsPageComponent } from './pages/review-documents-page/review-documents-page.component';
 import { RolesPageComponent } from './pages/roles-page/roles-page.component';
@@ -74,7 +75,17 @@ export const appRoutes: Routes = [
         canActivate: [permissionGuard],
         data: {
           title: 'Revision documental',
-          description: 'Aprueba, observa o rechaza documentos pendientes de publicacion.',
+          description: 'Aprueba o rechaza documentos pendientes de publicacion.',
+          permission: 'DOCUMENTO.PUBLICAR'
+        }
+      },
+      {
+        path: 'edicion-documental',
+        component: EditDocumentsPageComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Edicion documental',
+          description: 'Consulta documentos publicados o historicos y actualiza su configuracion.',
           permission: 'DOCUMENTO.PUBLICAR'
         }
       },

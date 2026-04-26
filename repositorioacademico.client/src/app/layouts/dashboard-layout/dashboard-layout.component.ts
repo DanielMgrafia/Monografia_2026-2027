@@ -35,6 +35,7 @@ export class DashboardLayoutComponent implements OnInit {
 
   readonly currentUser = this.authService.currentUser;
   readonly sidebarCollapsed = signal(this.readSidebarState());
+  readonly catalogMenuOpen = signal(true);
   readonly pendingCount = signal(0);
   readonly pageTitle = signal('Panel administrativo');
   readonly pageDescription = signal('Gestion centralizada del repositorio academico.');
@@ -49,12 +50,25 @@ export class DashboardLayoutComponent implements OnInit {
         icon: 'RV',
         badge: this.pendingCount()
       },
+      {
+        label: 'Edicion documental',
+        route: '/edicion-documental',
+        permission: 'DOCUMENTO.PUBLICAR',
+        icon: 'ED'
+      },
       { label: 'Repositorio', route: '/repositorio', permission: 'REPOSITORIO.VER', icon: 'RP' },
       { label: 'Subir documentos', route: '/subir-documento', permission: 'DOCUMENTO.SUBIR', icon: 'UP' },
-      { label: 'Tipos de documento', route: '/tipos-documento', permission: 'CATALOGO.GESTIONAR', icon: 'TD' },
-      { label: 'Facultades', route: '/facultades', permission: 'CATALOGO.GESTIONAR', icon: 'FC' },
       { label: 'Usuarios', route: '/usuarios', permission: 'USUARIO.GESTIONAR', icon: 'US' },
       { label: 'Roles y permisos', route: '/roles', permission: 'ROL.GESTIONAR', icon: 'RL' }
+    ];
+
+    return items.filter((item) => this.authService.hasPermission(item.permission));
+  });
+
+  readonly catalogItems = computed<MenuItem[]>(() => {
+    const items: MenuItem[] = [
+      { label: 'Tipos de documento', route: '/tipos-documento', permission: 'CATALOGO.GESTIONAR', icon: 'TD' },
+      { label: 'Facultades', route: '/facultades', permission: 'CATALOGO.GESTIONAR', icon: 'FC' }
     ];
 
     return items.filter((item) => this.authService.hasPermission(item.permission));
@@ -88,7 +102,19 @@ export class DashboardLayoutComponent implements OnInit {
   toggleSidebar(): void {
     const collapsed = !this.sidebarCollapsed();
     this.sidebarCollapsed.set(collapsed);
+    if (collapsed) {
+      this.catalogMenuOpen.set(false);
+    }
     localStorage.setItem(DashboardLayoutComponent.SIDEBAR_STORAGE_KEY, String(collapsed));
+  }
+
+  toggleCatalogMenu(): void {
+    if (this.sidebarCollapsed()) {
+      this.sidebarCollapsed.set(false);
+      localStorage.setItem(DashboardLayoutComponent.SIDEBAR_STORAGE_KEY, 'false');
+    }
+
+    this.catalogMenuOpen.set(!this.catalogMenuOpen());
   }
 
   submitSearch(): void {
@@ -136,6 +162,10 @@ export class DashboardLayoutComponent implements OnInit {
     }
 
     return 'Ver repositorio';
+  }
+
+  isCatalogRouteActive(): boolean {
+    return this.router.url.startsWith('/tipos-documento') || this.router.url.startsWith('/facultades');
   }
 
   private syncPageMetadata(): void {
