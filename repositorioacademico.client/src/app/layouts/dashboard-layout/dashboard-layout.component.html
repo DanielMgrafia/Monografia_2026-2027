@@ -1,4 +1,7 @@
-<div class="admin-layout" [class.is-collapsed]="sidebarCollapsed()">
+<div class="admin-layout"
+     [class.is-collapsed]="sidebarCollapsed() && !isMobileViewport()"
+     [class.is-mobile]="isMobileViewport()"
+     [class.mobile-menu-open]="mobileMenuOpen()">
   <aside class="sidebar">
     <div class="logo-box">
       <div class="logo-icon">RA</div>
@@ -12,6 +15,7 @@
       <a *ngFor="let item of menuItems()"
          [routerLink]="item.route"
          routerLinkActive="active"
+         (click)="handleNavigationSelection()"
          class="menu-item">
         <span class="icon">{{ item.icon }}</span>
         <span class="item-label">{{ item.label }}</span>
@@ -32,6 +36,7 @@
           <a *ngFor="let item of catalogItems()"
              [routerLink]="item.route"
              routerLinkActive="active"
+             (click)="handleNavigationSelection()"
              class="submenu-item">
             <span class="icon">{{ item.icon }}</span>
             <span>{{ item.label }}</span>
@@ -45,7 +50,7 @@
       <div class="admin-card-content">
         <h3>Accion rapida</h3>
         <p>Accede a la tarea principal permitida por tu perfil actual.</p>
-        <button type="button" [routerLink]="getPrimaryActionRoute()">
+        <button type="button" [routerLink]="getPrimaryActionRoute()" (click)="handleNavigationSelection()">
           {{ getPrimaryActionLabel() }}
         </button>
       </div>
@@ -60,14 +65,21 @@
     </div>
   </aside>
 
+  <button type="button"
+          class="sidebar-backdrop"
+          *ngIf="isMobileViewport() && mobileMenuOpen()"
+          (click)="toggleSidebar()"
+          aria-label="Cerrar panel lateral">
+  </button>
+
   <main class="main-content">
     <header class="topbar">
       <div class="page-title">
         <button class="collapse-button"
                 type="button"
                 (click)="toggleSidebar()"
-                [attr.aria-label]="sidebarCollapsed() ? 'Mostrar menu lateral' : 'Ocultar menu lateral'">
-          {{ sidebarCollapsed() ? '>>' : '<<' }}
+                [attr.aria-label]="getSidebarToggleAriaLabel()">
+          {{ getSidebarToggleLabel() }}
         </button>
 
         <div class="page-title-copy">

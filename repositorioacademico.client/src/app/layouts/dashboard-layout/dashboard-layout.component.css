@@ -1,4 +1,5 @@
 .admin-layout {
+  position: relative;
   height: 100vh;
   min-height: 100vh;
   display: flex;
@@ -9,6 +10,7 @@
 
 .sidebar {
   width: 304px;
+  flex-shrink: 0;
   height: 100vh;
   min-height: 100vh;
   background: #ffffff;
@@ -442,15 +444,42 @@
   justify-content: center;
 }
 
+.sidebar-backdrop {
+  display: none;
+}
+
 @media (max-width: 980px) {
-  .admin-layout {
-    flex-direction: column;
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    width: min(320px, 86vw);
+    height: 100dvh;
+    min-height: 100dvh;
+    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.24);
+    transform: translateX(calc(-100% - 12px));
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 0.24s ease,
+      opacity 0.24s ease,
+      box-shadow 0.24s ease;
   }
 
-  .sidebar {
-    width: 100%;
-    height: auto;
-    min-height: auto;
+  .admin-layout.mobile-menu-open .sidebar {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    border: none;
+    background: rgba(15, 23, 42, 0.4);
   }
 
   .topbar {
@@ -472,24 +501,19 @@
   }
 
   .main-content {
-    height: auto;
-    min-height: 0;
-  }
-
-  .view-shell {
-    overflow: visible;
-  }
-
-  .view-scroll {
-    height: auto;
-    overflow: visible;
-    padding-right: 0;
+    width: 100%;
   }
 }
 
 @media (max-width: 640px) {
   .main-content {
     padding: 16px;
+  }
+
+  .collapse-button {
+    min-width: 72px;
+    width: auto;
+    padding: 0 14px;
   }
 
   .account {

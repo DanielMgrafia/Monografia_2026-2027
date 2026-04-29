@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -23,6 +23,7 @@ interface MenuItem {
   styleUrls: ['./dashboard-layout.component.css']
 })
 export class DashboardLayoutComponent implements OnInit {
+  private static readonly MOBILE_BREAKPOINT = 980;
   private static readonly SIDEBAR_STORAGE_KEY = 'repositorio-dashboard-sidebar-collapsed';
 
   search = '';
@@ -34,6 +35,8 @@ export class DashboardLayoutComponent implements OnInit {
   private readonly documentosService = inject(DocumentosService);
 
   readonly currentUser = this.authService.currentUser;
+  readonly isMobileViewport = signal(this.readIsMobileViewport());
+  readonly mobileMenuOpen = signal(false);
   readonly sidebarCollapsed = signal(this.readSidebarState());
   readonly catalogMenuOpen = signal(true);
   readonly pendingCount = signal(0);
@@ -93,7 +96,10 @@ export class DashboardLayoutComponent implements OnInit {
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe(() => this.syncPageMetadata());
+      .subscribe(() => {
+        this.syncPageMetadata();
+        this.closeMobileMenu();
+      });
 
     if (this.authService.hasPermission('DOCUMENTO.PUBLICAR')) {
       merge(of(void 0), this.documentosService.documentosActualizados$)
@@ -112,6 +118,11 @@ export class DashboardLayoutComponent implements OnInit {
   }
 
   toggleSidebar(): void {
+    if (this.isMobileViewport()) {
+      this.mobileMenuOpen.set(!this.mobileMenuOpen());
+      return;
+    }
+
     const collapsed = !this.sidebarCollapsed();
     this.sidebarCollapsed.set(collapsed);
     if (collapsed) {
@@ -121,7 +132,7 @@ export class DashboardLayoutComponent implements OnInit {
   }
 
   toggleCatalogMenu(): void {
-    if (this.sidebarCollapsed()) {
+    if (!this.isMobileViewport() && this.sidebarCollapsed()) {
       this.sidebarCollapsed.set(false);
       localStorage.setItem(DashboardLayoutComponent.SIDEBAR_STORAGE_KEY, 'false');
     }
@@ -180,6 +191,31 @@ export class DashboardLayoutComponent implements OnInit {
     return this.router.url.startsWith('/tipos-documento') || this.router.url.startsWith('/facultades');
   }
 
+  handleNavigationSelection(): void {
+    this.closeMobileMenu();
+  }
+
+  getSidebarToggleLabel(): string {
+    if (this.isMobileViewport()) {
+      return this.mobileMenuOpen() ? 'X' : 'MENU';
+    }
+
+    return this.sidebarCollapsed() ? '>>' : '<<';
+  }
+
+  getSidebarToggleAriaLabel(): string {
+    if (this.isMobileViewport()) {
+      return this.mobileMenuOpen() ? 'Ocultar panel lateral' : 'Mostrar panel lateral';
+    }
+
+    return this.sidebarCollapsed() ? 'Mostrar menu lateral' : 'Ocultar menu lateral';
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.syncViewportState();
+  }
+
   private syncPageMetadata(): void {
     let route: ActivatedRoute | null = this.activatedRoute;
 
@@ -196,5 +232,30 @@ export class DashboardLayoutComponent implements OnInit {
   private readSidebarState(): boolean {
     const storedValue = localStorage.getItem(DashboardLayoutComponent.SIDEBAR_STORAGE_KEY);
     return storedValue === 'true';
+  }
+
+  private closeMobileMenu(): void {
+    if (this.isMobileViewport()) {
+      this.mobileMenuOpen.set(false);
+    }
+  }
+
+  private syncViewportState(): void {
+    const isMobile = this.readIsMobileViewport();
+    const wasMobile = this.isMobileViewport();
+
+    this.isMobileViewport.set(isMobile);
+
+    if (isMobile && !wasMobile) {
+      this.mobileMenuOpen.set(false);
+    }
+
+    if (!isMobile && wasMobile) {
+      this.mobileMenuOpen.set(false);
+    }
+  }
+
+  private readIsMobileViewport(): boolean {
+    return window.innerWidth <= DashboardLayoutComponent.MOBILE_BREAKPOINT;
   }
 }

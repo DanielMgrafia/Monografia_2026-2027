@@ -1,41 +1,16 @@
 <ng-container *ngIf="!loading(); else loadingState">
   <div *ngIf="error()" class="message error">{{ error() }}</div>
 
-  <section class="summary-grid">
-    <article class="summary-card urgent">
+  <section class="summary-grid" *ngIf="summaryCards().length > 0">
+    <article class="summary-card"
+             *ngFor="let card of summaryCards()"
+             [ngClass]="card.tone">
       <div>
-        <span class="label">Pendientes de revision</span>
-        <h3>{{ summary().pendientes }}</h3>
-        <p>Documentos esperando autorizacion</p>
+        <span class="label">{{ card.label }}</span>
+        <h3>{{ card.value }}</h3>
+        <p>{{ card.description }}</p>
       </div>
-      <div class="summary-icon">PD</div>
-    </article>
-
-    <article class="summary-card success">
-      <div>
-        <span class="label">Publicados</span>
-        <h3>{{ summary().publicados }}</h3>
-        <p>Documentos visibles en el repositorio</p>
-      </div>
-      <div class="summary-icon">OK</div>
-    </article>
-
-    <article class="summary-card warning">
-      <div>
-        <span class="label">Observados</span>
-        <h3>{{ summary().observados }}</h3>
-        <p>Requieren correcciones antes de publicar</p>
-      </div>
-      <div class="summary-icon">RV</div>
-    </article>
-
-    <article class="summary-card info">
-      <div>
-        <span class="label">Catalogos activos</span>
-        <h3>{{ summary().catalogosActivos }}</h3>
-        <p>Tipos y facultades disponibles</p>
-      </div>
-      <div class="summary-icon">CT</div>
+      <div class="summary-icon">{{ card.icon }}</div>
     </article>
   </section>
 
@@ -50,8 +25,8 @@
     </article>
   </section>
 
-  <section class="content-grid">
-    <article class="card documents-card">
+  <section class="content-grid" *ngIf="canPublishDocuments() || canViewRepository()">
+    <article class="card documents-card" *ngIf="canPublishDocuments(); else repositoryDocuments">
       <div class="card-header">
         <div>
           <h3>Documentos recientes para revision</h3>
@@ -98,14 +73,57 @@
       </div>
     </article>
 
-    <aside class="card side-panel">
+    <ng-template #repositoryDocuments>
+      <article class="card documents-card">
+        <div class="card-header">
+          <div>
+            <h3>Publicaciones recientes</h3>
+            <p>Documentos ya disponibles para consulta dentro del repositorio.</p>
+          </div>
+          <a routerLink="/repositorio" *ngIf="publishedDocuments().length > 0">Abrir repositorio</a>
+        </div>
+
+        <div class="table-wrapper" *ngIf="publishedDocuments().length > 0; else noPublished">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Documento</th>
+                <th>Autor</th>
+                <th>Tipo</th>
+                <th>Fecha</th>
+                <th class="text-right">Accion</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let documento of publishedDocuments()">
+                <td>
+                  <strong>{{ documento.titulo }}</strong>
+                  <span>{{ documento.facultad }}</span>
+                </td>
+                <td>{{ documento.autor }}</td>
+                <td>{{ documento.tipoDocumento }}</td>
+                <td>{{ documento.fechaSubida | date:"dd 'de' MMMM 'de' y" }}</td>
+                <td class="actions">
+                  <button class="btn outline" type="button" (click)="openDocumentViewer(documento)">
+                    Ver
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </ng-template>
+
+    <aside class="card side-panel" *ngIf="sidePanelTipos().length > 0">
       <div class="card-header simple">
-        <h3>Catalogos disponibles</h3>
+        <h3>Tipos disponibles</h3>
         <span class="mini-badge">Activo</span>
       </div>
 
       <div class="catalog-list">
-        <div class="catalog-item" *ngFor="let tipoDocumento of tiposDocumento().slice(0, 4)">
+        <div class="catalog-item" *ngFor="let tipoDocumento of sidePanelTipos()">
           <div>
             <strong>{{ tipoDocumento.descripcion }}</strong>
             <span>Tipo de documento habilitado</span>
@@ -116,8 +134,8 @@
     </aside>
   </section>
 
-  <section class="catalog-grid">
-    <article class="card">
+  <section class="catalog-grid" *ngIf="sidePanelFacultades().length > 0 || recentActivity().length > 0">
+    <article class="card" *ngIf="sidePanelFacultades().length > 0">
       <div class="card-header">
         <div>
           <h3>Facultades activas</h3>
@@ -132,7 +150,7 @@
       </div>
 
       <div class="catalog-list">
-        <div class="catalog-item" *ngFor="let facultad of facultades().slice(0, 4)">
+        <div class="catalog-item" *ngFor="let facultad of sidePanelFacultades()">
           <div>
             <strong>{{ facultad.descripcion }}</strong>
             <span>Visible al registrar documentos</span>
@@ -142,11 +160,11 @@
       </div>
     </article>
 
-    <article class="card activity-card">
+    <article class="card activity-card" *ngIf="recentActivity().length > 0">
       <div class="card-header">
         <div>
-          <h3>Actividad reciente</h3>
-          <p>Ultimos movimientos dentro del repositorio.</p>
+          <h3>{{ getActivityTitle() }}</h3>
+          <p>{{ getActivityDescription() }}</p>
         </div>
       </div>
 
@@ -155,7 +173,7 @@
           <span class="dot" [ngClass]="getStatusClass(documento.estado)"></span>
           <div>
             <strong>{{ documento.titulo }}</strong>
-            <p>{{ documento.autor }} registro un documento en estado {{ documento.estado?.toLowerCase() }}.</p>
+            <p>{{ getActivityMessage(documento) }}</p>
           </div>
           <small>{{ documento.fechaSubida | date:'dd MMM' }}</small>
         </div>
@@ -172,5 +190,12 @@
   <div class="empty-state">
     <strong>No hay documentos pendientes.</strong>
     <p>Cuando entren nuevas solicitudes apareceran aqui para su revision.</p>
+  </div>
+</ng-template>
+
+<ng-template #noPublished>
+  <div class="empty-state">
+    <strong>No hay publicaciones recientes.</strong>
+    <p>Cuando existan documentos visibles en el repositorio apareceran aqui.</p>
   </div>
 </ng-template>
