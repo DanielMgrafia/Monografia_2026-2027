@@ -143,14 +143,18 @@ namespace RepositorioAcademico.Server.Controllers
                 await request.Archivo.CopyToAsync(stream);
             }
 
+            var zonaNicaragua = TimeZoneInfo.FindSystemTimeZoneById("Central America Standard Time");
+            var fechaLocal = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaNicaragua);
+
             var documento = new Documento
             {
+
                 Titulo = request.Titulo,
                 Autor = request.Autor,
                 TipoDocumentoId = request.TipoDocumentoId,
                 FacultadId = request.FacultadId,
                 RutaDocumento = nombreArchivo,
-                FechaSubida = DateTime.UtcNow,
+                FechaSubida = fechaLocal,
                 Estado = "Pendiente",
                 SePuedeDescargar = request.SePuedeDescargar ?? true,
                 UsuarioId = usuarioActualId.Value
