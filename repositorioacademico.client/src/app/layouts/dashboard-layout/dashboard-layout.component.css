@@ -1,12 +1,15 @@
 .admin-layout {
+  height: 100vh;
   min-height: 100vh;
   display: flex;
   background: linear-gradient(180deg, #f4f7fb 0%, #edf2fb 100%);
   transition: background 0.28s ease;
+  overflow: hidden;
 }
 
 .sidebar {
   width: 304px;
+  height: 100vh;
   min-height: 100vh;
   background: #ffffff;
   border-right: 1px solid #e4eaf3;
@@ -15,6 +18,7 @@
   flex-direction: column;
   gap: 28px;
   transition: width 0.28s ease, padding 0.28s ease, box-shadow 0.28s ease;
+  overflow-y: auto;
 }
 
 .logo-box {
@@ -248,8 +252,12 @@
 
 .main-content {
   flex: 1;
+  min-width: 0;
+  height: 100vh;
   padding: 24px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   transition: padding 0.28s ease;
 }
 
@@ -260,6 +268,21 @@
   align-items: center;
   gap: 22px;
   margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.view-shell {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.view-scroll {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
 }
 
 .page-title h2 {
@@ -426,6 +449,7 @@
 
   .sidebar {
     width: 100%;
+    height: auto;
     min-height: auto;
   }
 
@@ -445,6 +469,21 @@
 
   .search-box {
     width: 100%;
+  }
+
+  .main-content {
+    height: auto;
+    min-height: 0;
+  }
+
+  .view-shell {
+    overflow: visible;
+  }
+
+  .view-scroll {
+    height: auto;
+    overflow: visible;
+    padding-right: 0;
   }
 }
 
