@@ -42,11 +42,9 @@ export const appRoutes: Routes = [
       {
         path: 'panel',
         component: DashboardHomeComponent,
-        canActivate: [permissionGuard],
         data: {
           title: 'Panel administrativo',
-          description: 'Resumen general del repositorio y accesos rapidos segun tu perfil.',
-          permission: 'DASHBOARD.VER'
+          description: 'Resumen general del repositorio y accesos rapidos segun tu perfil.'
         }
       },
       {

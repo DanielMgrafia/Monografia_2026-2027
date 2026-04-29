@@ -10,7 +10,7 @@ import { DocumentosService } from '../../services/documentos.service';
 interface MenuItem {
   label: string;
   route: string;
-  permission: string;
+  permission?: string;
   icon: string;
   badge?: number;
 }
@@ -42,7 +42,7 @@ export class DashboardLayoutComponent implements OnInit {
 
   readonly menuItems = computed<MenuItem[]>(() => {
     const items: MenuItem[] = [
-      { label: 'Panel principal', route: '/panel', permission: 'DASHBOARD.VER', icon: 'DB' },
+      { label: 'Panel principal', route: '/panel', icon: 'DB' },
       {
         label: 'Revision documental',
         route: '/revision-documental',
@@ -62,7 +62,13 @@ export class DashboardLayoutComponent implements OnInit {
       { label: 'Roles y permisos', route: '/roles', permission: 'ROL.GESTIONAR', icon: 'RL' }
     ];
 
-    return items.filter((item) => this.authService.hasPermission(item.permission));
+    return items.filter((item) => {
+      if (!item.permission) {
+        return true;
+      }
+
+      return this.authService.hasPermission(item.permission);
+    });
   });
 
   readonly catalogItems = computed<MenuItem[]>(() => {
@@ -71,7 +77,13 @@ export class DashboardLayoutComponent implements OnInit {
       { label: 'Facultades', route: '/facultades', permission: 'CATALOGO.GESTIONAR', icon: 'FC' }
     ];
 
-    return items.filter((item) => this.authService.hasPermission(item.permission));
+    return items.filter((item) => {
+      if (!item.permission) {
+        return true;
+      }
+
+      return this.authService.hasPermission(item.permission);
+    });
   });
 
   ngOnInit(): void {

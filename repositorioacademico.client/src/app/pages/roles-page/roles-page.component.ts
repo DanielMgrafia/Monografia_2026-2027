@@ -13,6 +13,8 @@ import { CrearRolPayload, RolesService } from '../../services/roles.service';
   styleUrls: ['./roles-page.component.css']
 })
 export class RolesPageComponent implements OnInit {
+  private static readonly HIDDEN_PERMISSION_CODES = new Set(['DASHBOARD.VER']);
+
   roles: Rol[] = [];
   permisos: Permiso[] = [];
 
@@ -43,7 +45,7 @@ export class RolesPageComponent implements OnInit {
 
     this.permisosService.getPermisos().subscribe({
       next: (permisos) => {
-        this.permisos = permisos;
+        this.permisos = permisos.filter((permiso) => !RolesPageComponent.HIDDEN_PERMISSION_CODES.has(permiso.codigo));
         this.cargarRoles();
       },
       error: () => {
