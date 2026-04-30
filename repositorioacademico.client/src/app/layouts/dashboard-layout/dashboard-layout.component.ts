@@ -15,9 +15,9 @@ interface MenuItem {
   badge?: number;
 }
 
-interface AccountMenuSection {
-  title: string;
-  items: MenuItem[];
+interface ProfileField {
+  label: string;
+  value: string;
 }
 
 @Component({
@@ -45,6 +45,7 @@ export class DashboardLayoutComponent implements OnInit {
   readonly sidebarCollapsed = signal(this.readSidebarState());
   readonly catalogMenuOpen = signal(true);
   readonly accountMenuOpen = signal(false);
+  readonly profileDetailsOpen = signal(false);
   readonly pendingCount = signal(0);
   readonly pageTitle = signal('Panel administrativo');
   readonly pageDescription = signal('Gestion centralizada del repositorio academico.');
@@ -95,30 +96,21 @@ export class DashboardLayoutComponent implements OnInit {
     });
   });
 
-  readonly accountMenuSections = computed<AccountMenuSection[]>(() => {
-    const navigationItems: MenuItem[] = [
-      { label: 'Panel principal', route: '/panel', icon: 'DB' },
-      { label: 'Repositorio', route: '/repositorio', permission: 'REPOSITORIO.VER', icon: 'RP' }
-    ].filter((item) => !item.permission || this.authService.hasPermission(item.permission));
-
-    const workspaceItems: MenuItem[] = [
-      { label: 'Subir documentos', route: '/subir-documento', permission: 'DOCUMENTO.SUBIR', icon: 'UP' },
-      { label: 'Revision documental', route: '/revision-documental', permission: 'DOCUMENTO.PUBLICAR', icon: 'RV' },
-      { label: 'Edicion documental', route: '/edicion-documental', permission: 'DOCUMENTO.PUBLICAR', icon: 'ED' }
-    ].filter((item) => !item.permission || this.authService.hasPermission(item.permission));
-
-    const administrationItems: MenuItem[] = [
-      { label: 'Tipos de documento', route: '/tipos-documento', permission: 'CATALOGO.GESTIONAR', icon: 'TD' },
-      { label: 'Facultades', route: '/facultades', permission: 'CATALOGO.GESTIONAR', icon: 'FC' },
-      { label: 'Usuarios', route: '/usuarios', permission: 'USUARIO.GESTIONAR', icon: 'US' },
-      { label: 'Roles y permisos', route: '/roles', permission: 'ROL.GESTIONAR', icon: 'RL' }
-    ].filter((item) => !item.permission || this.authService.hasPermission(item.permission));
+  readonly profileFields = computed<ProfileField[]>(() => {
+    const user = this.currentUser();
+    if (!user) {
+      return [];
+    }
 
     return [
-      { title: 'Navegacion', items: navigationItems },
-      { title: 'Trabajo', items: workspaceItems },
-      { title: 'Administracion', items: administrationItems }
-    ].filter((section) => section.items.length > 0);
+      { label: 'Correo', value: user.correo },
+      { label: 'Carnet', value: user.carnet },
+      { label: 'Estado', value: user.estado },
+      {
+        label: 'Roles',
+        value: user.roles.length > 0 ? user.roles.map((role) => role.nombre).join(', ') : 'Sin roles asignados'
+      }
+    ];
   });
 
   ngOnInit(): void {
@@ -231,16 +223,21 @@ export class DashboardLayoutComponent implements OnInit {
   }
 
   toggleAccountMenu(): void {
-    this.accountMenuOpen.set(!this.accountMenuOpen());
+    const nextState = !this.accountMenuOpen();
+    this.accountMenuOpen.set(nextState);
+
+    if (!nextState) {
+      this.profileDetailsOpen.set(false);
+    }
   }
 
   closeAccountMenu(): void {
     this.accountMenuOpen.set(false);
+    this.profileDetailsOpen.set(false);
   }
 
-  navigateFromAccount(route: string): void {
-    this.router.navigate([route]);
-    this.handleNavigationSelection();
+  toggleProfileDetails(): void {
+    this.profileDetailsOpen.set(!this.profileDetailsOpen());
   }
 
   getPrimaryRoleLabel(): string {

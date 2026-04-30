@@ -124,20 +124,26 @@
               <div class="account-dropdown-copy">
                 <strong>{{ user.nombres }} {{ user.apellidos }}</strong>
                 <span>{{ getPrimaryRoleLabel() }}</span>
-                <small>{{ getSecondaryRoleLabel() }}</small>
+                <small>{{ user.carnet }} - {{ user.correo }}</small>
               </div>
             </header>
 
-            <div class="account-section" *ngFor="let section of accountMenuSections()">
-              <p class="account-section-title">{{ section.title }}</p>
+            <div class="account-section">
               <button type="button"
                       class="account-action"
-                      *ngFor="let item of section.items"
-                      (click)="navigateFromAccount(item.route)">
-                <span class="account-action-icon">{{ item.icon }}</span>
-                <span>{{ item.label }}</span>
-                <small *ngIf="item.badge != null && item.badge > 0">{{ item.badge }}</small>
+                      [class.is-open]="profileDetailsOpen()"
+                      (click)="toggleProfileDetails()">
+                <span class="account-action-icon">PF</span>
+                <span>Perfil</span>
+                <span class="account-action-arrow">{{ profileDetailsOpen() ? 'v' : '>' }}</span>
               </button>
+
+              <div class="profile-details" *ngIf="profileDetailsOpen()">
+                <div class="profile-detail" *ngFor="let field of profileFields()">
+                  <span class="profile-detail-label">{{ field.label }}</span>
+                  <strong class="profile-detail-value">{{ field.value }}</strong>
+                </div>
+              </div>
             </div>
 
             <div class="account-section account-section-session">

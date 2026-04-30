@@ -527,6 +527,10 @@
   transition: background 0.18s ease, color 0.18s ease;
 }
 
+.account-action.is-open {
+  background: #eef5ff;
+}
+
 .account-action:hover {
   background: #eef5ff;
 }
@@ -543,17 +547,41 @@
   flex-shrink: 0;
 }
 
-.account-action small {
+.account-action-arrow {
   margin-left: auto;
-  min-width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #ffb116;
-  color: #061b4e;
-  display: grid;
-  place-items: center;
+  color: #52627e;
   font-size: 11px;
   font-weight: 800;
+}
+
+.profile-details {
+  margin-top: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #f8fbff;
+  border: 1px solid #e1ebf9;
+  display: grid;
+  gap: 10px;
+}
+
+.profile-detail {
+  display: grid;
+  gap: 4px;
+}
+
+.profile-detail-label {
+  color: #7b879d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-detail-value {
+  color: #08245b;
+  font-size: 14px;
+  line-height: 1.45;
+  word-break: break-word;
 }
 
 .account-section-session {
