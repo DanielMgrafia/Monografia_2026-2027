@@ -97,14 +97,56 @@
           <button type="submit" class="search-button">IR</button>
         </form>
 
-        <button class="icon-button" type="button" (click)="logout()">LX</button>
+        <div class="account-menu-wrapper" *ngIf="currentUser() as user">
+          <button type="button"
+                  class="account-trigger"
+                  (click)="toggleAccountMenu()"
+                  [attr.aria-expanded]="accountMenuOpen()"
+                  aria-haspopup="menu">
+            <div class="avatar">{{ getInitials() }}</div>
+            <div class="account-copy">
+              <strong>{{ getPrimaryRoleLabel() }}</strong>
+              <span>{{ user.correo }}</span>
+            </div>
+            <span class="account-arrow">{{ accountMenuOpen() ? 'v' : '>' }}</span>
+          </button>
 
-        <div class="account" *ngIf="currentUser() as user">
-          <div class="avatar">{{ getInitials() }}</div>
-          <div>
-            <strong>{{ user.roles.length > 0 ? user.roles[0].nombre : 'Perfil' }}</strong>
-            <span>{{ user.correo }}</span>
-          </div>
+          <button type="button"
+                  class="account-backdrop"
+                  *ngIf="accountMenuOpen()"
+                  (click)="closeAccountMenu()"
+                  aria-label="Cerrar menu de usuario">
+          </button>
+
+          <section class="account-dropdown" *ngIf="accountMenuOpen()">
+            <header class="account-dropdown-header">
+              <div class="account-dropdown-avatar">{{ getInitials() }}</div>
+              <div class="account-dropdown-copy">
+                <strong>{{ user.nombres }} {{ user.apellidos }}</strong>
+                <span>{{ getPrimaryRoleLabel() }}</span>
+                <small>{{ getSecondaryRoleLabel() }}</small>
+              </div>
+            </header>
+
+            <div class="account-section" *ngFor="let section of accountMenuSections()">
+              <p class="account-section-title">{{ section.title }}</p>
+              <button type="button"
+                      class="account-action"
+                      *ngFor="let item of section.items"
+                      (click)="navigateFromAccount(item.route)">
+                <span class="account-action-icon">{{ item.icon }}</span>
+                <span>{{ item.label }}</span>
+                <small *ngIf="item.badge != null && item.badge > 0">{{ item.badge }}</small>
+              </button>
+            </div>
+
+            <div class="account-section account-section-session">
+              <button type="button" class="account-action danger" (click)="logout()">
+                <span class="account-action-icon">LX</span>
+                <span>Cerrar sesion</span>
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     </header>

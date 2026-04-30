@@ -355,8 +355,7 @@
   background: transparent;
 }
 
-.search-button,
-.icon-button {
+.search-button {
   border: none;
   cursor: pointer;
 }
@@ -371,29 +370,203 @@
   font-weight: 800;
 }
 
-.icon-button {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid #e0e6f0;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 800;
-  color: #06265c;
+.account-menu-wrapper {
+  position: relative;
 }
 
-.account {
-  min-width: 190px;
-  min-height: 48px;
+.account-trigger {
+  min-width: 220px;
+  min-height: 52px;
   background: #ffffff;
   border: 1px solid #e0e6f0;
-  border-radius: 14px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   padding: 8px 12px;
+  color: #06265c;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.account-trigger:hover {
+  border-color: #bfd1f1;
+  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.1);
+  transform: translateY(-1px);
+}
+
+.account-copy {
+  min-width: 0;
+  text-align: left;
+}
+
+.account-copy strong,
+.account-copy span {
+  display: block;
+}
+
+.account-copy span {
+  color: #52627e;
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.account-arrow {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 800;
+  color: #52627e;
+}
+
+.account-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 69;
+  border: none;
+  background: transparent;
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 70;
+  width: min(360px, calc(100vw - 32px));
+  background: #ffffff;
+  border: 1px solid #e4eaf3;
+  border-radius: 22px;
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.2);
+  overflow: hidden;
+}
+
+.account-dropdown-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  background: linear-gradient(180deg, #f8fbff, #ffffff);
+}
+
+.account-dropdown-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0a54db, #06265c);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.account-dropdown-copy {
+  min-width: 0;
+}
+
+.account-dropdown-copy strong,
+.account-dropdown-copy span,
+.account-dropdown-copy small {
+  display: block;
+}
+
+.account-dropdown-copy strong {
+  color: #061b4e;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.account-dropdown-copy span {
+  color: #0a54db;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.account-dropdown-copy small {
+  color: #52627e;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.account-section {
+  padding: 12px 12px 0;
+}
+
+.account-section + .account-section {
+  border-top: 1px solid #eef2f8;
+  margin-top: 12px;
+  padding-top: 12px;
+}
+
+.account-section-title {
+  color: #7b879d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 8px 8px;
+}
+
+.account-action {
+  width: 100%;
+  min-height: 46px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  color: #08245b;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.account-action:hover {
+  background: #eef5ff;
+}
+
+.account-action-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: rgba(10, 84, 219, 0.08);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.account-action small {
+  margin-left: auto;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #ffb116;
+  color: #061b4e;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.account-section-session {
+  padding-bottom: 12px;
+}
+
+.account-action.danger {
+  color: #b42318;
+}
+
+.account-action.danger .account-action-icon {
+  background: rgba(240, 68, 56, 0.1);
+  color: #b42318;
 }
 
 .admin-layout.is-collapsed .sidebar {
@@ -503,6 +676,17 @@
   .main-content {
     width: 100%;
   }
+
+  .account-menu-wrapper,
+  .account-trigger {
+    width: 100%;
+  }
+
+  .account-dropdown {
+    left: 0;
+    right: auto;
+    width: min(100%, 360px);
+  }
 }
 
 @media (max-width: 640px) {
@@ -516,7 +700,11 @@
     padding: 0 14px;
   }
 
-  .account {
+  .account-trigger {
     width: 100%;
+  }
+
+  .account-dropdown {
+    width: min(100vw - 32px, 360px);
   }
 }

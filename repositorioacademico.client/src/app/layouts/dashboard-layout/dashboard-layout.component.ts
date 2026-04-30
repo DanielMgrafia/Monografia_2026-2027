@@ -15,6 +15,11 @@ interface MenuItem {
   badge?: number;
 }
 
+interface AccountMenuSection {
+  title: string;
+  items: MenuItem[];
+}
+
 @Component({
   selector: 'app-dashboard-layout',
   standalone: true,
@@ -39,6 +44,7 @@ export class DashboardLayoutComponent implements OnInit {
   readonly mobileMenuOpen = signal(false);
   readonly sidebarCollapsed = signal(this.readSidebarState());
   readonly catalogMenuOpen = signal(true);
+  readonly accountMenuOpen = signal(false);
   readonly pendingCount = signal(0);
   readonly pageTitle = signal('Panel administrativo');
   readonly pageDescription = signal('Gestion centralizada del repositorio academico.');
@@ -89,6 +95,32 @@ export class DashboardLayoutComponent implements OnInit {
     });
   });
 
+  readonly accountMenuSections = computed<AccountMenuSection[]>(() => {
+    const navigationItems: MenuItem[] = [
+      { label: 'Panel principal', route: '/panel', icon: 'DB' },
+      { label: 'Repositorio', route: '/repositorio', permission: 'REPOSITORIO.VER', icon: 'RP' }
+    ].filter((item) => !item.permission || this.authService.hasPermission(item.permission));
+
+    const workspaceItems: MenuItem[] = [
+      { label: 'Subir documentos', route: '/subir-documento', permission: 'DOCUMENTO.SUBIR', icon: 'UP' },
+      { label: 'Revision documental', route: '/revision-documental', permission: 'DOCUMENTO.PUBLICAR', icon: 'RV' },
+      { label: 'Edicion documental', route: '/edicion-documental', permission: 'DOCUMENTO.PUBLICAR', icon: 'ED' }
+    ].filter((item) => !item.permission || this.authService.hasPermission(item.permission));
+
+    const administrationItems: MenuItem[] = [
+      { label: 'Tipos de documento', route: '/tipos-documento', permission: 'CATALOGO.GESTIONAR', icon: 'TD' },
+      { label: 'Facultades', route: '/facultades', permission: 'CATALOGO.GESTIONAR', icon: 'FC' },
+      { label: 'Usuarios', route: '/usuarios', permission: 'USUARIO.GESTIONAR', icon: 'US' },
+      { label: 'Roles y permisos', route: '/roles', permission: 'ROL.GESTIONAR', icon: 'RL' }
+    ].filter((item) => !item.permission || this.authService.hasPermission(item.permission));
+
+    return [
+      { title: 'Navegacion', items: navigationItems },
+      { title: 'Trabajo', items: workspaceItems },
+      { title: 'Administracion', items: administrationItems }
+    ].filter((section) => section.items.length > 0);
+  });
+
   ngOnInit(): void {
     this.syncPageMetadata();
     this.router.events
@@ -99,6 +131,7 @@ export class DashboardLayoutComponent implements OnInit {
       .subscribe(() => {
         this.syncPageMetadata();
         this.closeMobileMenu();
+        this.closeAccountMenu();
       });
 
     if (this.authService.hasPermission('DOCUMENTO.PUBLICAR')) {
@@ -150,6 +183,7 @@ export class DashboardLayoutComponent implements OnInit {
   }
 
   logout(): void {
+    this.closeAccountMenu();
     this.authService.logout();
     this.router.navigate(['/login']);
   }
@@ -193,6 +227,39 @@ export class DashboardLayoutComponent implements OnInit {
 
   handleNavigationSelection(): void {
     this.closeMobileMenu();
+    this.closeAccountMenu();
+  }
+
+  toggleAccountMenu(): void {
+    this.accountMenuOpen.set(!this.accountMenuOpen());
+  }
+
+  closeAccountMenu(): void {
+    this.accountMenuOpen.set(false);
+  }
+
+  navigateFromAccount(route: string): void {
+    this.router.navigate([route]);
+    this.handleNavigationSelection();
+  }
+
+  getPrimaryRoleLabel(): string {
+    const roles = this.currentUser()?.roles ?? [];
+    return roles.length > 0 ? roles[0].nombre : 'Usuario';
+  }
+
+  getSecondaryRoleLabel(): string {
+    const roles = this.currentUser()?.roles ?? [];
+    if (roles.length <= 1) {
+      return this.currentUser()?.correo ?? '';
+    }
+
+    const secondaryRoles = roles
+      .slice(1)
+      .map((role) => role.nombre)
+      .join(', ');
+
+    return `${secondaryRoles} · ${this.currentUser()?.correo ?? ''}`;
   }
 
   getSidebarToggleLabel(): string {
@@ -253,6 +320,8 @@ export class DashboardLayoutComponent implements OnInit {
     if (!isMobile && wasMobile) {
       this.mobileMenuOpen.set(false);
     }
+
+    this.closeAccountMenu();
   }
 
   private readIsMobileViewport(): boolean {
