@@ -27,19 +27,11 @@
   color: #52627e;
 }
 
-.refresh-button,
 .clear-filters-button {
   border: none;
   border-radius: 12px;
   font-weight: 800;
   cursor: pointer;
-}
-
-.refresh-button {
-  min-width: 132px;
-  height: 44px;
-  background: #083b91;
-  color: #ffffff;
 }
 
 .clear-filters-button {
@@ -259,7 +251,6 @@
     grid-template-columns: 1fr;
   }
 
-  .refresh-button,
   .clear-filters-button {
     width: 100%;
   }

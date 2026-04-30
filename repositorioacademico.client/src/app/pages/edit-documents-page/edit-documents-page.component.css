@@ -75,7 +75,6 @@
   text-transform: uppercase;
 }
 
-.refresh-button,
 .primary-button,
 .secondary-button,
 .close-editor,
@@ -92,7 +91,6 @@
   color: #ffffff;
 }
 
-.refresh-button,
 .close-editor {
   min-width: 132px;
   height: 44px;
@@ -413,7 +411,6 @@
     padding: 18px;
   }
 
-  .refresh-button,
   .clear-filters-button,
   .primary-button,
   .secondary-button,

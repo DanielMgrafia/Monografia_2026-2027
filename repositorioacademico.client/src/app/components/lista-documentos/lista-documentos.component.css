@@ -24,16 +24,6 @@
   color: #52627e;
 }
 
-.refresh-button {
-  min-width: 132px;
-  height: 44px;
-  border: none;
-  border-radius: 12px;
-  background: #083b91;
-  color: #ffffff;
-  font-weight: 800;
-}
-
 .filters-card {
   border: 1px solid #dbeafe;
   border-radius: 18px;
@@ -225,7 +215,6 @@
     grid-template-columns: 1fr;
   }
 
-  .refresh-button,
   .clear-filters-button {
     width: 100%;
   }
