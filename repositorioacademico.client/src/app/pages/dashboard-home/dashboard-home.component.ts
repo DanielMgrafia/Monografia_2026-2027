@@ -9,15 +9,6 @@ import { AuthService } from '../../services/auth.service';
 import { CatalogosService } from '../../services/catalogos.service';
 import { DocumentosService } from '../../services/documentos.service';
 
-interface QuickAction {
-  title: string;
-  description: string;
-  route: string;
-  permission: string;
-  accent: 'blue' | 'green' | 'purple';
-  icon: string;
-}
-
 interface SummaryCard {
   label: string;
   value: number;
@@ -46,10 +37,13 @@ export class DashboardHomeComponent implements OnInit {
   private readonly documentosService = inject(DocumentosService);
   private readonly catalogosService = inject(CatalogosService);
 
+  readonly isAdministrator = computed(() =>
+    this.authService
+      .roles()
+      .some((role) => role.nombre.trim().toLowerCase() === 'administrador')
+  );
   readonly canViewRepository = computed(() => this.authService.hasPermission('REPOSITORIO.VER'));
-  readonly canUploadDocuments = computed(() => this.authService.hasPermission('DOCUMENTO.SUBIR'));
   readonly canPublishDocuments = computed(() => this.authService.hasPermission('DOCUMENTO.PUBLICAR'));
-  readonly canManageCatalogs = computed(() => this.authService.hasPermission('CATALOGO.GESTIONAR'));
 
   readonly pendingDocuments = computed(() =>
     this.documentos()
@@ -107,7 +101,7 @@ export class DashboardHomeComponent implements OnInit {
       });
     }
 
-    if (this.canManageCatalogs()) {
+    if (this.isAdministrator()) {
       cards.push({
         label: 'Catalogos activos',
         value: catalogosActivos,
@@ -115,69 +109,17 @@ export class DashboardHomeComponent implements OnInit {
         tone: 'info',
         icon: 'CT'
       });
-    } else if (this.canViewRepository()) {
-      cards.push(
-        {
-          label: 'Tipos disponibles',
-          value: tiposDisponibles,
-          description: 'Clasificaciones visibles para consultar documentos',
-          tone: 'info',
-          icon: 'TD'
-        },
-        {
-          label: 'Facultades registradas',
-          value: facultadesDisponibles,
-          description: 'Areas academicas usadas para organizar el repositorio',
-          tone: 'warning',
-          icon: 'FC'
-        }
-      );
     }
 
     return cards;
   });
 
-  readonly quickActions = computed(() => {
-    const allActions: QuickAction[] = [
-      {
-        title: 'Ver repositorio',
-        description: 'Explorar documentos publicados y disponibles para consulta.',
-        route: '/repositorio',
-        permission: 'REPOSITORIO.VER',
-        accent: 'blue',
-        icon: 'RP'
-      },
-      {
-        title: 'Subir documento',
-        description: 'Registrar tesis, monografias, articulos o investigaciones.',
-        route: '/subir-documento',
-        permission: 'DOCUMENTO.SUBIR',
-        accent: 'blue',
-        icon: 'UP'
-      },
-      {
-        title: 'Autorizar publicaciones',
-        description: 'Revisar documentos enviados por docentes, autoridades o estudiantes.',
-        route: '/revision-documental',
-        permission: 'DOCUMENTO.PUBLICAR',
-        accent: 'green',
-        icon: 'RV'
-      },
-      {
-        title: 'Gestionar catalogos',
-        description: 'Crear y mantener tipos de documento y facultades activas.',
-        route: '/tipos-documento',
-        permission: 'CATALOGO.GESTIONAR',
-        accent: 'purple',
-        icon: 'CT'
-      }
-    ];
-
-    return allActions.filter((action) => this.authService.hasPermission(action.permission));
-  });
-
-  readonly sidePanelTipos = computed(() => this.tiposDocumento().slice(0, 4));
-  readonly sidePanelFacultades = computed(() => this.facultades().slice(0, 4));
+  readonly sidePanelTipos = computed(() =>
+    this.isAdministrator() ? this.tiposDocumento().slice(0, 4) : []
+  );
+  readonly sidePanelFacultades = computed(() =>
+    this.isAdministrator() ? this.facultades().slice(0, 4) : []
+  );
 
   readonly recentActivity = computed(() =>
     this.documentos()

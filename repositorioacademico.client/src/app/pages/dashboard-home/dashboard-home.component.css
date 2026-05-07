@@ -1,5 +1,4 @@
 .summary-grid,
-.quick-actions,
 .content-grid,
 .catalog-grid {
   display: grid;
@@ -83,55 +82,6 @@
   font-weight: 800;
   flex-shrink: 0;
 }
-
-.quick-actions {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.action-card {
-  padding: 20px;
-  display: grid;
-  grid-template-columns: 54px 1fr auto;
-  align-items: center;
-  gap: 15px;
-}
-
-.action-icon {
-  width: 54px;
-  height: 54px;
-  border-radius: 17px;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.action-icon.blue {
-  background: #145cf0;
-}
-
-.action-icon.green {
-  background: #157b68;
-}
-
-.action-icon.purple {
-  background: #5d42c5;
-}
-
-.action-card h3 {
-  font-size: 16px;
-  margin-bottom: 6px;
-  color: #061b4e;
-}
-
-.action-card p {
-  color: #52627e;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.action-card button,
 .new-btn {
   height: 38px;
   padding: 0 16px;
@@ -391,7 +341,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .quick-actions,
   .content-grid,
   .catalog-grid {
     grid-template-columns: 1fr;
@@ -401,15 +350,6 @@
 @media (max-width: 640px) {
   .summary-grid {
     grid-template-columns: 1fr;
-  }
-
-  .action-card {
-    grid-template-columns: 54px 1fr;
-  }
-
-  .action-card button {
-    grid-column: 1 / -1;
-    width: 100%;
   }
 
   .card-header {

@@ -44,7 +44,7 @@ export const appRoutes: Routes = [
         component: DashboardHomeComponent,
         data: {
           title: 'Panel administrativo',
-          description: 'Resumen general del repositorio y accesos rapidos segun tu perfil.'
+          description: 'Resumen general del repositorio segun tu perfil.'
         }
       },
       {

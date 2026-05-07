@@ -14,17 +14,6 @@
     </article>
   </section>
 
-  <section class="quick-actions" *ngIf="quickActions().length > 0">
-    <article class="action-card" *ngFor="let action of quickActions()">
-      <div class="action-icon" [ngClass]="action.accent">{{ action.icon }}</div>
-      <div>
-        <h3>{{ action.title }}</h3>
-        <p>{{ action.description }}</p>
-      </div>
-      <button type="button" (click)="goTo(action.route)">Ir</button>
-    </article>
-  </section>
-
   <section class="content-grid" *ngIf="canPublishDocuments() || canViewRepository()">
     <article class="card documents-card" *ngIf="canPublishDocuments(); else repositoryDocuments">
       <div class="card-header">
