@@ -15,7 +15,5 @@ namespace RepositorioAcademico.Server.Contracts
         public string? Estado { get; set; }
 
         public bool? SePuedeDescargar { get; set; }
-
-        public int UsuarioId { get; set; }
     }
 }

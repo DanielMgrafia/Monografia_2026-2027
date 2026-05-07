@@ -400,6 +400,7 @@ namespace RepositorioAcademico.Server.Controllers
             return ConstruirConsultaDocumentosVisiblesEntidad()
                 .Include(documento => documento.TipoDocumento)
                 .Include(documento => documento.Facultad)
+                .Include(documento => documento.Usuario)
                 .Select(documento => new DocumentoDto
                 {
                     Id = documento.Id,
@@ -413,7 +414,16 @@ namespace RepositorioAcademico.Server.Controllers
                     FechaSubida = documento.FechaSubida,
                     Estado = documento.Estado,
                     SePuedeDescargar = documento.SePuedeDescargar,
-                    UsuarioId = documento.UsuarioId
+                    UsuarioId = documento.UsuarioId,
+                    Usuario = documento.Usuario == null
+                        ? null
+                        : new UsuarioDocumentoDto
+                        {
+                            Id = documento.Usuario.Id,
+                            Nombres = documento.Usuario.Nombres,
+                            Apellidos = documento.Usuario.Apellidos,
+                            Correo = documento.Usuario.Correo
+                        }
                 });
         }
 

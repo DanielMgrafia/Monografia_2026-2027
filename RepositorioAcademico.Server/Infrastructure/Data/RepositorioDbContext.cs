@@ -79,6 +79,11 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                     .WithMany(item => item.Documentos)
                     .HasForeignKey(item => item.FacultadId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(item => item.Usuario)
+                    .WithMany(item => item.Documentos)
+                    .HasForeignKey(item => item.UsuarioId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Usuario>(entity =>

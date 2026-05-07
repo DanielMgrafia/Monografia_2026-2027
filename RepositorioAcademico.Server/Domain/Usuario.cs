@@ -18,6 +18,8 @@ namespace RepositorioAcademico.Server.Domain
 
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
+        public ICollection<Documento> Documentos { get; set; } = [];
+
         public ICollection<UsuarioRol> UsuarioRoles { get; set; } = [];
     }
 }

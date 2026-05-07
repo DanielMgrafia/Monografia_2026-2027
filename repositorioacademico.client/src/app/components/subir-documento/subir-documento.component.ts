@@ -171,7 +171,6 @@ export class SubirDocumentoComponent implements OnInit {
     formData.append('tipoDocumentoId', this.tipoDocumentoId.toString());
     formData.append('facultadId', this.facultadId.toString());
     formData.append('sePuedeDescargar', String(this.sePuedeDescargar));
-    formData.append('usuarioId', currentUser.id.toString());
 
     this.cargando = true;
 

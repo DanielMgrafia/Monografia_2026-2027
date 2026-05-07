@@ -25,5 +25,7 @@ namespace RepositorioAcademico.Server.Contracts
         public bool SePuedeDescargar { get; set; }
 
         public int UsuarioId { get; set; }
+
+        public UsuarioDocumentoDto? Usuario { get; set; }
     }
 }

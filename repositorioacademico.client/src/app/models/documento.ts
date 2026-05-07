@@ -1,3 +1,10 @@
+export interface UsuarioDocumento {
+  id: number;
+  nombres: string;
+  apellidos: string;
+  correo: string;
+}
+
 export interface Documento {
   id: number;
   titulo?: string;
@@ -11,4 +18,5 @@ export interface Documento {
   estado?: string;
   sePuedeDescargar?: boolean;
   usuarioId: number;
+  usuario?: UsuarioDocumento;
 }
