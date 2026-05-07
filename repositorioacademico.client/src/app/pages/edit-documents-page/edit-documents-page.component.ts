@@ -8,7 +8,7 @@ import { Documento } from '../../models/documento';
 import { CatalogosService } from '../../services/catalogos.service';
 import { DocumentosService } from '../../services/documentos.service';
 
-type EstadoDocumento = 'Pendiente' | 'Publicado' | 'Observado' | 'Rechazado';
+type EstadoDocumento = 'Pendiente' | 'Publicado' | 'Rechazado';
 
 interface DocumentoEditModel {
   titulo: string;
@@ -27,7 +27,7 @@ interface DocumentoEditModel {
   styleUrls: ['./edit-documents-page.component.css']
 })
 export class EditDocumentsPageComponent implements OnInit {
-  readonly estadosDisponibles: EstadoDocumento[] = ['Pendiente', 'Publicado', 'Observado', 'Rechazado'];
+  readonly estadosDisponibles: EstadoDocumento[] = ['Pendiente', 'Publicado', 'Rechazado'];
 
   documentos: Documento[] = [];
   tiposDocumento: Catalogo[] = [];
@@ -213,10 +213,7 @@ export class EditDocumentsPageComponent implements OnInit {
   getStatusClass(status?: string): string {
     switch (status) {
       case 'Publicado':
-      case 'Aprobado':
         return 'published';
-      case 'Observado':
-        return 'observed';
       case 'Rechazado':
         return 'rejected';
       default:
@@ -245,7 +242,6 @@ export class EditDocumentsPageComponent implements OnInit {
   private normalizeEstado(estado?: string): EstadoDocumento {
     switch (estado) {
       case 'Publicado':
-      case 'Observado':
       case 'Rechazado':
         return estado;
       default:

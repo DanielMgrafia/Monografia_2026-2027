@@ -42,7 +42,7 @@ export class ListaDocumentosComponent implements OnInit {
     const fechaHasta = this.filtroFechaHasta ? new Date(`${this.filtroFechaHasta}T23:59:59.999`) : null;
 
     return this.documentos
-      .filter((documento) => (documento.estado ?? '') === 'Publicado' || (documento.estado ?? '') === 'Aprobado')
+      .filter((documento) => (documento.estado ?? '') === 'Publicado')
       .filter((documento) => {
         if (filtroTexto) {
           const coincideTexto = [

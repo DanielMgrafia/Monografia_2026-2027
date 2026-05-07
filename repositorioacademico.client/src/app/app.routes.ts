@@ -73,7 +73,7 @@ export const appRoutes: Routes = [
         canActivate: [permissionGuard],
         data: {
           title: 'Revision documental',
-          description: 'Aprueba o rechaza documentos pendientes de publicacion.',
+          description: 'Publica o rechaza documentos pendientes de publicacion.',
           permission: 'DOCUMENTO.PUBLICAR'
         }
       },

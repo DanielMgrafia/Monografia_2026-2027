@@ -54,7 +54,7 @@ export class DashboardHomeComponent implements OnInit {
 
   readonly publishedDocuments = computed(() =>
     this.documentos()
-      .filter((documento) => ['Publicado', 'Aprobado'].includes(documento.estado ?? ''))
+      .filter((documento) => (documento.estado ?? '') === 'Publicado')
       .sort((left, right) => new Date(right.fechaSubida).getTime() - new Date(left.fechaSubida).getTime())
       .slice(0, 5)
   );
@@ -62,10 +62,7 @@ export class DashboardHomeComponent implements OnInit {
   readonly summaryCards = computed<SummaryCard[]>(() => {
     const documentos = this.documentos();
     const pendientes = documentos.filter((documento) => (documento.estado ?? '') === 'Pendiente').length;
-    const publicados = documentos.filter((documento) =>
-      ['Publicado', 'Aprobado'].includes(documento.estado ?? '')
-    ).length;
-    const observados = documentos.filter((documento) => (documento.estado ?? '') === 'Observado').length;
+    const publicados = documentos.filter((documento) => (documento.estado ?? '') === 'Publicado').length;
     const tiposDisponibles = this.tiposDocumento().length;
     const facultadesDisponibles = this.facultades().length;
     const catalogosActivos = tiposDisponibles + facultadesDisponibles;
@@ -88,16 +85,6 @@ export class DashboardHomeComponent implements OnInit {
         description: 'Documentos visibles en el repositorio',
         tone: 'success',
         icon: 'OK'
-      });
-    }
-
-    if (this.canPublishDocuments()) {
-      cards.push({
-        label: 'Observados',
-        value: observados,
-        description: 'Requieren correcciones antes de publicar',
-        tone: 'warning',
-        icon: 'RV'
       });
     }
 
@@ -128,7 +115,7 @@ export class DashboardHomeComponent implements OnInit {
           return true;
         }
 
-        return ['Publicado', 'Aprobado'].includes(documento.estado ?? '');
+        return (documento.estado ?? '') === 'Publicado';
       })
       .slice()
       .sort((left, right) => new Date(right.fechaSubida).getTime() - new Date(left.fechaSubida).getTime())
@@ -163,10 +150,7 @@ export class DashboardHomeComponent implements OnInit {
   getStatusClass(status?: string): string {
     switch (status) {
       case 'Publicado':
-      case 'Aprobado':
         return 'published';
-      case 'Observado':
-        return 'observed';
       case 'Rechazado':
         return 'rejected';
       default:
@@ -189,10 +173,7 @@ export class DashboardHomeComponent implements OnInit {
 
     switch (documento.estado) {
       case 'Publicado':
-      case 'Aprobado':
         return `${autor} publico un documento en el repositorio.`;
-      case 'Observado':
-        return `${autor} tiene un documento observado para correccion.`;
       case 'Rechazado':
         return `${autor} tiene un documento rechazado.`;
       default:

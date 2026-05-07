@@ -145,7 +145,6 @@ export class ReviewDocumentsPageComponent implements OnInit {
   getStatusClass(status?: string): string {
     switch (status) {
       case 'Publicado':
-      case 'Aprobado':
         return 'published';
       case 'Rechazado':
         return 'rejected';

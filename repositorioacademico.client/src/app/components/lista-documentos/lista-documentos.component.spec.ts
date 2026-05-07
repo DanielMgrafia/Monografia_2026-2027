@@ -25,7 +25,7 @@ describe('ListaDocumentosComponent', () => {
       facultad: 'Ingenieria',
       rutaDocumento: 'archivo-demo.pdf',
       fechaSubida: new Date('2026-01-15'),
-      estado: 'Aprobado',
+      estado: 'Publicado',
       sePuedeDescargar: true,
       usuarioId: 99
     }

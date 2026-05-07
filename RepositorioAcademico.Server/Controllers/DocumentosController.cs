@@ -14,7 +14,7 @@ namespace RepositorioAcademico.Server.Controllers
     public class DocumentosController : ControllerBase
     {
         private static readonly string[] ExtensionesPermitidas = [".pdf", ".docx"];
-        private static readonly string[] EstadosPermitidos = ["Pendiente", "Publicado", "Observado", "Rechazado", "Aprobado"];
+        private static readonly string[] EstadosPermitidos = ["Pendiente", "Publicado", "Rechazado"];
         private const string PermisoVerRepositorio = "REPOSITORIO.VER";
         private const string PermisoSubirDocumento = "DOCUMENTO.SUBIR";
         private const string PermisoPublicarDocumento = "DOCUMENTO.PUBLICAR";
@@ -79,6 +79,13 @@ namespace RepositorioAcademico.Server.Controllers
                 return validacionCatalogos;
             }
 
+            var estado = request.Estado?.Trim();
+            if (!string.IsNullOrWhiteSpace(estado) &&
+                !EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
             var documento = new Documento
             {
                 Titulo = request.Titulo,
@@ -87,7 +94,7 @@ namespace RepositorioAcademico.Server.Controllers
                 FacultadId = request.FacultadId,
                 RutaDocumento = request.RutaDocumento,
                 FechaSubida = DateTime.UtcNow,
-                Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Pendiente" : request.Estado,
+                Estado = string.IsNullOrWhiteSpace(estado) ? "Pendiente" : estado,
                 SePuedeDescargar = request.SePuedeDescargar ?? true,
                 UsuarioId = usuarioActualId.Value
             };
@@ -441,13 +448,11 @@ namespace RepositorioAcademico.Server.Controllers
             {
                 return query.Where(documento =>
                     documento.Estado == "Publicado" ||
-                    documento.Estado == "Aprobado" ||
                     documento.UsuarioId == usuarioActualId.Value);
             }
 
             return query.Where(documento =>
-                documento.Estado == "Publicado" ||
-                documento.Estado == "Aprobado");
+                documento.Estado == "Publicado");
         }
 
         private async Task<ActionResult?> ValidarCatalogosAsync(int tipoDocumentoId, int facultadId)
@@ -519,5 +524,6 @@ namespace RepositorioAcademico.Server.Controllers
                 _ => "application/pdf"
             };
         }
+
     }
 }
