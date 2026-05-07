@@ -171,9 +171,15 @@
   margin-bottom: 4px;
 }
 
-.admin-table td span {
+.admin-table td span:not(.badge) {
   display: block;
   color: #52627e;
+  font-size: 12px;
+}
+
+.admin-table td .badge {
+  display: inline-flex;
+  color: inherit;
   font-size: 12px;
 }
 
