@@ -18,6 +18,14 @@ namespace RepositorioAcademico.Server.Contracts
 
         public string? RutaDocumento { get; set; }
 
+        public string? Tutor { get; set; }
+
+        public int? AnioPublicacion { get; set; }
+
+        public string? Descripcion { get; set; }
+
+        public string? PalabrasClave { get; set; }
+
         public DateTime FechaSubida { get; set; }
 
         public string? Estado { get; set; }
@@ -27,5 +35,7 @@ namespace RepositorioAcademico.Server.Contracts
         public int UsuarioId { get; set; }
 
         public UsuarioDocumentoDto? Usuario { get; set; }
+
+        public bool EsFavorito { get; set; }
     }
 }

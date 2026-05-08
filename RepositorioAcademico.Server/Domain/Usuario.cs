@@ -20,6 +20,12 @@ namespace RepositorioAcademico.Server.Domain
 
         public ICollection<Documento> Documentos { get; set; } = [];
 
+        public ICollection<DocumentoVista> DocumentosVistos { get; set; } = [];
+
+        public ICollection<DocumentoDescarga> DocumentosDescargados { get; set; } = [];
+
+        public ICollection<DocumentoFavorito> DocumentosFavoritos { get; set; } = [];
+
         public ICollection<UsuarioRol> UsuarioRoles { get; set; } = [];
     }
 }

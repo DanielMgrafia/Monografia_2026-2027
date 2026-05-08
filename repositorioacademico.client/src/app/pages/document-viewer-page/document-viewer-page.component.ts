@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BibliotecaService } from '../../services/biblioteca.service';
 import { Documento } from '../../models/documento';
 import { AuthService } from '../../services/auth.service';
 import { DocumentosService } from '../../services/documentos.service';
@@ -17,6 +18,7 @@ export class DocumentViewerPageComponent implements OnInit, OnDestroy {
   documento: Documento | null = null;
   loading = true;
   downloading = false;
+  updatingFavorite = false;
   error = '';
   previewUrl: SafeResourceUrl | null = null;
 
@@ -25,6 +27,7 @@ export class DocumentViewerPageComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly authService = inject(AuthService);
+  private readonly bibliotecaService = inject(BibliotecaService);
   private readonly documentosService = inject(DocumentosService);
 
   ngOnInit(): void {
@@ -38,6 +41,7 @@ export class DocumentViewerPageComponent implements OnInit, OnDestroy {
     this.documentosService.getDocumento(documentId).subscribe({
       next: (documento) => {
         this.documento = documento;
+        this.registrarVista(documento.id);
         this.loadPreview();
       },
       error: () => {
@@ -112,6 +116,47 @@ export class DocumentViewerPageComponent implements OnInit, OnDestroy {
     }
 
     return 'Descarga habilitada';
+  }
+
+  alternarFavorito(): void {
+    if (!this.documento) {
+      return;
+    }
+
+    this.updatingFavorite = true;
+    this.error = '';
+
+    this.bibliotecaService.alternarFavorito(this.documento.id).subscribe({
+      next: (response) => {
+        if (this.documento) {
+          this.documento = {
+            ...this.documento,
+            esFavorito: response.esFavorito
+          };
+        }
+        this.updatingFavorite = false;
+      },
+      error: () => {
+        this.error = 'No se pudo actualizar el favorito del documento.';
+        this.updatingFavorite = false;
+      }
+    });
+  }
+
+  getFavoriteButtonLabel(): string {
+    if (this.updatingFavorite) {
+      return 'Actualizando favorito...';
+    }
+
+    return this.documento?.esFavorito ? 'Quitar de favoritos' : 'Guardar en favoritos';
+  }
+
+  private registrarVista(documentoId: number): void {
+    this.bibliotecaService.registrarVista(documentoId).subscribe({
+      error: () => {
+        // No bloquea la vista del documento.
+      }
+    });
   }
 
   private loadPreview(): void {

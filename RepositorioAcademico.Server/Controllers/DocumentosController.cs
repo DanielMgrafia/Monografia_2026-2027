@@ -73,6 +73,41 @@ namespace RepositorioAcademico.Server.Controllers
                 return Unauthorized();
             }
 
+            var titulo = request.Titulo?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(titulo))
+            {
+                return BadRequest("El titulo es obligatorio.");
+            }
+
+            var autor = request.Autor?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(autor))
+            {
+                return BadRequest("El autor es obligatorio.");
+            }
+
+            var tutor = request.Tutor?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(tutor))
+            {
+                return BadRequest("El tutor es obligatorio.");
+            }
+
+            var descripcion = request.Descripcion?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(descripcion))
+            {
+                return BadRequest("La descripcion es obligatoria.");
+            }
+
+            var palabrasClave = request.PalabrasClave?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(palabrasClave))
+            {
+                return BadRequest("Las palabras clave son obligatorias.");
+            }
+
+            if (!request.AnioPublicacion.HasValue || request.AnioPublicacion < 1900 || request.AnioPublicacion > DateTime.UtcNow.Year + 1)
+            {
+                return BadRequest("El anio de publicacion no es valido.");
+            }
+
             var validacionCatalogos = await ValidarCatalogosAsync(request.TipoDocumentoId, request.FacultadId);
             if (validacionCatalogos is not null)
             {
@@ -88,11 +123,15 @@ namespace RepositorioAcademico.Server.Controllers
 
             var documento = new Documento
             {
-                Titulo = request.Titulo,
-                Autor = request.Autor,
+                Titulo = titulo,
+                Autor = autor,
                 TipoDocumentoId = request.TipoDocumentoId,
                 FacultadId = request.FacultadId,
                 RutaDocumento = request.RutaDocumento,
+                Tutor = tutor,
+                AnioPublicacion = request.AnioPublicacion,
+                Descripcion = descripcion,
+                PalabrasClave = palabrasClave,
                 FechaSubida = DateTime.UtcNow,
                 Estado = string.IsNullOrWhiteSpace(estado) ? "Pendiente" : estado,
                 SePuedeDescargar = request.SePuedeDescargar ?? true,
@@ -133,6 +172,41 @@ namespace RepositorioAcademico.Server.Controllers
                 return BadRequest("Solo se permiten archivos PDF y Word.");
             }
 
+            var titulo = request.Titulo?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(titulo))
+            {
+                return BadRequest("El titulo es obligatorio.");
+            }
+
+            var autor = request.Autor?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(autor))
+            {
+                return BadRequest("El autor es obligatorio.");
+            }
+
+            var tutor = request.Tutor?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(tutor))
+            {
+                return BadRequest("El tutor es obligatorio.");
+            }
+
+            var descripcion = request.Descripcion?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(descripcion))
+            {
+                return BadRequest("La descripcion es obligatoria.");
+            }
+
+            var palabrasClave = request.PalabrasClave?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(palabrasClave))
+            {
+                return BadRequest("Las palabras clave son obligatorias.");
+            }
+
+            if (!request.AnioPublicacion.HasValue || request.AnioPublicacion < 1900 || request.AnioPublicacion > DateTime.UtcNow.Year + 1)
+            {
+                return BadRequest("El anio de publicacion no es valido.");
+            }
+
             var validacionCatalogos = await ValidarCatalogosAsync(request.TipoDocumentoId, request.FacultadId);
             if (validacionCatalogos is not null)
             {
@@ -155,12 +229,15 @@ namespace RepositorioAcademico.Server.Controllers
 
             var documento = new Documento
             {
-
-                Titulo = request.Titulo,
-                Autor = request.Autor,
+                Titulo = titulo,
+                Autor = autor,
                 TipoDocumentoId = request.TipoDocumentoId,
                 FacultadId = request.FacultadId,
                 RutaDocumento = nombreArchivo,
+                Tutor = tutor,
+                AnioPublicacion = request.AnioPublicacion,
+                Descripcion = descripcion,
+                PalabrasClave = palabrasClave,
                 FechaSubida = fechaLocal,
                 Estado = "Pendiente",
                 SePuedeDescargar = request.SePuedeDescargar ?? true,
@@ -216,6 +293,19 @@ namespace RepositorioAcademico.Server.Controllers
                 return Forbid();
             }
 
+            var usuarioActualId = ObtenerUsuarioActualId();
+            if (usuarioActualId.HasValue)
+            {
+                _context.DocumentoDescargas.Add(new DocumentoDescarga
+                {
+                    DocumentoId = documento.Id,
+                    UsuarioId = usuarioActualId.Value,
+                    FechaDescarga = DateTime.UtcNow
+                });
+
+                await _context.SaveChangesAsync();
+            }
+
             return ConstruirRespuestaArchivo(documento, forzarDescarga: true);
         }
 
@@ -239,8 +329,10 @@ namespace RepositorioAcademico.Server.Controllers
             if (!string.IsNullOrWhiteSpace(titulo))
             {
                 query = query.Where(documento =>
-                    documento.Titulo != null &&
-                    documento.Titulo.Contains(titulo));
+                    (documento.Titulo != null && documento.Titulo.Contains(titulo)) ||
+                    (documento.Descripcion != null && documento.Descripcion.Contains(titulo)) ||
+                    (documento.PalabrasClave != null && documento.PalabrasClave.Contains(titulo)) ||
+                    (documento.Tutor != null && documento.Tutor.Contains(titulo)));
             }
 
             if (!string.IsNullOrWhiteSpace(autor))
@@ -346,6 +438,29 @@ namespace RepositorioAcademico.Server.Controllers
                 return BadRequest("El autor es obligatorio.");
             }
 
+            var tutor = request.Tutor?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(tutor))
+            {
+                return BadRequest("El tutor es obligatorio.");
+            }
+
+            var descripcion = request.Descripcion?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(descripcion))
+            {
+                return BadRequest("La descripcion es obligatoria.");
+            }
+
+            var palabrasClave = request.PalabrasClave?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(palabrasClave))
+            {
+                return BadRequest("Las palabras clave son obligatorias.");
+            }
+
+            if (!request.AnioPublicacion.HasValue || request.AnioPublicacion < 1900 || request.AnioPublicacion > DateTime.UtcNow.Year + 1)
+            {
+                return BadRequest("El anio de publicacion no es valido.");
+            }
+
             var estado = request.Estado?.Trim() ?? string.Empty;
             if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
             {
@@ -368,6 +483,10 @@ namespace RepositorioAcademico.Server.Controllers
             documento.Autor = autor;
             documento.TipoDocumentoId = request.TipoDocumentoId;
             documento.FacultadId = request.FacultadId;
+            documento.Tutor = tutor;
+            documento.AnioPublicacion = request.AnioPublicacion;
+            documento.Descripcion = descripcion;
+            documento.PalabrasClave = palabrasClave;
             documento.Estado = estado;
             documento.SePuedeDescargar = request.SePuedeDescargar;
 
@@ -404,6 +523,8 @@ namespace RepositorioAcademico.Server.Controllers
 
         private IQueryable<DocumentoDto> ConstruirConsultaDocumentos()
         {
+            var usuarioActualId = ObtenerUsuarioActualId();
+
             return ConstruirConsultaDocumentosVisiblesEntidad()
                 .Include(documento => documento.TipoDocumento)
                 .Include(documento => documento.Facultad)
@@ -418,6 +539,10 @@ namespace RepositorioAcademico.Server.Controllers
                     FacultadId = documento.FacultadId,
                     Facultad = documento.Facultad != null ? documento.Facultad.Descripcion : null,
                     RutaDocumento = documento.RutaDocumento,
+                    Tutor = documento.Tutor,
+                    AnioPublicacion = documento.AnioPublicacion,
+                    Descripcion = documento.Descripcion,
+                    PalabrasClave = documento.PalabrasClave,
                     FechaSubida = documento.FechaSubida,
                     Estado = documento.Estado,
                     SePuedeDescargar = documento.SePuedeDescargar,
@@ -430,7 +555,9 @@ namespace RepositorioAcademico.Server.Controllers
                             Nombres = documento.Usuario.Nombres,
                             Apellidos = documento.Usuario.Apellidos,
                             Correo = documento.Usuario.Correo
-                        }
+                        },
+                    EsFavorito = usuarioActualId.HasValue &&
+                        documento.Favoritos.Any(favorito => favorito.UsuarioId == usuarioActualId.Value)
                 });
         }
 

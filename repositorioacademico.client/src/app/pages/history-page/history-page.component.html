@@ -1,0 +1,91 @@
+<section class="history-shell">
+  <header class="history-header">
+    <div>
+      <h3>Mi historial de biblioteca</h3>
+      <p>Consulta tus documentos vistos, descargas recientes, favoritos y sugerencias personalizadas.</p>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="cargarPantalla()" [disabled]="cargando">
+      {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+    </button>
+  </header>
+
+  <div *ngIf="error" class="message error">{{ error }}</div>
+
+  <section class="recommendations-card" *ngIf="recomendaciones.length > 0">
+    <h4>Recomendaciones para ti</h4>
+    <div class="recommendations-grid">
+      <article class="recommendation-item" *ngFor="let documento of recomendaciones">
+        <span class="recommendation-pill">{{ documento.facultad || 'Sin facultad' }}</span>
+        <strong>{{ documento.titulo }}</strong>
+        <p>{{ documento.descripcion || 'Sin descripcion registrada.' }}</p>
+        <button type="button" class="open-button" (click)="abrirDocumento(documento)">
+          Abrir documento
+        </button>
+      </article>
+    </div>
+  </section>
+
+  <div class="history-grid" *ngIf="tieneContenido(); else emptyState">
+    <section class="history-card">
+      <h4>Favoritos</h4>
+      <div class="history-list" *ngIf="!getActividadVacia(historial.favoritos); else emptyFavoritos">
+        <article class="history-item" *ngFor="let item of historial.favoritos">
+          <div>
+            <strong>{{ item.documento.titulo }}</strong>
+            <p>{{ item.documento.autor }} · {{ item.documento.facultad || 'Sin facultad' }}</p>
+            <small>{{ item.fechaActividad | date:"dd/MM/y HH:mm" }}</small>
+          </div>
+          <button type="button" class="open-button" (click)="abrirDocumento(item.documento)">Abrir</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="history-card">
+      <h4>Documentos vistos</h4>
+      <div class="history-list" *ngIf="!getActividadVacia(historial.vistos); else emptyVistos">
+        <article class="history-item" *ngFor="let item of historial.vistos">
+          <div>
+            <strong>{{ item.documento.titulo }}</strong>
+            <p>{{ item.documento.autor }} · {{ item.documento.tipoDocumento }}</p>
+            <small>{{ item.fechaActividad | date:"dd/MM/y HH:mm" }}</small>
+          </div>
+          <button type="button" class="open-button" (click)="abrirDocumento(item.documento)">Abrir</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="history-card">
+      <h4>Descargas</h4>
+      <div class="history-list" *ngIf="!getActividadVacia(historial.descargas); else emptyDescargas">
+        <article class="history-item" *ngFor="let item of historial.descargas">
+          <div>
+            <strong>{{ item.documento.titulo }}</strong>
+            <p>{{ item.documento.autor }} · {{ item.documento.facultad || 'Sin facultad' }}</p>
+            <small>{{ item.fechaActividad | date:"dd/MM/y HH:mm" }}</small>
+          </div>
+          <button type="button" class="open-button" (click)="abrirDocumento(item.documento)">Abrir</button>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>
+
+<ng-template #emptyState>
+  <div class="empty-state">
+    <strong>Aun no tienes actividad registrada.</strong>
+    <p>Explora el repositorio, abre documentos y guarda favoritos para empezar a construir tu historial.</p>
+  </div>
+</ng-template>
+
+<ng-template #emptyFavoritos>
+  <p class="empty-copy">Aun no has guardado favoritos.</p>
+</ng-template>
+
+<ng-template #emptyVistos>
+  <p class="empty-copy">Aun no has visualizado documentos.</p>
+</ng-template>
+
+<ng-template #emptyDescargas>
+  <p class="empty-copy">Aun no tienes descargas registradas.</p>
+</ng-template>

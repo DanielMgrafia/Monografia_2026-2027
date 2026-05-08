@@ -13,7 +13,7 @@
         <input id="filtroTextoRepositorio"
                type="text"
                [(ngModel)]="filtroTexto"
-               placeholder="Titulo, autor, facultad o tipo..." />
+               placeholder="Titulo, autor, facultad, palabras clave o tutor..." />
       </div>
 
       <div class="filter-group">
@@ -52,6 +52,32 @@
     </div>
   </div>
 
+  <section class="recommendations-card" *ngIf="recomendaciones.length > 0">
+    <div class="recommendations-header">
+      <div>
+        <h4>Recomendaciones inteligentes</h4>
+        <p>Documentos sugeridos segun tu facultad de interes, palabras clave e historial de uso.</p>
+      </div>
+    </div>
+
+    <div class="recommendations-grid">
+      <article class="recommendation-item" *ngFor="let doc of recomendaciones">
+        <span class="recommendation-pill">{{ doc.facultad || 'Sin facultad' }}</span>
+        <strong>{{ doc.titulo }}</strong>
+        <p>{{ doc.descripcion || 'Sin descripcion registrada.' }}</p>
+        <small>{{ doc.autor }} · {{ doc.tipoDocumento }} · {{ doc.anioPublicacion || 'Anio no definido' }}</small>
+        <div class="recommendation-actions">
+          <button class="ghost-button" type="button" (click)="alternarFavorito(doc)" [disabled]="favoritoCambiandoId === doc.id">
+            {{ getFavoritoLabel(doc) }}
+          </button>
+          <button class="btn-ver" type="button" (click)="abrirVisor(doc)">
+            Ver documento
+          </button>
+        </div>
+      </article>
+    </div>
+  </section>
+
   <div *ngIf="error" class="message error">{{ error }}</div>
 
   <div class="tabla-wrapper" *ngIf="documentosFiltrados.length > 0; else emptyState">
@@ -84,9 +110,14 @@
             </span>
           </td>
           <td class="text-center">
-            <button class="btn-ver" (click)="abrirVisor(doc)">
-              Ver documento
-            </button>
+            <div class="row-actions">
+              <button class="ghost-button" type="button" (click)="alternarFavorito(doc)" [disabled]="favoritoCambiandoId === doc.id">
+                {{ getFavoritoLabel(doc) }}
+              </button>
+              <button class="btn-ver" type="button" (click)="abrirVisor(doc)">
+                Ver documento
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>

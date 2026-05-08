@@ -15,6 +15,13 @@
         {{ downloading ? 'Descargando...' : 'Descargar archivo' }}
       </button>
 
+      <button type="button"
+              class="favorite-button"
+              [disabled]="updatingFavorite"
+              (click)="alternarFavorito()">
+        {{ getFavoriteButtonLabel() }}
+      </button>
+
       <button type="button" class="close-button" (click)="closeWindow()">
         Cerrar ventana
       </button>
@@ -25,11 +32,25 @@
     <div class="meta-group">
       <span class="meta-pill">{{ documento?.tipoDocumento || 'Tipo no definido' }}</span>
       <span class="meta-pill">{{ documento?.facultad || 'Facultad no definida' }}</span>
+      <span class="meta-pill">{{ documento?.tutor || 'Tutor no definido' }}</span>
+      <span class="meta-pill">{{ documento?.anioPublicacion || 'Anio no definido' }}</span>
       <span class="meta-pill" [class.meta-pill-restricted]="!isDownloadEnabled()">
         {{ getDownloadStatusLabel() }}
       </span>
     </div>
   </div>
+
+  <section class="viewer-summary" *ngIf="documento">
+    <article class="summary-card">
+      <h2>Descripcion</h2>
+      <p>{{ documento.descripcion || 'Sin descripcion registrada.' }}</p>
+    </article>
+
+    <article class="summary-card">
+      <h2>Palabras clave</h2>
+      <p>{{ documento.palabrasClave || 'Sin palabras clave registradas.' }}</p>
+    </article>
+  </section>
 
   <div class="viewer-body">
     <div *ngIf="loading" class="viewer-message">

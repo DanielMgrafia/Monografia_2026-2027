@@ -10,6 +10,14 @@ namespace RepositorioAcademico.Server.Contracts
 
         public int FacultadId { get; set; }
 
+        public string? Tutor { get; set; }
+
+        public int? AnioPublicacion { get; set; }
+
+        public string? Descripcion { get; set; }
+
+        public string? PalabrasClave { get; set; }
+
         public string? Estado { get; set; }
 
         public bool SePuedeDescargar { get; set; }

@@ -3,6 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { BibliotecaService } from '../../services/biblioteca.service';
 import { Catalogo } from '../../models/catalogo';
 import { Documento } from '../../models/documento';
 import { AuthService } from '../../services/auth.service';
@@ -18,6 +19,7 @@ import { DocumentosService } from '../../services/documentos.service';
 })
 export class ListaDocumentosComponent implements OnInit {
   documentos: Documento[] = [];
+  recomendaciones: Documento[] = [];
   tiposDocumento: Catalogo[] = [];
   facultades: Catalogo[] = [];
 
@@ -28,11 +30,13 @@ export class ListaDocumentosComponent implements OnInit {
   filtroFechaHasta = '';
 
   cargando = false;
+  favoritoCambiandoId: number | null = null;
   error = '';
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly bibliotecaService = inject(BibliotecaService);
   private readonly catalogosService = inject(CatalogosService);
   private readonly documentosService = inject(DocumentosService);
 
@@ -49,7 +53,10 @@ export class ListaDocumentosComponent implements OnInit {
             documento.titulo,
             documento.autor,
             documento.tipoDocumento,
-            documento.facultad
+            documento.facultad,
+            documento.tutor,
+            documento.descripcion,
+            documento.palabrasClave
           ].some((valor) => valor?.toLowerCase().includes(filtroTexto));
 
           if (!coincideTexto) {
@@ -92,11 +99,13 @@ export class ListaDocumentosComponent implements OnInit {
 
     forkJoin({
       documentos: this.documentosService.getDocumentos(),
+      recomendaciones: this.bibliotecaService.getRecomendaciones(),
       tiposDocumento: this.catalogosService.getTiposDocumento(),
       facultades: this.catalogosService.getFacultades()
     }).subscribe({
-      next: ({ documentos, tiposDocumento, facultades }) => {
+      next: ({ documentos, recomendaciones, tiposDocumento, facultades }) => {
         this.documentos = documentos;
+        this.recomendaciones = recomendaciones;
         this.tiposDocumento = tiposDocumento;
         this.facultades = facultades;
         this.cargando = false;
@@ -138,5 +147,34 @@ export class ListaDocumentosComponent implements OnInit {
     }
 
     return 'Descargable';
+  }
+
+  alternarFavorito(documento: Documento): void {
+    this.favoritoCambiandoId = documento.id;
+    this.error = '';
+
+    this.bibliotecaService.alternarFavorito(documento.id).subscribe({
+      next: (response) => {
+        this.documentos = this.documentos.map((item) =>
+          item.id === documento.id ? { ...item, esFavorito: response.esFavorito } : item
+        );
+        this.recomendaciones = this.recomendaciones.map((item) =>
+          item.id === documento.id ? { ...item, esFavorito: response.esFavorito } : item
+        );
+        this.favoritoCambiandoId = null;
+      },
+      error: () => {
+        this.error = 'No se pudo actualizar el favorito.';
+        this.favoritoCambiandoId = null;
+      }
+    });
+  }
+
+  getFavoritoLabel(documento: Documento): string {
+    if (this.favoritoCambiandoId === documento.id) {
+      return 'Guardando...';
+    }
+
+    return documento.esFavorito ? 'Quitar favorito' : 'Guardar favorito';
   }
 }

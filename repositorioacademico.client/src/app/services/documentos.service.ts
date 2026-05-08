@@ -39,6 +39,10 @@ export class DocumentosService {
     autor: string;
     tipoDocumentoId: number;
     facultadId: number;
+    tutor: string;
+    anioPublicacion: number;
+    descripcion: string;
+    palabrasClave: string;
     estado: string;
     sePuedeDescargar: boolean;
   }): Observable<Documento> {

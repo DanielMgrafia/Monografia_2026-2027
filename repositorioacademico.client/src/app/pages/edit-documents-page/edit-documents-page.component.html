@@ -13,7 +13,7 @@
         <input id="filtroTextoEdicion"
                type="text"
                [(ngModel)]="filtroTexto"
-               placeholder="Titulo, autor, facultad, tipo o estado..." />
+               placeholder="Titulo, autor, facultad, tutor o palabras clave..." />
       </div>
 
       <div class="filter-group">
@@ -157,6 +157,16 @@
         </div>
 
         <div class="editor-group">
+          <label for="editTutor">Tutor</label>
+          <input id="editTutor" type="text" [(ngModel)]="editModel.tutor" name="editTutor" required />
+        </div>
+
+        <div class="editor-group">
+          <label for="editAnioPublicacion">Anio de publicacion</label>
+          <input id="editAnioPublicacion" type="number" [(ngModel)]="editModel.anioPublicacion" name="editAnioPublicacion" required />
+        </div>
+
+        <div class="editor-group">
           <label>Archivo actual</label>
           <div class="file-pill">{{ documento.rutaDocumento || 'Sin archivo asociado' }}</div>
         </div>
@@ -179,6 +189,16 @@
               {{ estado }}
             </option>
           </select>
+        </div>
+
+        <div class="editor-group editor-group-full">
+          <label for="editDescripcion">Descripcion</label>
+          <textarea id="editDescripcion" [(ngModel)]="editModel.descripcion" name="editDescripcion" rows="4" required></textarea>
+        </div>
+
+        <div class="editor-group editor-group-full">
+          <label for="editPalabrasClave">Palabras clave</label>
+          <input id="editPalabrasClave" type="text" [(ngModel)]="editModel.palabrasClave" name="editPalabrasClave" required />
         </div>
       </div>
 

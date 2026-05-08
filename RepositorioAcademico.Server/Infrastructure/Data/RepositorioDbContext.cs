@@ -26,6 +26,12 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
 
         public DbSet<RolPermiso> RolPermisos { get; set; }
 
+        public DbSet<DocumentoVista> DocumentoVistas { get; set; }
+
+        public DbSet<DocumentoDescarga> DocumentoDescargas { get; set; }
+
+        public DbSet<DocumentoFavorito> DocumentoFavoritos { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -64,6 +70,15 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 entity.Property(item => item.RutaDocumento)
                     .HasMaxLength(260);
 
+                entity.Property(item => item.Tutor)
+                    .HasMaxLength(200);
+
+                entity.Property(item => item.Descripcion)
+                    .HasMaxLength(1500);
+
+                entity.Property(item => item.PalabrasClave)
+                    .HasMaxLength(500);
+
                 entity.Property(item => item.Estado)
                     .HasMaxLength(50);
 
@@ -84,6 +99,57 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                     .WithMany(item => item.Documentos)
                     .HasForeignKey(item => item.UsuarioId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<DocumentoVista>(entity =>
+            {
+                entity.Property(item => item.FechaVista)
+                    .IsRequired();
+
+                entity.HasOne(item => item.Documento)
+                    .WithMany(item => item.Vistas)
+                    .HasForeignKey(item => item.DocumentoId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(item => item.Usuario)
+                    .WithMany(item => item.DocumentosVistos)
+                    .HasForeignKey(item => item.UsuarioId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<DocumentoDescarga>(entity =>
+            {
+                entity.Property(item => item.FechaDescarga)
+                    .IsRequired();
+
+                entity.HasOne(item => item.Documento)
+                    .WithMany(item => item.Descargas)
+                    .HasForeignKey(item => item.DocumentoId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(item => item.Usuario)
+                    .WithMany(item => item.DocumentosDescargados)
+                    .HasForeignKey(item => item.UsuarioId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<DocumentoFavorito>(entity =>
+            {
+                entity.Property(item => item.FechaMarcado)
+                    .IsRequired();
+
+                entity.HasIndex(item => new { item.UsuarioId, item.DocumentoId })
+                    .IsUnique();
+
+                entity.HasOne(item => item.Documento)
+                    .WithMany(item => item.Favoritos)
+                    .HasForeignKey(item => item.DocumentoId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(item => item.Usuario)
+                    .WithMany(item => item.DocumentosFavoritos)
+                    .HasForeignKey(item => item.UsuarioId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Usuario>(entity =>
@@ -210,6 +276,7 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 new Rol { Id = 4, Nombre = "Decano", Descripcion = "Puede revisar y publicar documentos", Estado = "Activo" },
                 new Rol { Id = 5, Nombre = "Director", Descripcion = "Puede revisar y publicar documentos", Estado = "Activo" }
             );
+
 
             modelBuilder.Entity<RolPermiso>().HasData(
                 new RolPermiso { RolId = 1, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },

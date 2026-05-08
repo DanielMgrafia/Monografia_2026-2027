@@ -15,6 +15,10 @@ interface DocumentoEditModel {
   autor: string;
   tipoDocumentoId: number | null;
   facultadId: number | null;
+  tutor: string;
+  anioPublicacion: number | null;
+  descripcion: string;
+  palabrasClave: string;
   estado: EstadoDocumento;
   sePuedeDescargar: boolean;
 }
@@ -65,7 +69,10 @@ export class EditDocumentsPageComponent implements OnInit {
             documento.autor,
             documento.tipoDocumento,
             documento.facultad,
-            documento.estado
+            documento.estado,
+            documento.tutor,
+            documento.descripcion,
+            documento.palabrasClave
           ].some((valor) => valor?.toLowerCase().includes(filtroTexto));
 
           if (!coincideTexto) {
@@ -142,6 +149,10 @@ export class EditDocumentsPageComponent implements OnInit {
       autor: documento.autor?.trim() ?? '',
       tipoDocumentoId: documento.tipoDocumentoId,
       facultadId: documento.facultadId,
+      tutor: documento.tutor?.trim() ?? '',
+      anioPublicacion: documento.anioPublicacion ?? null,
+      descripcion: documento.descripcion?.trim() ?? '',
+      palabrasClave: documento.palabrasClave?.trim() ?? '',
       estado: this.normalizeEstado(documento.estado),
       sePuedeDescargar: documento.sePuedeDescargar !== false
     };
@@ -160,8 +171,15 @@ export class EditDocumentsPageComponent implements OnInit {
     this.mensaje = '';
     this.error = '';
 
-    if (!this.editModel.titulo.trim() || !this.editModel.autor.trim()) {
-      this.error = 'El titulo y el autor son obligatorios para guardar cambios.';
+    if (
+      !this.editModel.titulo.trim() ||
+      !this.editModel.autor.trim() ||
+      !this.editModel.tutor.trim() ||
+      !this.editModel.descripcion.trim() ||
+      !this.editModel.palabrasClave.trim() ||
+      this.editModel.anioPublicacion == null
+    ) {
+      this.error = 'Completa los metadatos obligatorios antes de guardar cambios.';
       return;
     }
 
@@ -177,6 +195,10 @@ export class EditDocumentsPageComponent implements OnInit {
       autor: this.editModel.autor.trim(),
       tipoDocumentoId: this.editModel.tipoDocumentoId,
       facultadId: this.editModel.facultadId,
+      tutor: this.editModel.tutor.trim(),
+      anioPublicacion: this.editModel.anioPublicacion,
+      descripcion: this.editModel.descripcion.trim(),
+      palabrasClave: this.editModel.palabrasClave.trim(),
       estado: this.editModel.estado,
       sePuedeDescargar: this.editModel.sePuedeDescargar
     }).subscribe({
@@ -233,6 +255,10 @@ export class EditDocumentsPageComponent implements OnInit {
         autor: actualizado.autor?.trim() ?? '',
         tipoDocumentoId: actualizado.tipoDocumentoId,
         facultadId: actualizado.facultadId,
+        tutor: actualizado.tutor?.trim() ?? '',
+        anioPublicacion: actualizado.anioPublicacion ?? null,
+        descripcion: actualizado.descripcion?.trim() ?? '',
+        palabrasClave: actualizado.palabrasClave?.trim() ?? '',
         estado: this.normalizeEstado(actualizado.estado),
         sePuedeDescargar: actualizado.sePuedeDescargar !== false
       };
@@ -255,6 +281,10 @@ export class EditDocumentsPageComponent implements OnInit {
       autor: '',
       tipoDocumentoId: null,
       facultadId: null,
+      tutor: '',
+      anioPublicacion: null,
+      descripcion: '',
+      palabrasClave: '',
       estado: 'Pendiente',
       sePuedeDescargar: true
     };

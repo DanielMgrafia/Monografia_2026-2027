@@ -22,6 +22,10 @@ export class SubirDocumentoComponent implements OnInit {
   autor = '';
   tipoDocumentoId: number | null = null;
   facultadId: number | null = null;
+  tutor = '';
+  anioPublicacion: number | null = null;
+  descripcion = '';
+  palabrasClave = '';
   sePuedeDescargar = true;
   archivoSeleccionado: File | null = null;
 
@@ -147,7 +151,11 @@ export class SubirDocumentoComponent implements OnInit {
       !this.titulo.trim() ||
       !this.autor.trim() ||
       this.tipoDocumentoId == null ||
-      this.facultadId == null
+      this.facultadId == null ||
+      !this.tutor.trim() ||
+      this.anioPublicacion == null ||
+      !this.descripcion.trim() ||
+      !this.palabrasClave.trim()
     ) {
       this.error = 'Completa todos los campos obligatorios.';
       return;
@@ -170,6 +178,10 @@ export class SubirDocumentoComponent implements OnInit {
     formData.append('autor', this.autor.trim());
     formData.append('tipoDocumentoId', this.tipoDocumentoId.toString());
     formData.append('facultadId', this.facultadId.toString());
+    formData.append('tutor', this.tutor.trim());
+    formData.append('anioPublicacion', this.anioPublicacion.toString());
+    formData.append('descripcion', this.descripcion.trim());
+    formData.append('palabrasClave', this.palabrasClave.trim());
     formData.append('sePuedeDescargar', String(this.sePuedeDescargar));
 
     this.cargando = true;
@@ -192,6 +204,10 @@ export class SubirDocumentoComponent implements OnInit {
     this.autor = '';
     this.tipoDocumentoId = null;
     this.facultadId = null;
+    this.tutor = '';
+    this.anioPublicacion = null;
+    this.descripcion = '';
+    this.palabrasClave = '';
     this.sePuedeDescargar = true;
     this.archivoSeleccionado = null;
     if (this.archivoInput) {

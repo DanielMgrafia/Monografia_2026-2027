@@ -67,6 +67,7 @@ export class DashboardLayoutComponent implements OnInit {
         icon: 'ED'
       },
       { label: 'Repositorio', route: '/repositorio', permission: 'REPOSITORIO.VER', icon: 'RP' },
+      { label: 'Mi historial', route: '/historial-biblioteca', permission: 'REPOSITORIO.VER', icon: 'HB' },
       { label: 'Subir documentos', route: '/subir-documento', permission: 'DOCUMENTO.SUBIR', icon: 'UP' },
       { label: 'Usuarios', route: '/usuarios', permission: 'USUARIO.GESTIONAR', icon: 'US' },
       { label: 'Roles y permisos', route: '/roles', permission: 'ROL.GESTIONAR', icon: 'RL' }
@@ -105,7 +106,6 @@ export class DashboardLayoutComponent implements OnInit {
     return [
       { label: 'Correo', value: user.correo },
       { label: 'Carnet', value: user.carnet },
-      { label: 'Estado', value: user.estado },
       {
         label: 'Roles',
         value: user.roles.length > 0 ? user.roles.map((role) => role.nombre).join(', ') : 'Sin roles asignados'
@@ -214,7 +214,8 @@ export class DashboardLayoutComponent implements OnInit {
   }
 
   isCatalogRouteActive(): boolean {
-    return this.router.url.startsWith('/tipos-documento') || this.router.url.startsWith('/facultades');
+    return this.router.url.startsWith('/tipos-documento') ||
+      this.router.url.startsWith('/facultades');
   }
 
   handleNavigationSelection(): void {

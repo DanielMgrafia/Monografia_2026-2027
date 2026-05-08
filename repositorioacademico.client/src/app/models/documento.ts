@@ -14,9 +14,14 @@ export interface Documento {
   facultadId: number;
   facultad?: string;
   rutaDocumento?: string;
+  tutor?: string;
+  anioPublicacion?: number | null;
+  descripcion?: string;
+  palabrasClave?: string;
   fechaSubida: string | Date;
   estado?: string;
   sePuedeDescargar?: boolean;
   usuarioId: number;
   usuario?: UsuarioDocumento;
+  esFavorito?: boolean;
 }

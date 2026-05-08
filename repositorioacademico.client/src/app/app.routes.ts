@@ -10,6 +10,7 @@ import { SubirDocumentoComponent } from './components/subir-documento/subir-docu
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
 import { DocumentViewerPageComponent } from './pages/document-viewer-page/document-viewer-page.component';
 import { EditDocumentsPageComponent } from './pages/edit-documents-page/edit-documents-page.component';
+import { HistoryPageComponent } from './pages/history-page/history-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { ReviewDocumentsPageComponent } from './pages/review-documents-page/review-documents-page.component';
 import { RolesPageComponent } from './pages/roles-page/roles-page.component';
@@ -55,6 +56,16 @@ export const appRoutes: Routes = [
           title: 'Repositorio academico',
           description: 'Consulta y filtra los documentos disponibles en la plataforma.',
           permission: 'REPOSITORIO.VER'
+        }
+      },
+      {
+        path: 'historial-biblioteca',
+        component: HistoryPageComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Historial de biblioteca',
+          description: 'Consulta tus favoritos, documentos vistos, descargas y recomendaciones.',
+          permissions: ['REPOSITORIO.VER', 'DOCUMENTO.SUBIR', 'DOCUMENTO.PUBLICAR']
         }
       },
       {
