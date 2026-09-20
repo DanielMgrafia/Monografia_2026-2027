@@ -3,7 +3,12 @@ import { authGuard } from './guards/auth.guard';
 import { guestGuard } from './guards/guest.guard';
 import { permissionGuard } from './guards/permission.guard';
 import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-layout.component';
+import { CarreraLineasInvestigacionComponent } from './components/carrera-lineas-investigacion/carrera-lineas-investigacion.component';
+import { CrearAreaConocimientoComponent } from './components/crear-area-conocimiento/crear-area-conocimiento.component';
+import { CrearCarreraComponent } from './components/crear-carrera/crear-carrera.component';
 import { CrearFacultadComponent } from './components/crear-facultad/crear-facultad.component';
+import { CrearLineaInvestigacionComponent } from './components/crear-linea-investigacion/crear-linea-investigacion.component';
+import { CrearSublineaInvestigacionComponent } from './components/crear-sublinea-investigacion/crear-sublinea-investigacion.component';
 import { CrearTipoDocumentoComponent } from './components/crear-tipo-documento/crear-tipo-documento.component';
 import { ListaDocumentosComponent } from './components/lista-documentos/lista-documentos.component';
 import { SubirDocumentoComponent } from './components/subir-documento/subir-documento.component';
@@ -115,6 +120,56 @@ export const appRoutes: Routes = [
         data: {
           title: 'Facultades',
           description: 'Administra el catalogo de facultades del sistema.',
+          permission: 'CATALOGO.GESTIONAR'
+        }
+      },
+      {
+        path: 'areas-conocimiento',
+        component: CrearAreaConocimientoComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Areas de conocimiento',
+          description: 'Administra el catalogo de areas academicas del sistema.',
+          permission: 'CATALOGO.GESTIONAR'
+        }
+      },
+      {
+        path: 'lineas-investigacion',
+        component: CrearLineaInvestigacionComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Lineas de investigacion',
+          description: 'Administra el catalogo de lineas de investigacion academica.',
+          permission: 'CATALOGO.GESTIONAR'
+        }
+      },
+      {
+        path: 'sublineas-investigacion',
+        component: CrearSublineaInvestigacionComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Sublineas de investigacion',
+          description: 'Administra sublineas asociadas a cada linea de investigacion.',
+          permission: 'CATALOGO.GESTIONAR'
+        }
+      },
+      {
+        path: 'carreras',
+        component: CrearCarreraComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Carreras',
+          description: 'Administra carreras asociadas a facultades y areas de conocimiento.',
+          permission: 'CATALOGO.GESTIONAR'
+        }
+      },
+      {
+        path: 'carrera-lineas-investigacion',
+        component: CarreraLineasInvestigacionComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Lineas por carrera',
+          description: 'Asocia lineas de investigacion a cada carrera academica.',
           permission: 'CATALOGO.GESTIONAR'
         }
       },

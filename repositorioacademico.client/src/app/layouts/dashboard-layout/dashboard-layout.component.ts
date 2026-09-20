@@ -85,7 +85,12 @@ export class DashboardLayoutComponent implements OnInit {
   readonly catalogItems = computed<MenuItem[]>(() => {
     const items: MenuItem[] = [
       { label: 'Tipos de documento', route: '/tipos-documento', permission: 'CATALOGO.GESTIONAR', icon: 'TD' },
-      { label: 'Facultades', route: '/facultades', permission: 'CATALOGO.GESTIONAR', icon: 'FC' }
+      { label: 'Facultades', route: '/facultades', permission: 'CATALOGO.GESTIONAR', icon: 'FC' },
+      { label: 'Areas de conocimiento', route: '/areas-conocimiento', permission: 'CATALOGO.GESTIONAR', icon: 'AC' },
+      { label: 'Lineas de investigacion', route: '/lineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'LI' },
+      { label: 'Sublineas de investigacion', route: '/sublineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'SI' },
+      { label: 'Carreras', route: '/carreras', permission: 'CATALOGO.GESTIONAR', icon: 'CR' },
+      { label: 'Lineas por carrera', route: '/carrera-lineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'CL' }
     ];
 
     return items.filter((item) => {
@@ -215,7 +220,12 @@ export class DashboardLayoutComponent implements OnInit {
 
   isCatalogRouteActive(): boolean {
     return this.router.url.startsWith('/tipos-documento') ||
-      this.router.url.startsWith('/facultades');
+      this.router.url.startsWith('/facultades') ||
+      this.router.url.startsWith('/areas-conocimiento') ||
+      this.router.url.startsWith('/lineas-investigacion') ||
+      this.router.url.startsWith('/sublineas-investigacion') ||
+      this.router.url.startsWith('/carreras') ||
+      this.router.url.startsWith('/carrera-lineas-investigacion');
   }
 
   handleNavigationSelection(): void {

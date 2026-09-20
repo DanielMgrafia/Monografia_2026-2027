@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { Catalogo } from '../../models/catalogo';
 import { Documento } from '../../models/documento';
 import { AuthService } from '../../services/auth.service';
+import { BibliotecaService } from '../../services/biblioteca.service';
 import { CatalogosService } from '../../services/catalogos.service';
 import { DocumentosService } from '../../services/documentos.service';
 import { ListaDocumentosComponent } from './lista-documentos.component';
@@ -11,6 +12,7 @@ import { ListaDocumentosComponent } from './lista-documentos.component';
 describe('ListaDocumentosComponent', () => {
   let documentosServiceSpy: jasmine.SpyObj<DocumentosService>;
   let catalogosServiceSpy: jasmine.SpyObj<CatalogosService>;
+  let bibliotecaServiceSpy: jasmine.SpyObj<BibliotecaService>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
 
@@ -39,12 +41,17 @@ describe('ListaDocumentosComponent', () => {
       'getTiposDocumento',
       'getFacultades'
     ]);
+    bibliotecaServiceSpy = jasmine.createSpyObj<BibliotecaService>('BibliotecaService', [
+      'getRecomendaciones',
+      'alternarFavorito'
+    ]);
     documentosServiceSpy = jasmine.createSpyObj<DocumentosService>(
       'DocumentosService',
       ['getDocumentos']
     );
 
     documentosServiceSpy.getDocumentos.and.returnValue(of(mockDocumentos));
+    bibliotecaServiceSpy.getRecomendaciones.and.returnValue(of([]));
     catalogosServiceSpy.getTiposDocumento.and.returnValue(of(mockCatalogos));
     catalogosServiceSpy.getFacultades.and.returnValue(of(mockCatalogos));
     authServiceSpy.hasPermission.and.returnValue(true);
@@ -61,6 +68,7 @@ describe('ListaDocumentosComponent', () => {
           }
         },
         { provide: AuthService, useValue: authServiceSpy },
+        { provide: BibliotecaService, useValue: bibliotecaServiceSpy },
         { provide: CatalogosService, useValue: catalogosServiceSpy },
         { provide: Router, useValue: routerSpy },
         { provide: DocumentosService, useValue: documentosServiceSpy }

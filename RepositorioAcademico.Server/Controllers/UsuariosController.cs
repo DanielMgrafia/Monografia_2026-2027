@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using RepositorioAcademico.Server.Contracts;
 using RepositorioAcademico.Server.Domain;
@@ -8,6 +9,7 @@ using RepositorioAcademico.Server.Infrastructure.Security;
 namespace RepositorioAcademico.Server.Controllers
 {
     [ApiController]
+    [Authorize(Policy = AuthorizationPolicies.GestionarUsuarios)]
     [Route("api/usuarios")]
     public class UsuariosController : ControllerBase
     {

@@ -1,0 +1,86 @@
+<section class="catalogo-card">
+  <div class="catalogo-content association-layout">
+    <form class="catalogo-form"
+          (ngSubmit)="guardarLineas()"
+          #formCarreraLineas="ngForm">
+      <h3>Lineas por carrera</h3>
+
+      <div class="form-group">
+        <label for="carreraSeleccionada">Carrera</label>
+        <select id="carreraSeleccionada"
+                name="carreraSeleccionada"
+                [ngModel]="carreraSeleccionadaId"
+                (ngModelChange)="seleccionarCarrera($event)"
+                required>
+          <option [ngValue]="null">Selecciona una carrera</option>
+          <option *ngFor="let carrera of carreras" [ngValue]="carrera.id">
+            {{ carrera.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div *ngIf="carreraSeleccionada" class="carrera-resumen">
+        <strong>{{ carreraSeleccionada.descripcion }}</strong>
+        <span>{{ carreraSeleccionada.facultad || 'Sin facultad' }}</span>
+        <span>{{ carreraSeleccionada.areaConocimiento || 'Sin area' }}</span>
+      </div>
+
+      <button type="submit"
+              class="btn-guardar"
+              [disabled]="guardando || formCarreraLineas.invalid || cargando">
+        {{ guardando ? 'Guardando...' : 'Guardar asociaciones' }}
+      </button>
+
+      <div *ngIf="mensaje" class="mensaje exito">
+        {{ mensaje }}
+      </div>
+
+      <div *ngIf="error" class="mensaje error">
+        {{ error }}
+      </div>
+    </form>
+
+    <div class="catalogo-lista">
+      <div class="lista-header">
+        <div>
+          <h3>Lineas disponibles</h3>
+          <p>Marca las lineas que corresponden a la carrera seleccionada.</p>
+        </div>
+
+        <button type="button"
+                class="btn-actualizar"
+                (click)="cargarDatos()"
+                [disabled]="cargando">
+          {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+      </div>
+
+      <p *ngIf="cargando" class="estado-lista">
+        Cargando asociaciones...
+      </p>
+
+      <div *ngIf="!cargando && carreras.length === 0" class="lista-vacia">
+        <strong>No hay carreras registradas</strong>
+        <p>Agrega una carrera antes de asignarle lineas de investigacion.</p>
+      </div>
+
+      <div *ngIf="!cargando && carreras.length > 0 && lineasInvestigacion.length === 0" class="lista-vacia">
+        <strong>No hay lineas de investigacion registradas</strong>
+        <p>Agrega lineas de investigacion antes de asociarlas a una carrera.</p>
+      </div>
+
+      <div *ngIf="!cargando && carreras.length > 0 && lineasInvestigacion.length > 0" class="check-list">
+        <label *ngFor="let linea of lineasInvestigacion" class="check-item">
+          <input type="checkbox"
+                 [checked]="lineaSeleccionada(linea.id)"
+                 (change)="toggleLineaInvestigacion(linea.id, $any($event.target).checked)" />
+
+          <span>
+            <strong>{{ linea.descripcion }}</strong>
+            <small>Linea de investigacion</small>
+          </span>
+        </label>
+      </div>
+    </div>
+  </div>
+</section>

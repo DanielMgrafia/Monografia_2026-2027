@@ -1,0 +1,98 @@
+<section class="catalogo-card">
+  <div class="catalogo-content">
+    <form class="catalogo-form"
+          (ngSubmit)="guardarCarrera()"
+          #formCarrera="ngForm">
+      <h3>Nueva carrera</h3>
+
+      <div class="form-group">
+        <label for="descripcionCarrera">Nombre de la carrera</label>
+        <input type="text"
+               id="descripcionCarrera"
+               name="descripcionCarrera"
+               [(ngModel)]="descripcion"
+               maxlength="150"
+               placeholder="Ej. Ingenieria en Sistemas"
+               required />
+      </div>
+
+      <div class="form-group">
+        <label for="facultadCarrera">Facultad</label>
+        <select id="facultadCarrera"
+                name="facultadCarrera"
+                [(ngModel)]="facultadId"
+                required>
+          <option [ngValue]="null">Selecciona una facultad</option>
+          <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
+            {{ facultad.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="areaCarrera">Area de conocimiento</label>
+        <select id="areaCarrera"
+                name="areaCarrera"
+                [(ngModel)]="areaConocimientoId"
+                required>
+          <option [ngValue]="null">Selecciona un area</option>
+          <option *ngFor="let area of areasConocimiento" [ngValue]="area.id">
+            {{ area.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <button type="submit"
+              class="btn-guardar"
+              [disabled]="guardando || formCarrera.invalid">
+        {{ guardando ? 'Guardando...' : 'Guardar carrera' }}
+      </button>
+
+      <div *ngIf="mensaje" class="mensaje exito">
+        {{ mensaje }}
+      </div>
+
+      <div *ngIf="error" class="mensaje error">
+        {{ error }}
+      </div>
+    </form>
+
+    <div class="catalogo-lista">
+      <div class="lista-header">
+        <div>
+          <h3>Carreras registradas</h3>
+          <p>Listado vinculado con facultades y areas de conocimiento.</p>
+        </div>
+
+        <button type="button"
+                class="btn-actualizar"
+                (click)="cargarDatos()"
+                [disabled]="cargando">
+          {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+      </div>
+
+      <p *ngIf="cargando" class="estado-lista">
+        Cargando carreras...
+      </p>
+
+      <ul *ngIf="!cargando && carreras.length > 0" class="lista">
+        <li *ngFor="let carrera of carreras; index as indice">
+          <span class="numero">{{ indice + 1 }}</span>
+
+          <div class="catalogo-info">
+            <strong>{{ carrera.descripcion }}</strong>
+            <small>{{ carrera.facultad || 'Sin facultad' }} · {{ carrera.areaConocimiento || 'Sin area' }}</small>
+          </div>
+
+          <span class="estado activo">Activo</span>
+        </li>
+      </ul>
+
+      <div *ngIf="!cargando && carreras.length === 0" class="lista-vacia">
+        <strong>No hay carreras registradas</strong>
+        <p>Agrega carreras para conectar facultades, areas y lineas de investigacion.</p>
+      </div>
+    </div>
+  </div>
+</section>

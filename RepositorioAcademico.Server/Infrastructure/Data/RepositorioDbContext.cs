@@ -16,6 +16,16 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
 
         public DbSet<Facultad> Facultades { get; set; }
 
+        public DbSet<AreaConocimiento> AreasConocimiento { get; set; }
+
+        public DbSet<LineaInvestigacion> LineasInvestigacion { get; set; }
+
+        public DbSet<SublineaInvestigacion> SublineasInvestigacion { get; set; }
+
+        public DbSet<Carrera> Carreras { get; set; }
+
+        public DbSet<CarreraLineaInvestigacion> CarreraLineasInvestigacion { get; set; }
+
         public DbSet<Usuario> Usuarios { get; set; }
 
         public DbSet<Rol> Roles { get; set; }
@@ -57,6 +67,83 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
 
                 entity.Property(item => item.Estado)
                     .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<AreaConocimiento>(entity =>
+            {
+                entity.Property(item => item.Descripcion)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<LineaInvestigacion>(entity =>
+            {
+                entity.Property(item => item.Descripcion)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<SublineaInvestigacion>(entity =>
+            {
+                entity.Property(item => item.Descripcion)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50);
+
+                entity.HasOne(item => item.LineaInvestigacion)
+                    .WithMany(item => item.SublineasInvestigacion)
+                    .HasForeignKey(item => item.LineaInvestigacionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Carrera>(entity =>
+            {
+                entity.Property(item => item.Descripcion)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50);
+
+                entity.HasOne(item => item.Facultad)
+                    .WithMany(item => item.Carreras)
+                    .HasForeignKey(item => item.FacultadId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(item => item.AreaConocimiento)
+                    .WithMany(item => item.Carreras)
+                    .HasForeignKey(item => item.AreaConocimientoId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<CarreraLineaInvestigacion>(entity =>
+            {
+                entity.HasKey(item => new { item.CarreraId, item.LineaInvestigacionId });
+
+                entity.Property(item => item.Estado)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(item => item.FechaAsignacion)
+                    .IsRequired();
+
+                entity.HasOne(item => item.Carrera)
+                    .WithMany(item => item.CarreraLineasInvestigacion)
+                    .HasForeignKey(item => item.CarreraId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(item => item.LineaInvestigacion)
+                    .WithMany(item => item.CarreraLineasInvestigacion)
+                    .HasForeignKey(item => item.LineaInvestigacionId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Documento>(entity =>

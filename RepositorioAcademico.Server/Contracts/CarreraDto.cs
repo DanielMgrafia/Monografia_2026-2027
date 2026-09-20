@@ -1,0 +1,21 @@
+namespace RepositorioAcademico.Server.Contracts
+{
+    public class CarreraDto
+    {
+        public int Id { get; set; }
+
+        public string Descripcion { get; set; } = string.Empty;
+
+        public string? Estado { get; set; }
+
+        public int FacultadId { get; set; }
+
+        public string? Facultad { get; set; }
+
+        public int AreaConocimientoId { get; set; }
+
+        public string? AreaConocimiento { get; set; }
+
+        public List<CatalogoDto> LineasInvestigacion { get; set; } = [];
+    }
+}

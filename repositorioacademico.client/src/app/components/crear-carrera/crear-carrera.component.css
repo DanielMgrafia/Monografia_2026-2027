@@ -1,0 +1,22 @@
+@import '../crear-area-conocimiento/crear-area-conocimiento.component.css';
+
+.form-group select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 44px;
+  border: 1px solid #d8e0ec;
+  border-radius: 11px;
+  padding: 0 13px;
+  outline: none;
+  color: #061b4e;
+  font-size: 14px;
+  background: #ffffff;
+  transition: 0.2s ease;
+}
+
+.form-group select:focus {
+  border-color: #0a54db;
+  box-shadow: 0 0 0 4px rgba(10, 84, 219, 0.12);
+}

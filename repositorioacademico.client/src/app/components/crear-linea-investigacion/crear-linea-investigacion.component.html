@@ -1,0 +1,73 @@
+<section class="catalogo-card">
+  <div class="catalogo-content">
+    <form class="catalogo-form"
+          (ngSubmit)="guardarLineaInvestigacion()"
+          #formLineaInvestigacion="ngForm">
+      <h3>Nueva linea de investigacion</h3>
+
+      <div class="form-group">
+        <label for="descripcionLineaInvestigacion">Nombre de la linea</label>
+
+        <input type="text"
+               id="descripcionLineaInvestigacion"
+               name="descripcionLineaInvestigacion"
+               [(ngModel)]="descripcion"
+               maxlength="150"
+               placeholder="Ej. Inteligencia artificial aplicada"
+               required />
+      </div>
+
+      <button type="submit"
+              class="btn-guardar"
+              [disabled]="guardando || formLineaInvestigacion.invalid">
+        {{ guardando ? 'Guardando...' : 'Guardar linea de investigacion' }}
+      </button>
+
+      <div *ngIf="mensaje" class="mensaje exito">
+        {{ mensaje }}
+      </div>
+
+      <div *ngIf="error" class="mensaje error">
+        {{ error }}
+      </div>
+    </form>
+
+    <div class="catalogo-lista">
+      <div class="lista-header">
+        <div>
+          <h3>Lineas registradas</h3>
+          <p>Listado usado para organizar temas y proyectos de investigacion.</p>
+        </div>
+
+        <button type="button"
+                class="btn-actualizar"
+                (click)="cargarLineasInvestigacion()"
+                [disabled]="cargando">
+          {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+      </div>
+
+      <p *ngIf="cargando" class="estado-lista">
+        Cargando lineas de investigacion...
+      </p>
+
+      <ul *ngIf="!cargando && lineasInvestigacion.length > 0" class="lista">
+        <li *ngFor="let lineaInvestigacion of lineasInvestigacion; index as indice">
+          <span class="numero">{{ indice + 1 }}</span>
+
+          <div class="catalogo-info">
+            <strong>{{ lineaInvestigacion.descripcion }}</strong>
+            <small>Disponible para clasificacion investigativa</small>
+          </div>
+
+          <span class="estado activo">Activo</span>
+        </li>
+      </ul>
+
+      <div *ngIf="!cargando && lineasInvestigacion.length === 0" class="lista-vacia">
+        <strong>No hay lineas de investigacion registradas</strong>
+        <p>Agrega una nueva linea para ampliar el catalogo academico.</p>
+      </div>
+    </div>
+  </div>
+</section>

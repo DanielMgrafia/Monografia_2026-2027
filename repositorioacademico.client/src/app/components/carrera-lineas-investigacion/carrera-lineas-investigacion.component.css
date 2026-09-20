@@ -1,0 +1,71 @@
+@import '../crear-carrera/crear-carrera.component.css';
+
+.association-layout {
+  grid-template-columns: minmax(280px, 390px) minmax(0, 1fr);
+}
+
+.carrera-resumen {
+  display: grid;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid #e4eaf3;
+  border-radius: 12px;
+}
+
+.carrera-resumen strong {
+  color: #061b4e;
+  font-size: 14px;
+}
+
+.carrera-resumen span {
+  color: #52627e;
+  font-size: 12px;
+}
+
+.check-list {
+  display: grid;
+  gap: 10px;
+}
+
+.check-item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  background: #f8fafd;
+  border: 1px solid #e4eaf3;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.check-item:hover {
+  background: #eef5ff;
+  border-color: #cfe0fb;
+}
+
+.check-item input {
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: #083b91;
+}
+
+.check-item span {
+  min-width: 0;
+}
+
+.check-item strong {
+  display: block;
+  color: #061b4e;
+  font-size: 14px;
+  margin-bottom: 4px;
+  overflow-wrap: anywhere;
+}
+
+.check-item small {
+  color: #52627e;
+  font-size: 12px;
+}

@@ -1,0 +1,98 @@
+<section class="catalogo-card">
+  <div class="catalogo-content">
+    <form class="catalogo-form"
+          (ngSubmit)="guardarSublineaInvestigacion()"
+          #formSublineaInvestigacion="ngForm">
+      <h3>Nueva sublinea de investigacion</h3>
+
+      <div class="form-group">
+        <label for="lineaInvestigacionPadre">Linea de investigacion</label>
+        <select id="lineaInvestigacionPadre"
+                name="lineaInvestigacionPadre"
+                [(ngModel)]="lineaInvestigacionId"
+                required>
+          <option [ngValue]="null">Selecciona una linea</option>
+          <option *ngFor="let lineaInvestigacion of lineasInvestigacion" [ngValue]="lineaInvestigacion.id">
+            {{ lineaInvestigacion.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcionSublineaInvestigacion">Nombre de la sublinea</label>
+        <input type="text"
+               id="descripcionSublineaInvestigacion"
+               name="descripcionSublineaInvestigacion"
+               [(ngModel)]="descripcion"
+               maxlength="150"
+               placeholder="Ej. Aprendizaje automatico aplicado"
+               required />
+      </div>
+
+      <button type="submit"
+              class="btn-guardar"
+              [disabled]="guardando || formSublineaInvestigacion.invalid">
+        {{ guardando ? 'Guardando...' : 'Guardar sublinea' }}
+      </button>
+
+      <div *ngIf="mensaje" class="mensaje exito">
+        {{ mensaje }}
+      </div>
+
+      <div *ngIf="error" class="mensaje error">
+        {{ error }}
+      </div>
+    </form>
+
+    <div class="catalogo-lista">
+      <div class="lista-header">
+        <div>
+          <h3>Sublineas registradas</h3>
+          <p>Organizadas bajo su linea de investigacion principal.</p>
+        </div>
+
+        <button type="button"
+                class="btn-actualizar"
+                (click)="cargarDatos()"
+                [disabled]="cargando">
+          {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+      </div>
+
+      <p *ngIf="cargando" class="estado-lista">
+        Cargando sublineas de investigacion...
+      </p>
+
+      <div *ngIf="!cargando && lineasInvestigacion.length === 0" class="lista-vacia">
+        <strong>No hay lineas de investigacion registradas</strong>
+        <p>Agrega una linea antes de crear sus sublineas.</p>
+      </div>
+
+      <div *ngIf="!cargando && lineasInvestigacion.length > 0 && sublineasInvestigacion.length === 0" class="lista-vacia">
+        <strong>No hay sublineas registradas</strong>
+        <p>Agrega una nueva sublinea para detallar el catalogo investigativo.</p>
+      </div>
+
+      <div *ngIf="!cargando && sublineasInvestigacion.length > 0" class="sublinea-grupos">
+        <section *ngFor="let lineaInvestigacion of lineasInvestigacion"
+                 class="sublinea-grupo"
+                 [class.sin-sublineas]="getSublineasPorLinea(lineaInvestigacion.id).length === 0">
+          <h4>{{ lineaInvestigacion.descripcion }}</h4>
+
+          <ul *ngIf="getSublineasPorLinea(lineaInvestigacion.id).length > 0" class="lista">
+            <li *ngFor="let sublineaInvestigacion of getSublineasPorLinea(lineaInvestigacion.id); index as indice">
+              <span class="numero">{{ indice + 1 }}</span>
+
+              <div class="catalogo-info">
+                <strong>{{ sublineaInvestigacion.descripcion }}</strong>
+                <small>Sublinea de investigacion</small>
+              </div>
+
+              <span class="estado activo">Activo</span>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>

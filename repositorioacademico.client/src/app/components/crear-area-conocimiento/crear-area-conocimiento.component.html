@@ -1,0 +1,73 @@
+<section class="catalogo-card">
+  <div class="catalogo-content">
+    <form class="catalogo-form"
+          (ngSubmit)="guardarAreaConocimiento()"
+          #formAreaConocimiento="ngForm">
+      <h3>Nueva area de conocimiento</h3>
+
+      <div class="form-group">
+        <label for="descripcionAreaConocimiento">Nombre del area</label>
+
+        <input type="text"
+               id="descripcionAreaConocimiento"
+               name="descripcionAreaConocimiento"
+               [(ngModel)]="descripcion"
+               maxlength="150"
+               placeholder="Ej. Ciencias de la computacion"
+               required />
+      </div>
+
+      <button type="submit"
+              class="btn-guardar"
+              [disabled]="guardando || formAreaConocimiento.invalid">
+        {{ guardando ? 'Guardando...' : 'Guardar area de conocimiento' }}
+      </button>
+
+      <div *ngIf="mensaje" class="mensaje exito">
+        {{ mensaje }}
+      </div>
+
+      <div *ngIf="error" class="mensaje error">
+        {{ error }}
+      </div>
+    </form>
+
+    <div class="catalogo-lista">
+      <div class="lista-header">
+        <div>
+          <h3>Areas registradas</h3>
+          <p>Listado usado para clasificar carreras y documentos academicos.</p>
+        </div>
+
+        <button type="button"
+                class="btn-actualizar"
+                (click)="cargarAreasConocimiento()"
+                [disabled]="cargando">
+          {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+        </button>
+      </div>
+
+      <p *ngIf="cargando" class="estado-lista">
+        Cargando areas de conocimiento...
+      </p>
+
+      <ul *ngIf="!cargando && areasConocimiento.length > 0" class="lista">
+        <li *ngFor="let areaConocimiento of areasConocimiento; index as indice">
+          <span class="numero">{{ indice + 1 }}</span>
+
+          <div class="catalogo-info">
+            <strong>{{ areaConocimiento.descripcion }}</strong>
+            <small>Disponible para clasificacion academica</small>
+          </div>
+
+          <span class="estado activo">Activo</span>
+        </li>
+      </ul>
+
+      <div *ngIf="!cargando && areasConocimiento.length === 0" class="lista-vacia">
+        <strong>No hay areas de conocimiento registradas</strong>
+        <p>Agrega una nueva area para ampliar el catalogo academico.</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -9,5 +9,7 @@ namespace RepositorioAcademico.Server.Domain
         public string? Estado { get; set; }
 
         public ICollection<Documento> Documentos { get; set; } = [];
+
+        public ICollection<Carrera> Carreras { get; set; } = [];
     }
 }

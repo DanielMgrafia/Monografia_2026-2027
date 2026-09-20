@@ -22,6 +22,83 @@ namespace RepositorioAcademico.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.AreaConocimiento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Estado")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AreasConocimiento");
+                });
+
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.Carrera", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AreaConocimientoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Estado")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("FacultadId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreaConocimientoId");
+
+                    b.HasIndex("FacultadId");
+
+                    b.ToTable("Carreras");
+                });
+
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.CarreraLineaInvestigacion", b =>
+                {
+                    b.Property<int>("CarreraId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LineaInvestigacionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("FechaAsignacion")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("CarreraId", "LineaInvestigacionId");
+
+                    b.HasIndex("LineaInvestigacionId");
+
+                    b.ToTable("CarreraLineasInvestigacion");
+                });
+
             modelBuilder.Entity("RepositorioAcademico.Server.Domain.Documento", b =>
                 {
                     b.Property<int>("Id")
@@ -188,6 +265,28 @@ namespace RepositorioAcademico.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Facultades");
+                });
+
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.LineaInvestigacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Estado")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LineasInvestigacion");
                 });
 
             modelBuilder.Entity("RepositorioAcademico.Server.Domain.Permiso", b =>
@@ -532,6 +631,33 @@ namespace RepositorioAcademico.Server.Migrations
                         });
                 });
 
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.SublineaInvestigacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Estado")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("LineaInvestigacionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LineaInvestigacionId");
+
+                    b.ToTable("SublineasInvestigacion");
+                });
+
             modelBuilder.Entity("RepositorioAcademico.Server.Domain.TipoDocumento", b =>
                 {
                     b.Property<int>("Id")
@@ -705,6 +831,44 @@ namespace RepositorioAcademico.Server.Migrations
                         });
                 });
 
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.Carrera", b =>
+                {
+                    b.HasOne("RepositorioAcademico.Server.Domain.AreaConocimiento", "AreaConocimiento")
+                        .WithMany("Carreras")
+                        .HasForeignKey("AreaConocimientoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RepositorioAcademico.Server.Domain.Facultad", "Facultad")
+                        .WithMany("Carreras")
+                        .HasForeignKey("FacultadId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AreaConocimiento");
+
+                    b.Navigation("Facultad");
+                });
+
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.CarreraLineaInvestigacion", b =>
+                {
+                    b.HasOne("RepositorioAcademico.Server.Domain.Carrera", "Carrera")
+                        .WithMany("CarreraLineasInvestigacion")
+                        .HasForeignKey("CarreraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RepositorioAcademico.Server.Domain.LineaInvestigacion", "LineaInvestigacion")
+                        .WithMany("CarreraLineasInvestigacion")
+                        .HasForeignKey("LineaInvestigacionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Carrera");
+
+                    b.Navigation("LineaInvestigacion");
+                });
+
             modelBuilder.Entity("RepositorioAcademico.Server.Domain.Documento", b =>
                 {
                     b.HasOne("RepositorioAcademico.Server.Domain.Facultad", "Facultad")
@@ -808,6 +972,17 @@ namespace RepositorioAcademico.Server.Migrations
                     b.Navigation("Rol");
                 });
 
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.SublineaInvestigacion", b =>
+                {
+                    b.HasOne("RepositorioAcademico.Server.Domain.LineaInvestigacion", "LineaInvestigacion")
+                        .WithMany("SublineasInvestigacion")
+                        .HasForeignKey("LineaInvestigacionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LineaInvestigacion");
+                });
+
             modelBuilder.Entity("RepositorioAcademico.Server.Domain.UsuarioRol", b =>
                 {
                     b.HasOne("RepositorioAcademico.Server.Domain.Rol", "Rol")
@@ -827,6 +1002,16 @@ namespace RepositorioAcademico.Server.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.AreaConocimiento", b =>
+                {
+                    b.Navigation("Carreras");
+                });
+
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.Carrera", b =>
+                {
+                    b.Navigation("CarreraLineasInvestigacion");
+                });
+
             modelBuilder.Entity("RepositorioAcademico.Server.Domain.Documento", b =>
                 {
                     b.Navigation("Descargas");
@@ -838,7 +1023,16 @@ namespace RepositorioAcademico.Server.Migrations
 
             modelBuilder.Entity("RepositorioAcademico.Server.Domain.Facultad", b =>
                 {
+                    b.Navigation("Carreras");
+
                     b.Navigation("Documentos");
+                });
+
+            modelBuilder.Entity("RepositorioAcademico.Server.Domain.LineaInvestigacion", b =>
+                {
+                    b.Navigation("CarreraLineasInvestigacion");
+
+                    b.Navigation("SublineasInvestigacion");
                 });
 
             modelBuilder.Entity("RepositorioAcademico.Server.Domain.Permiso", b =>

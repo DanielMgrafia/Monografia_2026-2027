@@ -1,12 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RepositorioAcademico.Server.Contracts;
 using RepositorioAcademico.Server.Domain;
 using RepositorioAcademico.Server.Infrastructure.Data;
+using RepositorioAcademico.Server.Infrastructure.Security;
 
 namespace RepositorioAcademico.Server.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/facultades")]
     public class FacultadesController : ControllerBase
     {
@@ -54,6 +57,7 @@ namespace RepositorioAcademico.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicies.GestionarCatalogos)]
         public async Task<ActionResult<CatalogoDto>> CrearFacultad([FromBody] CrearFacultadRequest request)
         {
             var descripcion = request.Descripcion?.Trim() ?? string.Empty;

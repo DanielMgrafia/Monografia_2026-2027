@@ -1,12 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RepositorioAcademico.Server.Contracts;
 using RepositorioAcademico.Server.Domain;
 using RepositorioAcademico.Server.Infrastructure.Data;
+using RepositorioAcademico.Server.Infrastructure.Security;
 
 namespace RepositorioAcademico.Server.Controllers
 {
     [ApiController]
+    [Authorize(Policy = AuthorizationPolicies.ConsultarRolesAdministrativos)]
     [Route("api/roles")]
     public class RolesController : ControllerBase
     {
@@ -56,6 +59,7 @@ namespace RepositorioAcademico.Server.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = AuthorizationPolicies.GestionarRoles)]
         public async Task<ActionResult<RolDto>> CrearRol([FromBody] CrearRolRequest request)
         {
             var nombre = request.Nombre?.Trim() ?? string.Empty;
@@ -114,6 +118,7 @@ namespace RepositorioAcademico.Server.Controllers
         }
 
         [HttpPut("{id:int}/permisos")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarRoles)]
         public async Task<ActionResult<RolDto>> ActualizarPermisos(int id, [FromBody] ActualizarPermisosRolRequest request)
         {
             var rol = await _context.Roles

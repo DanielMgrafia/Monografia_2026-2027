@@ -43,7 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(AuthorizationPolicies.Configure);
 builder.Services.AddSingleton<PasswordService>();
 builder.Services.AddSingleton<JwtTokenService>();
 
@@ -51,7 +51,7 @@ var app = builder.Build();
 
 // Archivos estáticos del frontend
 app.UseDefaultFiles();
-app.MapStaticAssets();
+app.UseStaticFiles();
 
 // Pipeline
 if (app.Environment.IsDevelopment())
