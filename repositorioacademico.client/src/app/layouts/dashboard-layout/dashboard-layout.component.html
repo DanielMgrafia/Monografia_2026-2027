@@ -89,14 +89,6 @@
       </div>
 
       <div class="topbar-right">
-        <form class="search-box" (ngSubmit)="submitSearch()">
-          <input type="text"
-                 [(ngModel)]="search"
-                 name="search"
-                 placeholder="Buscar documentos, autores o catalogos..." />
-          <button type="submit" class="search-button">IR</button>
-        </form>
-
         <div class="account-menu-wrapper" *ngIf="currentUser() as user">
           <button type="button"
                   class="account-trigger"

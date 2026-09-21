@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, merge, of, switchMap } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
@@ -23,15 +22,13 @@ interface ProfileField {
 @Component({
   selector: 'app-dashboard-layout',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.css']
 })
 export class DashboardLayoutComponent implements OnInit {
   private static readonly MOBILE_BREAKPOINT = 980;
   private static readonly SIDEBAR_STORAGE_KEY = 'repositorio-dashboard-sidebar-collapsed';
-
-  search = '';
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
@@ -169,15 +166,6 @@ export class DashboardLayoutComponent implements OnInit {
     }
 
     this.catalogMenuOpen.set(!this.catalogMenuOpen());
-  }
-
-  submitSearch(): void {
-    const query = this.search.trim();
-    this.router.navigate(['/repositorio'], {
-      queryParams: {
-        q: query || null
-      }
-    });
   }
 
   logout(): void {

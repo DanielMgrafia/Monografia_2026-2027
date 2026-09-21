@@ -10,27 +10,27 @@
     <form class="form-grid" (ngSubmit)="guardarUsuario()">
       <label>
         Nombres
-        <input type="text" [(ngModel)]="nuevoUsuario.nombres" name="nombres" />
+        <input type="text" [(ngModel)]="nuevoUsuario.nombres" name="nombres" required maxlength="150" />
       </label>
 
       <label>
         Apellidos
-        <input type="text" [(ngModel)]="nuevoUsuario.apellidos" name="apellidos" />
+        <input type="text" [(ngModel)]="nuevoUsuario.apellidos" name="apellidos" required maxlength="150" />
       </label>
 
       <label>
         Correo
-        <input type="email" [(ngModel)]="nuevoUsuario.correo" name="correo" />
+        <input type="email" [(ngModel)]="nuevoUsuario.correo" name="correo" required maxlength="150" />
       </label>
 
       <label>
         Carnet
-        <input type="text" [(ngModel)]="nuevoUsuario.carnet" name="carnet" />
+        <input type="text" [(ngModel)]="nuevoUsuario.carnet" name="carnet" required maxlength="50" />
       </label>
 
       <label class="full">
         Contrasena
-        <input type="password" [(ngModel)]="nuevoUsuario.password" name="password" />
+        <input type="password" [(ngModel)]="nuevoUsuario.password" name="password" required minlength="8" />
       </label>
 
       <div class="full selection-box">

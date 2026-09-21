@@ -333,43 +333,6 @@
   gap: 16px;
 }
 
-.search-box {
-  width: min(420px, 100%);
-  min-width: 280px;
-  height: 43px;
-  background: #ffffff;
-  border: 1px solid #d8e0ec;
-  border-radius: 12px;
-  padding: 0 6px 0 13px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.search-box input {
-  flex: 1;
-  border: none;
-  outline: none;
-  color: #061b4e;
-  font-size: 14px;
-  background: transparent;
-}
-
-.search-button {
-  border: none;
-  cursor: pointer;
-}
-
-.search-button {
-  min-width: 44px;
-  height: 31px;
-  border-radius: 9px;
-  background: #083b91;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 800;
-}
-
 .account-menu-wrapper {
   position: relative;
 }
@@ -695,10 +658,6 @@
   .topbar-right {
     width: 100%;
     flex-wrap: wrap;
-  }
-
-  .search-box {
-    width: 100%;
   }
 
   .main-content {

@@ -114,7 +114,7 @@ export class UsersPageComponent implements OnInit {
       },
       error: (response) => {
         this.guardando = false;
-        this.error = response.error || 'No se pudo crear el usuario.';
+        this.error = this.obtenerMensajeError(response, 'No se pudo crear el usuario.');
       }
     });
   }
@@ -152,12 +152,62 @@ export class UsersPageComponent implements OnInit {
       },
       error: (response) => {
         this.actualizandoUsuarioId = null;
-        this.error = response.error || 'No se pudieron actualizar los roles.';
+        this.error = this.obtenerMensajeError(response, 'No se pudieron actualizar los roles.');
       }
     });
   }
 
   hasRoleSelected(usuarioId: number, rolId: number): boolean {
     return (this.rolesPorUsuario[usuarioId] ?? []).includes(rolId);
+  }
+
+  private obtenerMensajeError(response: unknown, mensajePorDefecto: string): string {
+    const error = this.esRegistro(response) ? response['error'] : response;
+    return this.convertirErrorATexto(error) ?? mensajePorDefecto;
+  }
+
+  private convertirErrorATexto(error: unknown): string | null {
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    if (Array.isArray(error)) {
+      const mensajes = error.filter((item): item is string => typeof item === 'string');
+      return mensajes.length > 0 ? mensajes.join(' ') : null;
+    }
+
+    if (!this.esRegistro(error)) {
+      return null;
+    }
+
+    const erroresModelo = this.convertirErroresModelo(error['errors']);
+    if (erroresModelo) {
+      return erroresModelo;
+    }
+
+    for (const clave of ['message', 'detail', 'title']) {
+      const valor = error[clave];
+      if (typeof valor === 'string' && valor.trim()) {
+        return valor;
+      }
+    }
+
+    return null;
+  }
+
+  private convertirErroresModelo(errors: unknown): string | null {
+    if (!this.esRegistro(errors)) {
+      return null;
+    }
+
+    const mensajes = Object.values(errors)
+      .flatMap((valor) => Array.isArray(valor) ? valor : [valor])
+      .filter((valor): valor is string => typeof valor === 'string' && valor.trim().length > 0);
+
+    return mensajes.length > 0 ? mensajes.join(' ') : null;
+  }
+
+  private esRegistro(valor: unknown): valor is Record<string, unknown> {
+    return typeof valor === 'object' && valor !== null;
   }
 }
