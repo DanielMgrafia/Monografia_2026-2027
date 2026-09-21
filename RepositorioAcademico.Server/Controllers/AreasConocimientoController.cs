@@ -13,6 +13,7 @@ namespace RepositorioAcademico.Server.Controllers
     [Route("api/areas-conocimiento")]
     public class AreasConocimientoController : ControllerBase
     {
+        private static readonly string[] EstadosPermitidos = ["Activo", "Inactivo"];
         private readonly RepositorioDbContext _context;
 
         public AreasConocimientoController(RepositorioDbContext context)
@@ -21,17 +22,18 @@ namespace RepositorioAcademico.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CatalogoDto>>> GetAreasConocimiento()
+        public async Task<ActionResult<IEnumerable<CatalogoDto>>> GetAreasConocimiento(bool incluirInactivos = false)
         {
-            return await _context.AreasConocimiento
-                .AsNoTracking()
-                .Where(item => item.Estado == null || item.Estado == "Activo")
+            var query = _context.AreasConocimiento.AsNoTracking();
+
+            if (!incluirInactivos)
+            {
+                query = query.Where(item => item.Estado == null || item.Estado == "Activo");
+            }
+
+            return await query
                 .OrderBy(item => item.Descripcion)
-                .Select(item => new CatalogoDto
-                {
-                    Id = item.Id,
-                    Descripcion = item.Descripcion
-                })
+                .Select(item => MapearAreaConocimiento(item))
                 .ToListAsync();
         }
 
@@ -41,11 +43,7 @@ namespace RepositorioAcademico.Server.Controllers
             var areaConocimiento = await _context.AreasConocimiento
                 .AsNoTracking()
                 .Where(item => item.Id == id)
-                .Select(item => new CatalogoDto
-                {
-                    Id = item.Id,
-                    Descripcion = item.Descripcion
-                })
+                .Select(item => MapearAreaConocimiento(item))
                 .FirstOrDefaultAsync();
 
             if (areaConocimiento == null)
@@ -74,22 +72,93 @@ namespace RepositorioAcademico.Server.Controllers
                 return Conflict("Ya existe un area de conocimiento con esa descripcion.");
             }
 
+            var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
             var areaConocimiento = new AreaConocimiento
             {
                 Descripcion = descripcion,
-                Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim()
+                Estado = estado
             };
 
             _context.AreasConocimiento.Add(areaConocimiento);
             await _context.SaveChangesAsync();
 
-            var resultado = new CatalogoDto
+            return CreatedAtAction(nameof(GetAreaConocimiento), new { id = areaConocimiento.Id }, MapearAreaConocimiento(areaConocimiento));
+        }
+
+        [HttpPut("{id:int}")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarCatalogos)]
+        public async Task<ActionResult<CatalogoDto>> ActualizarAreaConocimiento(int id, [FromBody] ActualizarCatalogoRequest request)
+        {
+            var descripcion = request.Descripcion?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(descripcion))
+            {
+                return BadRequest("La descripcion es obligatoria.");
+            }
+
+            var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var areaConocimiento = await _context.AreasConocimiento.FirstOrDefaultAsync(item => item.Id == id);
+            if (areaConocimiento == null)
+            {
+                return NotFound();
+            }
+
+            var existeAreaConocimiento = await _context.AreasConocimiento
+                .AnyAsync(item => item.Id != id && item.Descripcion == descripcion);
+
+            if (existeAreaConocimiento)
+            {
+                return Conflict("Ya existe un area de conocimiento con esa descripcion.");
+            }
+
+            areaConocimiento.Descripcion = descripcion;
+            areaConocimiento.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            return MapearAreaConocimiento(areaConocimiento);
+        }
+
+        [HttpPut("{id:int}/estado")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarCatalogos)]
+        public async Task<ActionResult<CatalogoDto>> ActualizarEstadoAreaConocimiento(
+            int id,
+            [FromBody] ActualizarEstadoCatalogoRequest request)
+        {
+            var estado = request.Estado?.Trim() ?? string.Empty;
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var areaConocimiento = await _context.AreasConocimiento.FirstOrDefaultAsync(item => item.Id == id);
+            if (areaConocimiento == null)
+            {
+                return NotFound();
+            }
+
+            areaConocimiento.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            return MapearAreaConocimiento(areaConocimiento);
+        }
+
+        private static CatalogoDto MapearAreaConocimiento(AreaConocimiento areaConocimiento)
+        {
+            return new CatalogoDto
             {
                 Id = areaConocimiento.Id,
-                Descripcion = areaConocimiento.Descripcion
+                Descripcion = areaConocimiento.Descripcion,
+                Estado = areaConocimiento.Estado
             };
-
-            return CreatedAtAction(nameof(GetAreaConocimiento), new { id = areaConocimiento.Id }, resultado);
         }
     }
 }

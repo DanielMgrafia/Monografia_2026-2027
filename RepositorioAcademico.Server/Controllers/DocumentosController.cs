@@ -644,19 +644,23 @@ namespace RepositorioAcademico.Server.Controllers
             int? sublineaInvestigacionId)
         {
             var tipoDocumentoExiste = await _context.TiposDocumento
-                .AnyAsync(item => item.Id == tipoDocumentoId);
+                .AnyAsync(item =>
+                    item.Id == tipoDocumentoId &&
+                    (item.Estado == null || item.Estado == "Activo"));
 
             if (!tipoDocumentoExiste)
             {
-                return BadRequest("El tipo de documento seleccionado no existe.");
+                return BadRequest("El tipo de documento seleccionado no existe o esta inactivo.");
             }
 
             var facultadExiste = await _context.Facultades
-                .AnyAsync(item => item.Id == facultadId);
+                .AnyAsync(item =>
+                    item.Id == facultadId &&
+                    (item.Estado == null || item.Estado == "Activo"));
 
             if (!facultadExiste)
             {
-                return BadRequest("La facultad seleccionada no existe.");
+                return BadRequest("La facultad seleccionada no existe o esta inactiva.");
             }
 
             Carrera? carrera = null;
@@ -664,11 +668,13 @@ namespace RepositorioAcademico.Server.Controllers
             {
                 carrera = await _context.Carreras
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(item => item.Id == carreraId.Value);
+                    .FirstOrDefaultAsync(item =>
+                        item.Id == carreraId.Value &&
+                        (item.Estado == null || item.Estado == "Activo"));
 
                 if (carrera == null)
                 {
-                    return BadRequest("La carrera seleccionada no existe.");
+                    return BadRequest("La carrera seleccionada no existe o esta inactiva.");
                 }
 
                 if (carrera.FacultadId != facultadId)
@@ -680,11 +686,13 @@ namespace RepositorioAcademico.Server.Controllers
             if (lineaInvestigacionId.HasValue)
             {
                 var lineaInvestigacionExiste = await _context.LineasInvestigacion
-                    .AnyAsync(item => item.Id == lineaInvestigacionId.Value);
+                    .AnyAsync(item =>
+                        item.Id == lineaInvestigacionId.Value &&
+                        (item.Estado == null || item.Estado == "Activo"));
 
                 if (!lineaInvestigacionExiste)
                 {
-                    return BadRequest("La linea de investigacion seleccionada no existe.");
+                    return BadRequest("La linea de investigacion seleccionada no existe o esta inactiva.");
                 }
 
                 if (carrera != null)
@@ -692,7 +700,8 @@ namespace RepositorioAcademico.Server.Controllers
                     var lineaPerteneceCarrera = await _context.CarreraLineasInvestigacion
                         .AnyAsync(item =>
                             item.CarreraId == carrera.Id &&
-                            item.LineaInvestigacionId == lineaInvestigacionId.Value);
+                            item.LineaInvestigacionId == lineaInvestigacionId.Value &&
+                            item.Estado == "Activo");
 
                     if (!lineaPerteneceCarrera)
                     {
@@ -710,11 +719,13 @@ namespace RepositorioAcademico.Server.Controllers
 
                 var sublineaInvestigacion = await _context.SublineasInvestigacion
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(item => item.Id == sublineaInvestigacionId.Value);
+                    .FirstOrDefaultAsync(item =>
+                        item.Id == sublineaInvestigacionId.Value &&
+                        (item.Estado == null || item.Estado == "Activo"));
 
                 if (sublineaInvestigacion == null)
                 {
-                    return BadRequest("La sublinea de investigacion seleccionada no existe.");
+                    return BadRequest("La sublinea de investigacion seleccionada no existe o esta inactiva.");
                 }
 
                 if (sublineaInvestigacion.LineaInvestigacionId != lineaInvestigacionId.Value)

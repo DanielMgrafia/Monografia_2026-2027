@@ -4,6 +4,11 @@ import { Observable, Subject, tap } from 'rxjs';
 import { Catalogo } from '../models/catalogo';
 import { CrearSublineaInvestigacionPayload, SublineaInvestigacion } from '../models/sublinea-investigacion';
 
+export interface ActualizarCatalogoPayload {
+  descripcion: string;
+  estado?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,24 +32,34 @@ export class CatalogosService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getTiposDocumento(): Observable<Catalogo[]> {
-    return this.http.get<Catalogo[]>(this.tiposDocumentoApiUrl);
+  getTiposDocumento(incluirInactivos = false): Observable<Catalogo[]> {
+    return this.http.get<Catalogo[]>(this.tiposDocumentoApiUrl, {
+      params: this.buildCatalogParams(incluirInactivos)
+    });
   }
 
-  getFacultades(): Observable<Catalogo[]> {
-    return this.http.get<Catalogo[]>(this.facultadesApiUrl);
+  getFacultades(incluirInactivos = false): Observable<Catalogo[]> {
+    return this.http.get<Catalogo[]>(this.facultadesApiUrl, {
+      params: this.buildCatalogParams(incluirInactivos)
+    });
   }
 
-  getAreasConocimiento(): Observable<Catalogo[]> {
-    return this.http.get<Catalogo[]>(this.areasConocimientoApiUrl);
+  getAreasConocimiento(incluirInactivos = false): Observable<Catalogo[]> {
+    return this.http.get<Catalogo[]>(this.areasConocimientoApiUrl, {
+      params: this.buildCatalogParams(incluirInactivos)
+    });
   }
 
-  getLineasInvestigacion(): Observable<Catalogo[]> {
-    return this.http.get<Catalogo[]>(this.lineasInvestigacionApiUrl);
+  getLineasInvestigacion(incluirInactivos = false): Observable<Catalogo[]> {
+    return this.http.get<Catalogo[]>(this.lineasInvestigacionApiUrl, {
+      params: this.buildCatalogParams(incluirInactivos)
+    });
   }
 
-  getSublineasInvestigacion(): Observable<SublineaInvestigacion[]> {
-    return this.http.get<SublineaInvestigacion[]>(this.sublineasInvestigacionApiUrl);
+  getSublineasInvestigacion(incluirInactivos = false): Observable<SublineaInvestigacion[]> {
+    return this.http.get<SublineaInvestigacion[]>(this.sublineasInvestigacionApiUrl, {
+      params: this.buildCatalogParams(incluirInactivos)
+    });
   }
 
   crearTipoDocumento(descripcion: string): Observable<Catalogo> {
@@ -75,5 +90,52 @@ export class CatalogosService {
     return this.http
       .post<SublineaInvestigacion>(this.sublineasInvestigacionApiUrl, payload)
       .pipe(tap((sublineaInvestigacion) => this.sublineaInvestigacionCreadaSource.next(sublineaInvestigacion)));
+  }
+
+  actualizarTipoDocumento(id: number, payload: ActualizarCatalogoPayload): Observable<Catalogo> {
+    return this.http.put<Catalogo>(`${this.tiposDocumentoApiUrl}/${id}`, payload);
+  }
+
+  actualizarEstadoTipoDocumento(id: number, estado: string): Observable<Catalogo> {
+    return this.http.put<Catalogo>(`${this.tiposDocumentoApiUrl}/${id}/estado`, { estado });
+  }
+
+  actualizarFacultad(id: number, payload: ActualizarCatalogoPayload): Observable<Catalogo> {
+    return this.http.put<Catalogo>(`${this.facultadesApiUrl}/${id}`, payload);
+  }
+
+  actualizarEstadoFacultad(id: number, estado: string): Observable<Catalogo> {
+    return this.http.put<Catalogo>(`${this.facultadesApiUrl}/${id}/estado`, { estado });
+  }
+
+  actualizarAreaConocimiento(id: number, payload: ActualizarCatalogoPayload): Observable<Catalogo> {
+    return this.http.put<Catalogo>(`${this.areasConocimientoApiUrl}/${id}`, payload);
+  }
+
+  actualizarEstadoAreaConocimiento(id: number, estado: string): Observable<Catalogo> {
+    return this.http.put<Catalogo>(`${this.areasConocimientoApiUrl}/${id}/estado`, { estado });
+  }
+
+  actualizarLineaInvestigacion(id: number, payload: ActualizarCatalogoPayload): Observable<Catalogo> {
+    return this.http.put<Catalogo>(`${this.lineasInvestigacionApiUrl}/${id}`, payload);
+  }
+
+  actualizarEstadoLineaInvestigacion(id: number, estado: string): Observable<Catalogo> {
+    return this.http.put<Catalogo>(`${this.lineasInvestigacionApiUrl}/${id}/estado`, { estado });
+  }
+
+  actualizarSublineaInvestigacion(
+    id: number,
+    payload: CrearSublineaInvestigacionPayload
+  ): Observable<SublineaInvestigacion> {
+    return this.http.put<SublineaInvestigacion>(`${this.sublineasInvestigacionApiUrl}/${id}`, payload);
+  }
+
+  actualizarEstadoSublineaInvestigacion(id: number, estado: string): Observable<SublineaInvestigacion> {
+    return this.http.put<SublineaInvestigacion>(`${this.sublineasInvestigacionApiUrl}/${id}/estado`, { estado });
+  }
+
+  private buildCatalogParams(incluirInactivos: boolean): Record<string, string> | undefined {
+    return incluirInactivos ? { incluirInactivos: 'true' } : undefined;
   }
 }

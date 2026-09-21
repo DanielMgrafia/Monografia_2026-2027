@@ -12,7 +12,7 @@
                 [(ngModel)]="lineaInvestigacionId"
                 required>
           <option [ngValue]="null">Selecciona una linea</option>
-          <option *ngFor="let lineaInvestigacion of lineasInvestigacion" [ngValue]="lineaInvestigacion.id">
+          <option *ngFor="let lineaInvestigacion of lineasActivas" [ngValue]="lineaInvestigacion.id">
             {{ lineaInvestigacion.descripcion }}
           </option>
         </select>
@@ -88,11 +88,86 @@
                 <small>Sublinea de investigacion</small>
               </div>
 
-              <span class="estado activo">Activo</span>
+              <div class="item-actions">
+                <span class="estado" [ngClass]="getEstadoClass(sublineaInvestigacion.estado)">
+                  {{ sublineaInvestigacion.estado || 'Activo' }}
+                </span>
+
+                <button type="button"
+                        class="btn-editar-catalogo"
+                        [disabled]="procesandoId === sublineaInvestigacion.id"
+                        (click)="abrirEdicion(sublineaInvestigacion)">
+                  Editar
+                </button>
+
+                <button type="button"
+                        class="btn-estado-catalogo"
+                        [ngClass]="getEstadoClass(sublineaInvestigacion.estado)"
+                        [disabled]="procesandoId === sublineaInvestigacion.id"
+                        (click)="cambiarEstado(sublineaInvestigacion)">
+                  {{ procesandoId === sublineaInvestigacion.id ? 'Guardando...' : getToggleLabel(sublineaInvestigacion) }}
+                </button>
+              </div>
             </li>
           </ul>
         </section>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="editor-modal-backdrop" *ngIf="sublineaEnEdicion as sublineaInvestigacion" (click)="cancelarEdicion()">
+  <div class="editor-modal" (click)="$event.stopPropagation()">
+    <div class="editor-header">
+      <div>
+        <p>Editar sublinea de investigacion</p>
+        <h3>{{ sublineaInvestigacion.descripcion }}</h3>
+      </div>
+
+      <button type="button" class="btn-editar-catalogo" (click)="cancelarEdicion()">Cerrar</button>
+    </div>
+
+    <form class="editor-form" (ngSubmit)="guardarEdicion()" #formEdicionSublinea="ngForm">
+      <label>
+        Linea de investigacion
+        <select [(ngModel)]="editLineaInvestigacionId" name="editLineaSublinea" required>
+          <option [ngValue]="null">Selecciona una linea</option>
+          <option *ngFor="let lineaInvestigacion of getLineasParaEdicion()" [ngValue]="lineaInvestigacion.id">
+            {{ lineaInvestigacion.descripcion }}
+          </option>
+        </select>
+      </label>
+
+      <label>
+        Nombre de la sublinea
+        <input type="text"
+               [(ngModel)]="editDescripcion"
+               name="editDescripcionSublinea"
+               maxlength="150"
+               required />
+      </label>
+
+      <label>
+        Estado
+        <select [(ngModel)]="editEstado" name="editEstadoSublinea">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </label>
+
+      <div class="editor-actions">
+        <button type="button"
+                class="btn-editar-catalogo"
+                [disabled]="procesandoId === sublineaInvestigacion.id"
+                (click)="cancelarEdicion()">
+          Cancelar
+        </button>
+        <button type="submit"
+                class="btn-guardar-catalogo"
+                [disabled]="procesandoId === sublineaInvestigacion.id || formEdicionSublinea.invalid">
+          {{ procesandoId === sublineaInvestigacion.id ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
   </div>
 </section>

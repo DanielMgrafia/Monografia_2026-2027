@@ -13,6 +13,7 @@ namespace RepositorioAcademico.Server.Controllers
     [Route("api/lineas-investigacion")]
     public class LineasInvestigacionController : ControllerBase
     {
+        private static readonly string[] EstadosPermitidos = ["Activo", "Inactivo"];
         private readonly RepositorioDbContext _context;
 
         public LineasInvestigacionController(RepositorioDbContext context)
@@ -21,17 +22,18 @@ namespace RepositorioAcademico.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CatalogoDto>>> GetLineasInvestigacion()
+        public async Task<ActionResult<IEnumerable<CatalogoDto>>> GetLineasInvestigacion(bool incluirInactivos = false)
         {
-            return await _context.LineasInvestigacion
-                .AsNoTracking()
-                .Where(item => item.Estado == null || item.Estado == "Activo")
+            var query = _context.LineasInvestigacion.AsNoTracking();
+
+            if (!incluirInactivos)
+            {
+                query = query.Where(item => item.Estado == null || item.Estado == "Activo");
+            }
+
+            return await query
                 .OrderBy(item => item.Descripcion)
-                .Select(item => new CatalogoDto
-                {
-                    Id = item.Id,
-                    Descripcion = item.Descripcion
-                })
+                .Select(item => MapearLineaInvestigacion(item))
                 .ToListAsync();
         }
 
@@ -41,11 +43,7 @@ namespace RepositorioAcademico.Server.Controllers
             var lineaInvestigacion = await _context.LineasInvestigacion
                 .AsNoTracking()
                 .Where(item => item.Id == id)
-                .Select(item => new CatalogoDto
-                {
-                    Id = item.Id,
-                    Descripcion = item.Descripcion
-                })
+                .Select(item => MapearLineaInvestigacion(item))
                 .FirstOrDefaultAsync();
 
             if (lineaInvestigacion == null)
@@ -74,22 +72,93 @@ namespace RepositorioAcademico.Server.Controllers
                 return Conflict("Ya existe una linea de investigacion con esa descripcion.");
             }
 
+            var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
             var lineaInvestigacion = new LineaInvestigacion
             {
                 Descripcion = descripcion,
-                Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim()
+                Estado = estado
             };
 
             _context.LineasInvestigacion.Add(lineaInvestigacion);
             await _context.SaveChangesAsync();
 
-            var resultado = new CatalogoDto
+            return CreatedAtAction(nameof(GetLineaInvestigacion), new { id = lineaInvestigacion.Id }, MapearLineaInvestigacion(lineaInvestigacion));
+        }
+
+        [HttpPut("{id:int}")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarCatalogos)]
+        public async Task<ActionResult<CatalogoDto>> ActualizarLineaInvestigacion(int id, [FromBody] ActualizarCatalogoRequest request)
+        {
+            var descripcion = request.Descripcion?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(descripcion))
+            {
+                return BadRequest("La descripcion es obligatoria.");
+            }
+
+            var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var lineaInvestigacion = await _context.LineasInvestigacion.FirstOrDefaultAsync(item => item.Id == id);
+            if (lineaInvestigacion == null)
+            {
+                return NotFound();
+            }
+
+            var existeLineaInvestigacion = await _context.LineasInvestigacion
+                .AnyAsync(item => item.Id != id && item.Descripcion == descripcion);
+
+            if (existeLineaInvestigacion)
+            {
+                return Conflict("Ya existe una linea de investigacion con esa descripcion.");
+            }
+
+            lineaInvestigacion.Descripcion = descripcion;
+            lineaInvestigacion.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            return MapearLineaInvestigacion(lineaInvestigacion);
+        }
+
+        [HttpPut("{id:int}/estado")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarCatalogos)]
+        public async Task<ActionResult<CatalogoDto>> ActualizarEstadoLineaInvestigacion(
+            int id,
+            [FromBody] ActualizarEstadoCatalogoRequest request)
+        {
+            var estado = request.Estado?.Trim() ?? string.Empty;
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var lineaInvestigacion = await _context.LineasInvestigacion.FirstOrDefaultAsync(item => item.Id == id);
+            if (lineaInvestigacion == null)
+            {
+                return NotFound();
+            }
+
+            lineaInvestigacion.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            return MapearLineaInvestigacion(lineaInvestigacion);
+        }
+
+        private static CatalogoDto MapearLineaInvestigacion(LineaInvestigacion lineaInvestigacion)
+        {
+            return new CatalogoDto
             {
                 Id = lineaInvestigacion.Id,
-                Descripcion = lineaInvestigacion.Descripcion
+                Descripcion = lineaInvestigacion.Descripcion,
+                Estado = lineaInvestigacion.Estado
             };
-
-            return CreatedAtAction(nameof(GetLineaInvestigacion), new { id = lineaInvestigacion.Id }, resultado);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace RepositorioAcademico.Server.Controllers
     [Route("api/carreras")]
     public class CarrerasController : ControllerBase
     {
+        private static readonly string[] EstadosPermitidos = ["Activo", "Inactivo"];
         private readonly RepositorioDbContext _context;
 
         public CarrerasController(RepositorioDbContext context)
@@ -27,7 +28,12 @@ namespace RepositorioAcademico.Server.Controllers
 
             if (!incluirInactivas)
             {
-                query = query.Where(item => item.Estado == null || item.Estado == "Activo");
+                query = query.Where(item =>
+                    (item.Estado == null || item.Estado == "Activo") &&
+                    item.Facultad != null &&
+                    (item.Facultad.Estado == null || item.Facultad.Estado == "Activo") &&
+                    item.AreaConocimiento != null &&
+                    (item.AreaConocimiento.Estado == null || item.AreaConocimiento.Estado == "Activo"));
             }
 
             var carreras = await query
@@ -75,12 +81,18 @@ namespace RepositorioAcademico.Server.Controllers
                 return Conflict("Ya existe una carrera con esa descripcion en la facultad seleccionada.");
             }
 
+            var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
             var carrera = new Carrera
             {
                 Descripcion = descripcion,
                 FacultadId = request.FacultadId,
                 AreaConocimientoId = request.AreaConocimientoId,
-                Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim()
+                Estado = estado
             };
 
             _context.Carreras.Add(carrera);
@@ -90,6 +102,96 @@ namespace RepositorioAcademico.Server.Controllers
                 .FirstAsync(item => item.Id == carrera.Id);
 
             return CreatedAtAction(nameof(GetCarrera), new { id = carrera.Id }, MapearCarrera(creada));
+        }
+
+        [HttpPut("{id:int}")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarCatalogos)]
+        public async Task<ActionResult<CarreraDto>> ActualizarCarrera(
+            int id,
+            [FromBody] ActualizarCarreraRequest request)
+        {
+            var descripcion = request.Descripcion?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(descripcion))
+            {
+                return BadRequest("La descripcion es obligatoria.");
+            }
+
+            var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var validacionCatalogos = await ValidarCatalogosAsync(request.FacultadId, request.AreaConocimientoId);
+            if (validacionCatalogos is not null)
+            {
+                return validacionCatalogos;
+            }
+
+            var carrera = await _context.Carreras.FirstOrDefaultAsync(item => item.Id == id);
+            if (carrera == null)
+            {
+                return NotFound();
+            }
+
+            var existeCarrera = await _context.Carreras
+                .AnyAsync(item =>
+                    item.Id != id &&
+                    item.FacultadId == request.FacultadId &&
+                    item.Descripcion == descripcion);
+
+            if (existeCarrera)
+            {
+                return Conflict("Ya existe una carrera con esa descripcion en la facultad seleccionada.");
+            }
+
+            carrera.Descripcion = descripcion;
+            carrera.FacultadId = request.FacultadId;
+            carrera.AreaConocimientoId = request.AreaConocimientoId;
+            carrera.Estado = estado;
+
+            await _context.SaveChangesAsync();
+
+            var actualizada = await ConstruirConsultaCarreras()
+                .FirstAsync(item => item.Id == id);
+
+            return MapearCarrera(actualizada);
+        }
+
+        [HttpPut("{id:int}/estado")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarCatalogos)]
+        public async Task<ActionResult<CarreraDto>> ActualizarEstadoCarrera(
+            int id,
+            [FromBody] ActualizarEstadoCatalogoRequest request)
+        {
+            var estado = request.Estado?.Trim() ?? string.Empty;
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var carrera = await _context.Carreras.FirstOrDefaultAsync(item => item.Id == id);
+            if (carrera == null)
+            {
+                return NotFound();
+            }
+
+            if (string.Equals(estado, "Activo", StringComparison.OrdinalIgnoreCase))
+            {
+                var validacionCatalogos = await ValidarCatalogosAsync(carrera.FacultadId, carrera.AreaConocimientoId);
+                if (validacionCatalogos is not null)
+                {
+                    return validacionCatalogos;
+                }
+            }
+
+            carrera.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            var actualizada = await ConstruirConsultaCarreras()
+                .FirstAsync(item => item.Id == id);
+
+            return MapearCarrera(actualizada);
         }
 
         [HttpPut("{id:int}/lineas-investigacion")]
@@ -105,6 +207,11 @@ namespace RepositorioAcademico.Server.Controllers
             if (carrera == null)
             {
                 return NotFound();
+            }
+
+            if (carrera.Estado != null && carrera.Estado != "Activo")
+            {
+                return BadRequest("La carrera seleccionada esta inactiva.");
             }
 
             var lineaInvestigacionIds = (request.LineaInvestigacionIds ?? [])
@@ -204,7 +311,8 @@ namespace RepositorioAcademico.Server.Controllers
                     .Select(item => new CatalogoDto
                     {
                         Id = item.LineaInvestigacionId,
-                        Descripcion = item.LineaInvestigacion!.Descripcion
+                        Descripcion = item.LineaInvestigacion!.Descripcion,
+                        Estado = item.LineaInvestigacion.Estado
                     })
                     .ToList()
             };

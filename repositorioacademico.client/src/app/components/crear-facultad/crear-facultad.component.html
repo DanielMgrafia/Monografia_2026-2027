@@ -67,7 +67,26 @@
             <small>Disponible para documentos académicos</small>
           </div>
 
-          <span class="estado activo">Activo</span>
+          <div class="item-actions">
+            <span class="estado" [ngClass]="getEstadoClass(facultad.estado)">
+              {{ facultad.estado || 'Activo' }}
+            </span>
+
+            <button type="button"
+                    class="btn-editar-catalogo"
+                    [disabled]="procesandoId === facultad.id"
+                    (click)="abrirEdicion(facultad)">
+              Editar
+            </button>
+
+            <button type="button"
+                    class="btn-estado-catalogo"
+                    [ngClass]="getEstadoClass(facultad.estado)"
+                    [disabled]="procesandoId === facultad.id"
+                    (click)="cambiarEstado(facultad)">
+              {{ procesandoId === facultad.id ? 'Guardando...' : getToggleLabel(facultad) }}
+            </button>
+          </div>
         </li>
       </ul>
 
@@ -80,4 +99,50 @@
 
   </div>
 
+</section>
+
+<section class="editor-modal-backdrop" *ngIf="facultadEnEdicion as facultad" (click)="cancelarEdicion()">
+  <div class="editor-modal" (click)="$event.stopPropagation()">
+    <div class="editor-header">
+      <div>
+        <p>Editar facultad</p>
+        <h3>{{ facultad.descripcion }}</h3>
+      </div>
+
+      <button type="button" class="btn-editar-catalogo" (click)="cancelarEdicion()">Cerrar</button>
+    </div>
+
+    <form class="editor-form" (ngSubmit)="guardarEdicion()" #formEdicionFacultad="ngForm">
+      <label>
+        Nombre de la facultad
+        <input type="text"
+               [(ngModel)]="editDescripcion"
+               name="editDescripcionFacultad"
+               maxlength="150"
+               required />
+      </label>
+
+      <label>
+        Estado
+        <select [(ngModel)]="editEstado" name="editEstadoFacultad">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </label>
+
+      <div class="editor-actions">
+        <button type="button"
+                class="btn-editar-catalogo"
+                [disabled]="procesandoId === facultad.id"
+                (click)="cancelarEdicion()">
+          Cancelar
+        </button>
+        <button type="submit"
+                class="btn-guardar-catalogo"
+                [disabled]="procesandoId === facultad.id || formEdicionFacultad.invalid">
+          {{ procesandoId === facultad.id ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+  </div>
 </section>

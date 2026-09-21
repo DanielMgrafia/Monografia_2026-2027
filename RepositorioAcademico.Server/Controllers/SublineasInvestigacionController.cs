@@ -13,6 +13,7 @@ namespace RepositorioAcademico.Server.Controllers
     [Route("api/sublineas-investigacion")]
     public class SublineasInvestigacionController : ControllerBase
     {
+        private static readonly string[] EstadosPermitidos = ["Activo", "Inactivo"];
         private readonly RepositorioDbContext _context;
 
         public SublineasInvestigacionController(RepositorioDbContext context)
@@ -22,12 +23,21 @@ namespace RepositorioAcademico.Server.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SublineaInvestigacionDto>>> GetSublineasInvestigacion(
-            int? lineaInvestigacionId = null)
+            int? lineaInvestigacionId = null,
+            bool incluirInactivos = false)
         {
             var query = _context.SublineasInvestigacion
                 .AsNoTracking()
                 .Include(item => item.LineaInvestigacion)
-                .Where(item => item.Estado == null || item.Estado == "Activo");
+                .AsQueryable();
+
+            if (!incluirInactivos)
+            {
+                query = query.Where(item =>
+                    (item.Estado == null || item.Estado == "Activo") &&
+                    item.LineaInvestigacion != null &&
+                    (item.LineaInvestigacion.Estado == null || item.LineaInvestigacion.Estado == "Activo"));
+            }
 
             if (lineaInvestigacionId.HasValue)
             {
@@ -69,14 +79,16 @@ namespace RepositorioAcademico.Server.Controllers
                 return BadRequest("La descripcion es obligatoria.");
             }
 
-            var lineaInvestigacionExiste = await _context.LineasInvestigacion
-                .AnyAsync(item =>
-                    item.Id == request.LineaInvestigacionId &&
-                    (item.Estado == null || item.Estado == "Activo"));
-
-            if (!lineaInvestigacionExiste)
+            var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
             {
-                return BadRequest("La linea de investigacion seleccionada no existe o esta inactiva.");
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var validacionLinea = await ValidarLineaInvestigacionActivaAsync(request.LineaInvestigacionId);
+            if (validacionLinea is not null)
+            {
+                return validacionLinea;
             }
 
             var existeSublinea = await _context.SublineasInvestigacion
@@ -93,7 +105,7 @@ namespace RepositorioAcademico.Server.Controllers
             {
                 Descripcion = descripcion,
                 LineaInvestigacionId = request.LineaInvestigacionId,
-                Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim()
+                Estado = estado
             };
 
             _context.SublineasInvestigacion.Add(sublineaInvestigacion);
@@ -108,6 +120,111 @@ namespace RepositorioAcademico.Server.Controllers
                 nameof(GetSublineaInvestigacion),
                 new { id = sublineaInvestigacion.Id },
                 MapearSublinea(creada));
+        }
+
+        [HttpPut("{id:int}")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarCatalogos)]
+        public async Task<ActionResult<SublineaInvestigacionDto>> ActualizarSublineaInvestigacion(
+            int id,
+            [FromBody] ActualizarSublineaInvestigacionRequest request)
+        {
+            var descripcion = request.Descripcion?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(descripcion))
+            {
+                return BadRequest("La descripcion es obligatoria.");
+            }
+
+            var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var validacionLinea = await ValidarLineaInvestigacionActivaAsync(request.LineaInvestigacionId);
+            if (validacionLinea is not null)
+            {
+                return validacionLinea;
+            }
+
+            var sublineaInvestigacion = await _context.SublineasInvestigacion
+                .Include(item => item.LineaInvestigacion)
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (sublineaInvestigacion == null)
+            {
+                return NotFound();
+            }
+
+            var existeSublinea = await _context.SublineasInvestigacion
+                .AnyAsync(item =>
+                    item.Id != id &&
+                    item.LineaInvestigacionId == request.LineaInvestigacionId &&
+                    item.Descripcion == descripcion);
+
+            if (existeSublinea)
+            {
+                return Conflict("Ya existe una sublinea con esa descripcion para la linea seleccionada.");
+            }
+
+            sublineaInvestigacion.Descripcion = descripcion;
+            sublineaInvestigacion.LineaInvestigacionId = request.LineaInvestigacionId;
+            sublineaInvestigacion.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            var actualizada = await _context.SublineasInvestigacion
+                .AsNoTracking()
+                .Include(item => item.LineaInvestigacion)
+                .FirstAsync(item => item.Id == id);
+
+            return MapearSublinea(actualizada);
+        }
+
+        [HttpPut("{id:int}/estado")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarCatalogos)]
+        public async Task<ActionResult<SublineaInvestigacionDto>> ActualizarEstadoSublineaInvestigacion(
+            int id,
+            [FromBody] ActualizarEstadoCatalogoRequest request)
+        {
+            var estado = request.Estado?.Trim() ?? string.Empty;
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var sublineaInvestigacion = await _context.SublineasInvestigacion
+                .Include(item => item.LineaInvestigacion)
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (sublineaInvestigacion == null)
+            {
+                return NotFound();
+            }
+
+            if (string.Equals(estado, "Activo", StringComparison.OrdinalIgnoreCase))
+            {
+                var validacionLinea = await ValidarLineaInvestigacionActivaAsync(sublineaInvestigacion.LineaInvestigacionId);
+                if (validacionLinea is not null)
+                {
+                    return validacionLinea;
+                }
+            }
+
+            sublineaInvestigacion.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            return MapearSublinea(sublineaInvestigacion);
+        }
+
+        private async Task<ActionResult?> ValidarLineaInvestigacionActivaAsync(int lineaInvestigacionId)
+        {
+            var lineaInvestigacionExiste = await _context.LineasInvestigacion
+                .AnyAsync(item =>
+                    item.Id == lineaInvestigacionId &&
+                    (item.Estado == null || item.Estado == "Activo"));
+
+            return lineaInvestigacionExiste
+                ? null
+                : BadRequest("La linea de investigacion seleccionada no existe o esta inactiva.");
         }
 
         private static SublineaInvestigacionDto MapearSublinea(SublineaInvestigacion sublineaInvestigacion)

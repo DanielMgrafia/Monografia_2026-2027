@@ -14,13 +14,26 @@ export class CarrerasService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getCarreras(): Observable<Carrera[]> {
-    return this.http.get<Carrera[]>(this.apiUrl);
+  getCarreras(incluirInactivas = false): Observable<Carrera[]> {
+    const params = incluirInactivas ? { incluirInactivas: 'true' } : undefined;
+    return this.http.get<Carrera[]>(this.apiUrl, { params });
   }
 
   crearCarrera(payload: CrearCarreraPayload): Observable<Carrera> {
     return this.http
       .post<Carrera>(this.apiUrl, payload)
+      .pipe(tap(() => this.carrerasActualizadasSource.next()));
+  }
+
+  actualizarCarrera(carreraId: number, payload: CrearCarreraPayload): Observable<Carrera> {
+    return this.http
+      .put<Carrera>(`${this.apiUrl}/${carreraId}`, payload)
+      .pipe(tap(() => this.carrerasActualizadasSource.next()));
+  }
+
+  actualizarEstadoCarrera(carreraId: number, estado: string): Observable<Carrera> {
+    return this.http
+      .put<Carrera>(`${this.apiUrl}/${carreraId}/estado`, { estado })
       .pipe(tap(() => this.carrerasActualizadasSource.next()));
   }
 

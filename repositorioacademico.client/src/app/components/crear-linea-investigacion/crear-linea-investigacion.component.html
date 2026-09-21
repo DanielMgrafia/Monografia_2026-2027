@@ -60,7 +60,26 @@
             <small>Disponible para clasificacion investigativa</small>
           </div>
 
-          <span class="estado activo">Activo</span>
+          <div class="item-actions">
+            <span class="estado" [ngClass]="getEstadoClass(lineaInvestigacion.estado)">
+              {{ lineaInvestigacion.estado || 'Activo' }}
+            </span>
+
+            <button type="button"
+                    class="btn-editar-catalogo"
+                    [disabled]="procesandoId === lineaInvestigacion.id"
+                    (click)="abrirEdicion(lineaInvestigacion)">
+              Editar
+            </button>
+
+            <button type="button"
+                    class="btn-estado-catalogo"
+                    [ngClass]="getEstadoClass(lineaInvestigacion.estado)"
+                    [disabled]="procesandoId === lineaInvestigacion.id"
+                    (click)="cambiarEstado(lineaInvestigacion)">
+              {{ procesandoId === lineaInvestigacion.id ? 'Guardando...' : getToggleLabel(lineaInvestigacion) }}
+            </button>
+          </div>
         </li>
       </ul>
 
@@ -69,5 +88,51 @@
         <p>Agrega una nueva linea para ampliar el catalogo academico.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="editor-modal-backdrop" *ngIf="lineaEnEdicion as lineaInvestigacion" (click)="cancelarEdicion()">
+  <div class="editor-modal" (click)="$event.stopPropagation()">
+    <div class="editor-header">
+      <div>
+        <p>Editar linea de investigacion</p>
+        <h3>{{ lineaInvestigacion.descripcion }}</h3>
+      </div>
+
+      <button type="button" class="btn-editar-catalogo" (click)="cancelarEdicion()">Cerrar</button>
+    </div>
+
+    <form class="editor-form" (ngSubmit)="guardarEdicion()" #formEdicionLinea="ngForm">
+      <label>
+        Nombre de la linea
+        <input type="text"
+               [(ngModel)]="editDescripcion"
+               name="editDescripcionLinea"
+               maxlength="150"
+               required />
+      </label>
+
+      <label>
+        Estado
+        <select [(ngModel)]="editEstado" name="editEstadoLinea">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </label>
+
+      <div class="editor-actions">
+        <button type="button"
+                class="btn-editar-catalogo"
+                [disabled]="procesandoId === lineaInvestigacion.id"
+                (click)="cancelarEdicion()">
+          Cancelar
+        </button>
+        <button type="submit"
+                class="btn-guardar-catalogo"
+                [disabled]="procesandoId === lineaInvestigacion.id || formEdicionLinea.invalid">
+          {{ procesandoId === lineaInvestigacion.id ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
   </div>
 </section>
