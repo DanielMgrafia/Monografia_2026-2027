@@ -90,7 +90,8 @@ export class DashboardLayoutComponent implements OnInit {
       { label: 'Lineas de investigacion', route: '/lineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'LI' },
       { label: 'Sublineas de investigacion', route: '/sublineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'SI' },
       { label: 'Carreras', route: '/carreras', permission: 'CATALOGO.GESTIONAR', icon: 'CR' },
-      { label: 'Lineas por carrera', route: '/carrera-lineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'CL' }
+      { label: 'Lineas por carrera', route: '/carrera-lineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'CL' },
+      { label: 'Roles', route: '/catalogo-roles', permission: 'ROL.GESTIONAR', icon: 'RL' }
     ];
 
     return items.filter((item) => {
@@ -225,7 +226,8 @@ export class DashboardLayoutComponent implements OnInit {
       this.router.url.startsWith('/lineas-investigacion') ||
       this.router.url.startsWith('/sublineas-investigacion') ||
       this.router.url.startsWith('/carreras') ||
-      this.router.url.startsWith('/carrera-lineas-investigacion');
+      this.router.url.startsWith('/carrera-lineas-investigacion') ||
+      this.router.url.startsWith('/catalogo-roles');
   }
 
   handleNavigationSelection(): void {

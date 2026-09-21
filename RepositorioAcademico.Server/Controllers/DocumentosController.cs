@@ -108,7 +108,12 @@ namespace RepositorioAcademico.Server.Controllers
                 return BadRequest("El anio de publicacion no es valido.");
             }
 
-            var validacionCatalogos = await ValidarCatalogosAsync(request.TipoDocumentoId, request.FacultadId);
+            var validacionCatalogos = await ValidarCatalogosAsync(
+                request.TipoDocumentoId,
+                request.FacultadId,
+                request.CarreraId,
+                request.LineaInvestigacionId,
+                request.SublineaInvestigacionId);
             if (validacionCatalogos is not null)
             {
                 return validacionCatalogos;
@@ -127,6 +132,9 @@ namespace RepositorioAcademico.Server.Controllers
                 Autor = autor,
                 TipoDocumentoId = request.TipoDocumentoId,
                 FacultadId = request.FacultadId,
+                CarreraId = request.CarreraId,
+                LineaInvestigacionId = request.LineaInvestigacionId,
+                SublineaInvestigacionId = request.SublineaInvestigacionId,
                 RutaDocumento = request.RutaDocumento,
                 Tutor = tutor,
                 AnioPublicacion = request.AnioPublicacion,
@@ -207,7 +215,12 @@ namespace RepositorioAcademico.Server.Controllers
                 return BadRequest("El anio de publicacion no es valido.");
             }
 
-            var validacionCatalogos = await ValidarCatalogosAsync(request.TipoDocumentoId, request.FacultadId);
+            var validacionCatalogos = await ValidarCatalogosAsync(
+                request.TipoDocumentoId,
+                request.FacultadId,
+                request.CarreraId,
+                request.LineaInvestigacionId,
+                request.SublineaInvestigacionId);
             if (validacionCatalogos is not null)
             {
                 return validacionCatalogos;
@@ -233,6 +246,9 @@ namespace RepositorioAcademico.Server.Controllers
                 Autor = autor,
                 TipoDocumentoId = request.TipoDocumentoId,
                 FacultadId = request.FacultadId,
+                CarreraId = request.CarreraId,
+                LineaInvestigacionId = request.LineaInvestigacionId,
+                SublineaInvestigacionId = request.SublineaInvestigacionId,
                 RutaDocumento = nombreArchivo,
                 Tutor = tutor,
                 AnioPublicacion = request.AnioPublicacion,
@@ -315,6 +331,9 @@ namespace RepositorioAcademico.Server.Controllers
             string? autor,
             int? tipoDocumentoId,
             int? facultadId,
+            int? carreraId,
+            int? lineaInvestigacionId,
+            int? sublineaInvestigacionId,
             string? estado,
             DateTime? fechaDesde,
             DateTime? fechaHasta)
@@ -332,7 +351,10 @@ namespace RepositorioAcademico.Server.Controllers
                     (documento.Titulo != null && documento.Titulo.Contains(titulo)) ||
                     (documento.Descripcion != null && documento.Descripcion.Contains(titulo)) ||
                     (documento.PalabrasClave != null && documento.PalabrasClave.Contains(titulo)) ||
-                    (documento.Tutor != null && documento.Tutor.Contains(titulo)));
+                    (documento.Tutor != null && documento.Tutor.Contains(titulo)) ||
+                    (documento.Carrera != null && documento.Carrera.Contains(titulo)) ||
+                    (documento.LineaInvestigacion != null && documento.LineaInvestigacion.Contains(titulo)) ||
+                    (documento.SublineaInvestigacion != null && documento.SublineaInvestigacion.Contains(titulo)));
             }
 
             if (!string.IsNullOrWhiteSpace(autor))
@@ -350,6 +372,21 @@ namespace RepositorioAcademico.Server.Controllers
             if (facultadId.HasValue)
             {
                 query = query.Where(documento => documento.FacultadId == facultadId.Value);
+            }
+
+            if (carreraId.HasValue)
+            {
+                query = query.Where(documento => documento.CarreraId == carreraId.Value);
+            }
+
+            if (lineaInvestigacionId.HasValue)
+            {
+                query = query.Where(documento => documento.LineaInvestigacionId == lineaInvestigacionId.Value);
+            }
+
+            if (sublineaInvestigacionId.HasValue)
+            {
+                query = query.Where(documento => documento.SublineaInvestigacionId == sublineaInvestigacionId.Value);
             }
 
             if (!string.IsNullOrWhiteSpace(estado))
@@ -467,7 +504,12 @@ namespace RepositorioAcademico.Server.Controllers
                 return BadRequest("El estado solicitado no es valido.");
             }
 
-            var validacionCatalogos = await ValidarCatalogosAsync(request.TipoDocumentoId, request.FacultadId);
+            var validacionCatalogos = await ValidarCatalogosAsync(
+                request.TipoDocumentoId,
+                request.FacultadId,
+                request.CarreraId,
+                request.LineaInvestigacionId,
+                request.SublineaInvestigacionId);
             if (validacionCatalogos is not null)
             {
                 return validacionCatalogos;
@@ -483,6 +525,9 @@ namespace RepositorioAcademico.Server.Controllers
             documento.Autor = autor;
             documento.TipoDocumentoId = request.TipoDocumentoId;
             documento.FacultadId = request.FacultadId;
+            documento.CarreraId = request.CarreraId;
+            documento.LineaInvestigacionId = request.LineaInvestigacionId;
+            documento.SublineaInvestigacionId = request.SublineaInvestigacionId;
             documento.Tutor = tutor;
             documento.AnioPublicacion = request.AnioPublicacion;
             documento.Descripcion = descripcion;
@@ -528,6 +573,9 @@ namespace RepositorioAcademico.Server.Controllers
             return ConstruirConsultaDocumentosVisiblesEntidad()
                 .Include(documento => documento.TipoDocumento)
                 .Include(documento => documento.Facultad)
+                .Include(documento => documento.Carrera)
+                .Include(documento => documento.LineaInvestigacion)
+                .Include(documento => documento.SublineaInvestigacion)
                 .Include(documento => documento.Usuario)
                 .Select(documento => new DocumentoDto
                 {
@@ -538,6 +586,12 @@ namespace RepositorioAcademico.Server.Controllers
                     TipoDocumento = documento.TipoDocumento != null ? documento.TipoDocumento.Descripcion : null,
                     FacultadId = documento.FacultadId,
                     Facultad = documento.Facultad != null ? documento.Facultad.Descripcion : null,
+                    CarreraId = documento.CarreraId,
+                    Carrera = documento.Carrera != null ? documento.Carrera.Descripcion : null,
+                    LineaInvestigacionId = documento.LineaInvestigacionId,
+                    LineaInvestigacion = documento.LineaInvestigacion != null ? documento.LineaInvestigacion.Descripcion : null,
+                    SublineaInvestigacionId = documento.SublineaInvestigacionId,
+                    SublineaInvestigacion = documento.SublineaInvestigacion != null ? documento.SublineaInvestigacion.Descripcion : null,
                     RutaDocumento = documento.RutaDocumento,
                     Tutor = documento.Tutor,
                     AnioPublicacion = documento.AnioPublicacion,
@@ -582,7 +636,12 @@ namespace RepositorioAcademico.Server.Controllers
                 documento.Estado == "Publicado");
         }
 
-        private async Task<ActionResult?> ValidarCatalogosAsync(int tipoDocumentoId, int facultadId)
+        private async Task<ActionResult?> ValidarCatalogosAsync(
+            int tipoDocumentoId,
+            int facultadId,
+            int? carreraId,
+            int? lineaInvestigacionId,
+            int? sublineaInvestigacionId)
         {
             var tipoDocumentoExiste = await _context.TiposDocumento
                 .AnyAsync(item => item.Id == tipoDocumentoId);
@@ -598,6 +657,70 @@ namespace RepositorioAcademico.Server.Controllers
             if (!facultadExiste)
             {
                 return BadRequest("La facultad seleccionada no existe.");
+            }
+
+            Carrera? carrera = null;
+            if (carreraId.HasValue)
+            {
+                carrera = await _context.Carreras
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(item => item.Id == carreraId.Value);
+
+                if (carrera == null)
+                {
+                    return BadRequest("La carrera seleccionada no existe.");
+                }
+
+                if (carrera.FacultadId != facultadId)
+                {
+                    return BadRequest("La carrera seleccionada no pertenece a la facultad indicada.");
+                }
+            }
+
+            if (lineaInvestigacionId.HasValue)
+            {
+                var lineaInvestigacionExiste = await _context.LineasInvestigacion
+                    .AnyAsync(item => item.Id == lineaInvestigacionId.Value);
+
+                if (!lineaInvestigacionExiste)
+                {
+                    return BadRequest("La linea de investigacion seleccionada no existe.");
+                }
+
+                if (carrera != null)
+                {
+                    var lineaPerteneceCarrera = await _context.CarreraLineasInvestigacion
+                        .AnyAsync(item =>
+                            item.CarreraId == carrera.Id &&
+                            item.LineaInvestigacionId == lineaInvestigacionId.Value);
+
+                    if (!lineaPerteneceCarrera)
+                    {
+                        return BadRequest("La linea de investigacion seleccionada no esta asociada a la carrera.");
+                    }
+                }
+            }
+
+            if (sublineaInvestigacionId.HasValue)
+            {
+                if (!lineaInvestigacionId.HasValue)
+                {
+                    return BadRequest("Debes seleccionar una linea de investigacion para usar una sublinea.");
+                }
+
+                var sublineaInvestigacion = await _context.SublineasInvestigacion
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(item => item.Id == sublineaInvestigacionId.Value);
+
+                if (sublineaInvestigacion == null)
+                {
+                    return BadRequest("La sublinea de investigacion seleccionada no existe.");
+                }
+
+                if (sublineaInvestigacion.LineaInvestigacionId != lineaInvestigacionId.Value)
+                {
+                    return BadRequest("La sublinea seleccionada no pertenece a la linea de investigacion indicada.");
+                }
             }
 
             return null;

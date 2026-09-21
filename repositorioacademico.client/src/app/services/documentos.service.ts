@@ -39,6 +39,9 @@ export class DocumentosService {
     autor: string;
     tipoDocumentoId: number;
     facultadId: number;
+    carreraId?: number | null;
+    lineaInvestigacionId?: number | null;
+    sublineaInvestigacionId?: number | null;
     tutor: string;
     anioPublicacion: number;
     descripcion: string;
@@ -73,6 +76,9 @@ export class DocumentosService {
     autor?: string,
     tipoDocumentoId?: number,
     facultadId?: number,
+    carreraId?: number,
+    lineaInvestigacionId?: number,
+    sublineaInvestigacionId?: number,
     estado?: string,
     fechaDesde?: string,
     fechaHasta?: string
@@ -83,6 +89,9 @@ export class DocumentosService {
     if (autor) params['autor'] = autor;
     if (tipoDocumentoId != null) params['tipoDocumentoId'] = tipoDocumentoId;
     if (facultadId != null) params['facultadId'] = facultadId;
+    if (carreraId != null) params['carreraId'] = carreraId;
+    if (lineaInvestigacionId != null) params['lineaInvestigacionId'] = lineaInvestigacionId;
+    if (sublineaInvestigacionId != null) params['sublineaInvestigacionId'] = sublineaInvestigacionId;
     if (estado) params['estado'] = estado;
     if (fechaDesde) params['fechaDesde'] = fechaDesde;
     if (fechaHasta) params['fechaHasta'] = fechaHasta;

@@ -46,11 +46,53 @@
           <select id="facultadId"
                   name="facultadId"
                   [(ngModel)]="facultadId"
+                  (ngModelChange)="actualizarDependientesDesdeFacultad()"
                   [disabled]="cargandoCatalogos || facultades.length === 0"
                   required>
             <option [ngValue]="null">Seleccione</option>
             <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
               {{ facultad.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="carreraId">Carrera</label>
+          <select id="carreraId"
+                  name="carreraId"
+                  [(ngModel)]="carreraId"
+                  (ngModelChange)="actualizarDependientesDesdeCarrera()"
+                  [disabled]="cargandoCatalogos || carrerasDisponibles.length === 0">
+            <option [ngValue]="null">Sin carrera</option>
+            <option *ngFor="let carrera of carrerasDisponibles" [ngValue]="carrera.id">
+              {{ carrera.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="lineaInvestigacionId">Linea de investigacion</label>
+          <select id="lineaInvestigacionId"
+                  name="lineaInvestigacionId"
+                  [(ngModel)]="lineaInvestigacionId"
+                  (ngModelChange)="actualizarDependientesDesdeLinea()"
+                  [disabled]="cargandoCatalogos || lineasDisponibles.length === 0">
+            <option [ngValue]="null">Sin linea</option>
+            <option *ngFor="let linea of lineasDisponibles" [ngValue]="linea.id">
+              {{ linea.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="sublineaInvestigacionId">Sublinea de investigacion</label>
+          <select id="sublineaInvestigacionId"
+                  name="sublineaInvestigacionId"
+                  [(ngModel)]="sublineaInvestigacionId"
+                  [disabled]="cargandoCatalogos || sublineasDisponibles.length === 0">
+            <option [ngValue]="null">Sin sublinea</option>
+            <option *ngFor="let sublinea of sublineasDisponibles" [ngValue]="sublinea.id">
+              {{ sublinea.descripcion }}
             </option>
           </select>
         </div>

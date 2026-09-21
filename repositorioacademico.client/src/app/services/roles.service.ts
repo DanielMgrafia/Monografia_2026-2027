@@ -10,6 +10,12 @@ export interface CrearRolPayload {
   permisoIds: number[];
 }
 
+export interface ActualizarRolPayload {
+  nombre: string;
+  descripcion?: string;
+  estado?: string;
+}
+
 export interface ActualizarPermisosRolPayload {
   permisoIds: number[];
 }
@@ -22,12 +28,21 @@ export class RolesService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getRoles(): Observable<Rol[]> {
-    return this.http.get<Rol[]>(this.apiUrl);
+  getRoles(incluirInactivos = false): Observable<Rol[]> {
+    const params = incluirInactivos ? { incluirInactivos: 'true' } : undefined;
+    return this.http.get<Rol[]>(this.apiUrl, { params });
   }
 
   crearRol(payload: CrearRolPayload): Observable<Rol> {
     return this.http.post<Rol>(this.apiUrl, payload);
+  }
+
+  actualizarRol(rolId: number, payload: ActualizarRolPayload): Observable<Rol> {
+    return this.http.put<Rol>(`${this.apiUrl}/${rolId}`, payload);
+  }
+
+  actualizarEstado(rolId: number, estado: string): Observable<Rol> {
+    return this.http.put<Rol>(`${this.apiUrl}/${rolId}/estado`, { estado });
   }
 
   actualizarPermisos(rolId: number, payload: ActualizarPermisosRolPayload): Observable<Rol> {

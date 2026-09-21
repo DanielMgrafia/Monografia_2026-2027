@@ -13,6 +13,7 @@ namespace RepositorioAcademico.Server.Controllers
     [Route("api/roles")]
     public class RolesController : ControllerBase
     {
+        private static readonly string[] EstadosPermitidos = ["Activo", "Inactivo"];
         private readonly RepositorioDbContext _context;
 
         public RolesController(RepositorioDbContext context)
@@ -95,6 +96,11 @@ namespace RepositorioAcademico.Server.Controllers
                 Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim()
             };
 
+            if (!EstadosPermitidos.Contains(rol.Estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
             foreach (var permisoId in permisoIds)
             {
                 rol.RolPermisos.Add(new RolPermiso
@@ -115,6 +121,75 @@ namespace RepositorioAcademico.Server.Controllers
                 .FirstAsync(item => item.Id == rol.Id);
 
             return CreatedAtAction(nameof(GetRol), new { id = rol.Id }, MapearRol(creado));
+        }
+
+        [HttpPut("{id:int}")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarRoles)]
+        public async Task<ActionResult<RolDto>> ActualizarRol(int id, [FromBody] ActualizarRolRequest request)
+        {
+            var nombre = request.Nombre?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                return BadRequest("El nombre del rol es obligatorio.");
+            }
+
+            var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var rol = await _context.Roles
+                .Include(item => item.RolPermisos)
+                .ThenInclude(item => item.Permiso)
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (rol == null)
+            {
+                return NotFound();
+            }
+
+            var existeRol = await _context.Roles
+                .AnyAsync(item => item.Id != id && item.Nombre.ToUpper() == nombre.ToUpper());
+
+            if (existeRol)
+            {
+                return Conflict("Ya existe un rol con ese nombre.");
+            }
+
+            rol.Nombre = nombre;
+            rol.Descripcion = string.IsNullOrWhiteSpace(request.Descripcion) ? null : request.Descripcion.Trim();
+            rol.Estado = estado;
+
+            await _context.SaveChangesAsync();
+
+            return MapearRol(rol);
+        }
+
+        [HttpPut("{id:int}/estado")]
+        [Authorize(Policy = AuthorizationPolicies.GestionarRoles)]
+        public async Task<ActionResult<RolDto>> ActualizarEstado(int id, [FromBody] ActualizarEstadoRolRequest request)
+        {
+            var estado = request.Estado?.Trim() ?? string.Empty;
+            if (!EstadosPermitidos.Contains(estado, StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest("El estado solicitado no es valido.");
+            }
+
+            var rol = await _context.Roles
+                .Include(item => item.RolPermisos)
+                .ThenInclude(item => item.Permiso)
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (rol == null)
+            {
+                return NotFound();
+            }
+
+            rol.Estado = estado;
+            await _context.SaveChangesAsync();
+
+            return MapearRol(rol);
         }
 
         [HttpPut("{id:int}/permisos")]

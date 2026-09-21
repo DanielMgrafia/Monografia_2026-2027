@@ -6,50 +6,19 @@
     </div>
   </div>
 
-  <div class="filters-card">
-    <div class="filter-grid">
-      <div class="filter-group filter-group-wide">
-        <label for="filtroTextoRepositorio">Busqueda general</label>
-        <input id="filtroTextoRepositorio"
-               type="text"
-               [(ngModel)]="filtroTexto"
-               placeholder="Titulo, autor, facultad, palabras clave o tutor..." />
-      </div>
-
-      <div class="filter-group">
-        <label for="filtroTipoRepositorio">Tipo de documento</label>
-        <select id="filtroTipoRepositorio" [(ngModel)]="filtroTipoDocumentoId" name="filtroTipoDocumentoIdRepositorio">
-          <option [ngValue]="null">Todos</option>
-          <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
-            {{ tipo.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="filtroFacultadRepositorio">Facultad</label>
-        <select id="filtroFacultadRepositorio" [(ngModel)]="filtroFacultadId" name="filtroFacultadIdRepositorio">
-          <option [ngValue]="null">Todas</option>
-          <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
-            {{ facultad.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="filtroFechaDesdeRepositorio">Desde</label>
-        <input id="filtroFechaDesdeRepositorio" type="date" [(ngModel)]="filtroFechaDesde" name="filtroFechaDesdeRepositorio" />
-      </div>
-
-      <div class="filter-group">
-        <label for="filtroFechaHastaRepositorio">Hasta</label>
-        <input id="filtroFechaHastaRepositorio" type="date" [(ngModel)]="filtroFechaHasta" name="filtroFechaHastaRepositorio" />
-      </div>
-
-      <div class="filter-actions">
-        <button type="button" class="clear-filters-button" (click)="limpiarFiltros()">Limpiar filtros</button>
-      </div>
+  <div class="search-panel">
+    <div class="search-group">
+      <label for="filtroTextoRepositorio">Busqueda general</label>
+      <input id="filtroTextoRepositorio"
+             type="text"
+             [(ngModel)]="filtroTexto"
+             placeholder="Titulo, autor, carrera, linea o palabras clave..." />
     </div>
+
+    <button type="button" class="filters-button" (click)="abrirFiltros()">
+      Filtros
+      <span *ngIf="filtrosActivos > 0">{{ filtrosActivos }}</span>
+    </button>
   </div>
 
   <section class="recommendations-card" *ngIf="recomendaciones.length > 0">
@@ -122,6 +91,110 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</section>
+
+<section class="filters-modal-backdrop" *ngIf="filtrosAbiertos" (click)="cerrarFiltros()">
+  <div class="filters-modal" (click)="$event.stopPropagation()">
+    <div class="filters-modal-header">
+      <div>
+        <p>Filtros</p>
+        <h3>Clasificacion del repositorio</h3>
+      </div>
+
+      <button type="button" class="close-filters-button" (click)="cerrarFiltros()">Cerrar</button>
+    </div>
+
+    <div class="filter-grid">
+      <div class="filter-group">
+        <label for="filtroTipoRepositorio">Tipo de documento</label>
+        <select id="filtroTipoRepositorio" [(ngModel)]="filtroTipoDocumentoId" name="filtroTipoDocumentoIdRepositorio">
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
+            {{ tipo.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroFacultadRepositorio">Facultad</label>
+        <select id="filtroFacultadRepositorio"
+                [(ngModel)]="filtroFacultadId"
+                name="filtroFacultadIdRepositorio"
+                (ngModelChange)="actualizarDependientesDesdeFacultad()">
+          <option [ngValue]="null">Todas</option>
+          <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
+            {{ facultad.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroAreaRepositorio">Area del conocimiento</label>
+        <select id="filtroAreaRepositorio"
+                [(ngModel)]="filtroAreaConocimientoId"
+                name="filtroAreaConocimientoIdRepositorio"
+                (ngModelChange)="actualizarDependientesDesdeArea()">
+          <option [ngValue]="null">Todas</option>
+          <option *ngFor="let area of areasConocimiento" [ngValue]="area.id">
+            {{ area.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroCarreraRepositorio">Carrera</label>
+        <select id="filtroCarreraRepositorio"
+                [(ngModel)]="filtroCarreraId"
+                name="filtroCarreraIdRepositorio"
+                (ngModelChange)="actualizarDependientesDesdeCarrera()">
+          <option [ngValue]="null">Todas</option>
+          <option *ngFor="let carrera of carrerasFiltradas" [ngValue]="carrera.id">
+            {{ carrera.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroLineaRepositorio">Linea de investigacion</label>
+        <select id="filtroLineaRepositorio"
+                [(ngModel)]="filtroLineaInvestigacionId"
+                name="filtroLineaInvestigacionIdRepositorio"
+                (ngModelChange)="actualizarDependientesDesdeLinea()">
+          <option [ngValue]="null">Todas</option>
+          <option *ngFor="let linea of lineasFiltradas" [ngValue]="linea.id">
+            {{ linea.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroSublineaRepositorio">Sublinea de investigacion</label>
+        <select id="filtroSublineaRepositorio"
+                [(ngModel)]="filtroSublineaInvestigacionId"
+                name="filtroSublineaInvestigacionIdRepositorio">
+          <option [ngValue]="null">Todas</option>
+          <option *ngFor="let sublinea of sublineasFiltradas" [ngValue]="sublinea.id">
+            {{ sublinea.descripcion }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroFechaDesdeRepositorio">Desde</label>
+        <input id="filtroFechaDesdeRepositorio" type="date" [(ngModel)]="filtroFechaDesde" name="filtroFechaDesdeRepositorio" />
+      </div>
+
+      <div class="filter-group">
+        <label for="filtroFechaHastaRepositorio">Hasta</label>
+        <input id="filtroFechaHastaRepositorio" type="date" [(ngModel)]="filtroFechaHasta" name="filtroFechaHastaRepositorio" />
+      </div>
+    </div>
+
+    <div class="filters-modal-actions">
+      <button type="button" class="clear-filters-button" (click)="limpiarFiltros()">Limpiar filtros</button>
+      <button type="button" class="apply-filters-button" (click)="cerrarFiltros()">Aplicar filtros</button>
+    </div>
   </div>
 </section>
 

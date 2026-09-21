@@ -4,8 +4,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { Catalogo } from '../../models/catalogo';
+import { Carrera } from '../../models/carrera';
+import { SublineaInvestigacion } from '../../models/sublinea-investigacion';
 import { AuthService } from '../../services/auth.service';
 import { CatalogosService } from '../../services/catalogos.service';
+import { CarrerasService } from '../../services/carreras.service';
 import { DocumentosService } from '../../services/documentos.service';
 
 @Component({
@@ -22,6 +25,9 @@ export class SubirDocumentoComponent implements OnInit {
   autor = '';
   tipoDocumentoId: number | null = null;
   facultadId: number | null = null;
+  carreraId: number | null = null;
+  lineaInvestigacionId: number | null = null;
+  sublineaInvestigacionId: number | null = null;
   tutor = '';
   anioPublicacion: number | null = null;
   descripcion = '';
@@ -31,6 +37,9 @@ export class SubirDocumentoComponent implements OnInit {
 
   tiposDocumento: Catalogo[] = [];
   facultades: Catalogo[] = [];
+  carreras: Carrera[] = [];
+  lineasInvestigacion: Catalogo[] = [];
+  sublineasInvestigacion: SublineaInvestigacion[] = [];
 
   cargando = false;
   cargandoCatalogos = false;
@@ -41,6 +50,34 @@ export class SubirDocumentoComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly documentosService = inject(DocumentosService);
   private readonly catalogosService = inject(CatalogosService);
+  private readonly carrerasService = inject(CarrerasService);
+
+  get carrerasDisponibles(): Carrera[] {
+    if (this.facultadId == null) {
+      return this.carreras;
+    }
+
+    return this.carreras.filter((carrera) => carrera.facultadId === this.facultadId);
+  }
+
+  get lineasDisponibles(): Catalogo[] {
+    if (this.carreraId == null) {
+      return this.lineasInvestigacion;
+    }
+
+    const carrera = this.carreras.find((item) => item.id === this.carreraId);
+    return carrera?.lineasInvestigacion ?? [];
+  }
+
+  get sublineasDisponibles(): SublineaInvestigacion[] {
+    if (this.lineaInvestigacionId == null) {
+      return this.sublineasInvestigacion;
+    }
+
+    return this.sublineasInvestigacion.filter(
+      (sublinea) => sublinea.lineaInvestigacionId === this.lineaInvestigacionId
+    );
+  }
 
   ngOnInit(): void {
     const currentUser = this.authService.currentUser();
@@ -71,11 +108,17 @@ export class SubirDocumentoComponent implements OnInit {
 
     forkJoin({
       tiposDocumento: this.catalogosService.getTiposDocumento(),
-      facultades: this.catalogosService.getFacultades()
+      facultades: this.catalogosService.getFacultades(),
+      carreras: this.carrerasService.getCarreras(),
+      lineasInvestigacion: this.catalogosService.getLineasInvestigacion(),
+      sublineasInvestigacion: this.catalogosService.getSublineasInvestigacion()
     }).subscribe({
-      next: ({ tiposDocumento, facultades }) => {
+      next: ({ tiposDocumento, facultades, carreras, lineasInvestigacion, sublineasInvestigacion }) => {
         this.tiposDocumento = tiposDocumento;
         this.facultades = facultades;
+        this.carreras = carreras;
+        this.lineasInvestigacion = lineasInvestigacion;
+        this.sublineasInvestigacion = sublineasInvestigacion;
 
         if (
           this.tipoDocumentoId != null &&
@@ -90,6 +133,10 @@ export class SubirDocumentoComponent implements OnInit {
         ) {
           this.facultadId = null;
         }
+
+        this.actualizarDependientesDesdeFacultad();
+        this.actualizarDependientesDesdeCarrera();
+        this.actualizarDependientesDesdeLinea();
 
         if (
           opciones?.tipoDocumentoSugeridoId != null &&
@@ -178,6 +225,15 @@ export class SubirDocumentoComponent implements OnInit {
     formData.append('autor', this.autor.trim());
     formData.append('tipoDocumentoId', this.tipoDocumentoId.toString());
     formData.append('facultadId', this.facultadId.toString());
+    if (this.carreraId != null) {
+      formData.append('carreraId', this.carreraId.toString());
+    }
+    if (this.lineaInvestigacionId != null) {
+      formData.append('lineaInvestigacionId', this.lineaInvestigacionId.toString());
+    }
+    if (this.sublineaInvestigacionId != null) {
+      formData.append('sublineaInvestigacionId', this.sublineaInvestigacionId.toString());
+    }
     formData.append('tutor', this.tutor.trim());
     formData.append('anioPublicacion', this.anioPublicacion.toString());
     formData.append('descripcion', this.descripcion.trim());
@@ -204,6 +260,9 @@ export class SubirDocumentoComponent implements OnInit {
     this.autor = '';
     this.tipoDocumentoId = null;
     this.facultadId = null;
+    this.carreraId = null;
+    this.lineaInvestigacionId = null;
+    this.sublineaInvestigacionId = null;
     this.tutor = '';
     this.anioPublicacion = null;
     this.descripcion = '';
@@ -212,6 +271,36 @@ export class SubirDocumentoComponent implements OnInit {
     this.archivoSeleccionado = null;
     if (this.archivoInput) {
       this.archivoInput.nativeElement.value = '';
+    }
+  }
+
+  actualizarDependientesDesdeFacultad(): void {
+    if (
+      this.carreraId != null &&
+      !this.carrerasDisponibles.some((carrera) => carrera.id === this.carreraId)
+    ) {
+      this.carreraId = null;
+      this.lineaInvestigacionId = null;
+      this.sublineaInvestigacionId = null;
+    }
+  }
+
+  actualizarDependientesDesdeCarrera(): void {
+    if (
+      this.lineaInvestigacionId != null &&
+      !this.lineasDisponibles.some((linea) => linea.id === this.lineaInvestigacionId)
+    ) {
+      this.lineaInvestigacionId = null;
+      this.sublineaInvestigacionId = null;
+    }
+  }
+
+  actualizarDependientesDesdeLinea(): void {
+    if (
+      this.sublineaInvestigacionId != null &&
+      !this.sublineasDisponibles.some((sublinea) => sublinea.id === this.sublineaInvestigacionId)
+    ) {
+      this.sublineaInvestigacionId = null;
     }
   }
 }

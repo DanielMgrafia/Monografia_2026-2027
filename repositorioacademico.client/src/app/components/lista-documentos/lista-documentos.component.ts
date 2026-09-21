@@ -5,9 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { BibliotecaService } from '../../services/biblioteca.service';
 import { Catalogo } from '../../models/catalogo';
+import { Carrera } from '../../models/carrera';
 import { Documento } from '../../models/documento';
+import { SublineaInvestigacion } from '../../models/sublinea-investigacion';
 import { AuthService } from '../../services/auth.service';
 import { CatalogosService } from '../../services/catalogos.service';
+import { CarrerasService } from '../../services/carreras.service';
 import { DocumentosService } from '../../services/documentos.service';
 
 @Component({
@@ -22,12 +25,21 @@ export class ListaDocumentosComponent implements OnInit {
   recomendaciones: Documento[] = [];
   tiposDocumento: Catalogo[] = [];
   facultades: Catalogo[] = [];
+  areasConocimiento: Catalogo[] = [];
+  lineasInvestigacion: Catalogo[] = [];
+  sublineasInvestigacion: SublineaInvestigacion[] = [];
+  carreras: Carrera[] = [];
 
   filtroTexto = '';
   filtroTipoDocumentoId: number | null = null;
   filtroFacultadId: number | null = null;
+  filtroAreaConocimientoId: number | null = null;
+  filtroCarreraId: number | null = null;
+  filtroLineaInvestigacionId: number | null = null;
+  filtroSublineaInvestigacionId: number | null = null;
   filtroFechaDesde = '';
   filtroFechaHasta = '';
+  filtrosAbiertos = false;
 
   cargando = false;
   favoritoCambiandoId: number | null = null;
@@ -38,7 +50,54 @@ export class ListaDocumentosComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly bibliotecaService = inject(BibliotecaService);
   private readonly catalogosService = inject(CatalogosService);
+  private readonly carrerasService = inject(CarrerasService);
   private readonly documentosService = inject(DocumentosService);
+
+  get carrerasFiltradas(): Carrera[] {
+    return this.carreras.filter((carrera) => {
+      if (this.filtroFacultadId != null && carrera.facultadId !== this.filtroFacultadId) {
+        return false;
+      }
+
+      if (this.filtroAreaConocimientoId != null && carrera.areaConocimientoId !== this.filtroAreaConocimientoId) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  get lineasFiltradas(): Catalogo[] {
+    if (this.filtroCarreraId == null) {
+      return this.lineasInvestigacion;
+    }
+
+    const carrera = this.carreras.find((item) => item.id === this.filtroCarreraId);
+    return carrera?.lineasInvestigacion ?? [];
+  }
+
+  get sublineasFiltradas(): SublineaInvestigacion[] {
+    if (this.filtroLineaInvestigacionId == null) {
+      return this.sublineasInvestigacion;
+    }
+
+    return this.sublineasInvestigacion.filter(
+      (sublinea) => sublinea.lineaInvestigacionId === this.filtroLineaInvestigacionId
+    );
+  }
+
+  get filtrosActivos(): number {
+    return [
+      this.filtroTipoDocumentoId,
+      this.filtroFacultadId,
+      this.filtroAreaConocimientoId,
+      this.filtroCarreraId,
+      this.filtroLineaInvestigacionId,
+      this.filtroSublineaInvestigacionId,
+      this.filtroFechaDesde,
+      this.filtroFechaHasta
+    ].filter((valor) => valor !== null && valor !== '').length;
+  }
 
   get documentosFiltrados(): Documento[] {
     const filtroTexto = this.filtroTexto.trim().toLowerCase();
@@ -54,6 +113,9 @@ export class ListaDocumentosComponent implements OnInit {
             documento.autor,
             documento.tipoDocumento,
             documento.facultad,
+            documento.carrera,
+            documento.lineaInvestigacion,
+            documento.sublineaInvestigacion,
             documento.tutor,
             documento.descripcion,
             documento.palabrasClave
@@ -69,6 +131,31 @@ export class ListaDocumentosComponent implements OnInit {
         }
 
         if (this.filtroFacultadId != null && documento.facultadId !== this.filtroFacultadId) {
+          return false;
+        }
+
+        if (this.filtroAreaConocimientoId != null) {
+          const carrera = this.carreras.find((item) => item.id === documento.carreraId);
+          if (!carrera || carrera.areaConocimientoId !== this.filtroAreaConocimientoId) {
+            return false;
+          }
+        }
+
+        if (this.filtroCarreraId != null && documento.carreraId !== this.filtroCarreraId) {
+          return false;
+        }
+
+        if (
+          this.filtroLineaInvestigacionId != null &&
+          documento.lineaInvestigacionId !== this.filtroLineaInvestigacionId
+        ) {
+          return false;
+        }
+
+        if (
+          this.filtroSublineaInvestigacionId != null &&
+          documento.sublineaInvestigacionId !== this.filtroSublineaInvestigacionId
+        ) {
           return false;
         }
 
@@ -101,13 +188,30 @@ export class ListaDocumentosComponent implements OnInit {
       documentos: this.documentosService.getDocumentos(),
       recomendaciones: this.bibliotecaService.getRecomendaciones(),
       tiposDocumento: this.catalogosService.getTiposDocumento(),
-      facultades: this.catalogosService.getFacultades()
+      facultades: this.catalogosService.getFacultades(),
+      areasConocimiento: this.catalogosService.getAreasConocimiento(),
+      lineasInvestigacion: this.catalogosService.getLineasInvestigacion(),
+      sublineasInvestigacion: this.catalogosService.getSublineasInvestigacion(),
+      carreras: this.carrerasService.getCarreras()
     }).subscribe({
-      next: ({ documentos, recomendaciones, tiposDocumento, facultades }) => {
+      next: ({
+        documentos,
+        recomendaciones,
+        tiposDocumento,
+        facultades,
+        areasConocimiento,
+        lineasInvestigacion,
+        sublineasInvestigacion,
+        carreras
+      }) => {
         this.documentos = documentos;
         this.recomendaciones = recomendaciones;
         this.tiposDocumento = tiposDocumento;
         this.facultades = facultades;
+        this.areasConocimiento = areasConocimiento;
+        this.lineasInvestigacion = lineasInvestigacion;
+        this.sublineasInvestigacion = sublineasInvestigacion;
+        this.carreras = carreras;
         this.cargando = false;
       },
       error: () => {
@@ -121,8 +225,54 @@ export class ListaDocumentosComponent implements OnInit {
     this.filtroTexto = '';
     this.filtroTipoDocumentoId = null;
     this.filtroFacultadId = null;
+    this.filtroAreaConocimientoId = null;
+    this.filtroCarreraId = null;
+    this.filtroLineaInvestigacionId = null;
+    this.filtroSublineaInvestigacionId = null;
     this.filtroFechaDesde = '';
     this.filtroFechaHasta = '';
+  }
+
+  abrirFiltros(): void {
+    this.filtrosAbiertos = true;
+  }
+
+  cerrarFiltros(): void {
+    this.filtrosAbiertos = false;
+  }
+
+  actualizarDependientesDesdeFacultad(): void {
+    if (
+      this.filtroCarreraId != null &&
+      !this.carrerasFiltradas.some((carrera) => carrera.id === this.filtroCarreraId)
+    ) {
+      this.filtroCarreraId = null;
+      this.filtroLineaInvestigacionId = null;
+      this.filtroSublineaInvestigacionId = null;
+    }
+  }
+
+  actualizarDependientesDesdeArea(): void {
+    this.actualizarDependientesDesdeFacultad();
+  }
+
+  actualizarDependientesDesdeCarrera(): void {
+    if (
+      this.filtroLineaInvestigacionId != null &&
+      !this.lineasFiltradas.some((linea) => linea.id === this.filtroLineaInvestigacionId)
+    ) {
+      this.filtroLineaInvestigacionId = null;
+      this.filtroSublineaInvestigacionId = null;
+    }
+  }
+
+  actualizarDependientesDesdeLinea(): void {
+    if (
+      this.filtroSublineaInvestigacionId != null &&
+      !this.sublineasFiltradas.some((sublinea) => sublinea.id === this.filtroSublineaInvestigacionId)
+    ) {
+      this.filtroSublineaInvestigacionId = null;
+    }
   }
 
   abrirVisor(documento: Documento): void {

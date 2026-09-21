@@ -1,46 +1,9 @@
 <section class="page-grid">
-  <article class="page-card form-card">
-    <div class="card-header">
-      <div>
-        <h3>Nuevo rol</h3>
-        <p>Define cargos del sistema a partir de permisos concretos.</p>
-      </div>
-    </div>
-
-    <form class="form-grid" (ngSubmit)="guardarRol()">
-      <label class="full">
-        Nombre del rol
-        <input type="text" [(ngModel)]="nuevoRol.nombre" name="nombreRol" />
-      </label>
-
-      <label class="full">
-        Descripcion
-        <input type="text" [(ngModel)]="nuevoRol.descripcion" name="descripcionRol" />
-      </label>
-
-      <div class="full selection-box">
-        <strong>Permisos incluidos</strong>
-        <div class="check-grid">
-          <label class="check-item" *ngFor="let permiso of permisos">
-            <input type="checkbox"
-                   [checked]="nuevoRol.permisoIds.includes(permiso.id)"
-                   (change)="toggleNuevoPermiso(permiso.id, $any($event.target).checked)" />
-            <span>{{ permiso.codigo }}</span>
-          </label>
-        </div>
-      </div>
-
-      <button type="submit" class="primary-button" [disabled]="guardando">
-        {{ guardando ? 'Guardando...' : 'Crear rol' }}
-      </button>
-    </form>
-  </article>
-
   <article class="page-card list-card">
     <div class="card-header">
       <div>
-        <h3>Roles del sistema</h3>
-        <p>Ajusta permisos segun el dashboard o modulo que cada rol puede ver.</p>
+        <h3>Roles y permisos</h3>
+        <p>Ajusta permisos de los roles activos disponibles en el sistema.</p>
       </div>
       <button type="button" class="secondary-button" (click)="cargarDatos()" [disabled]="cargando">
         {{ cargando ? 'Actualizando...' : 'Recargar' }}
@@ -93,7 +56,7 @@
 
 <ng-template #emptyState>
   <div class="empty-state">
-    <strong>No hay roles registrados.</strong>
-    <p>Crea el primer rol usando el formulario lateral.</p>
+    <strong>No hay roles activos.</strong>
+    <p>Activa o crea roles desde el catalogo de roles.</p>
   </div>
 </ng-template>

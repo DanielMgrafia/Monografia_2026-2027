@@ -148,10 +148,52 @@
 
         <div class="editor-group">
           <label for="editFacultad">Facultad</label>
-          <select id="editFacultad" [(ngModel)]="editModel.facultadId" name="editFacultadId" required>
+          <select id="editFacultad"
+                  [(ngModel)]="editModel.facultadId"
+                  name="editFacultadId"
+                  (ngModelChange)="actualizarDependientesDesdeFacultad()"
+                  required>
             <option [ngValue]="null">Seleccione</option>
             <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
               {{ facultad.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="editor-group">
+          <label for="editCarrera">Carrera</label>
+          <select id="editCarrera"
+                  [(ngModel)]="editModel.carreraId"
+                  name="editCarreraId"
+                  (ngModelChange)="actualizarDependientesDesdeCarrera()">
+            <option [ngValue]="null">Sin carrera</option>
+            <option *ngFor="let carrera of carrerasDisponibles" [ngValue]="carrera.id">
+              {{ carrera.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="editor-group">
+          <label for="editLineaInvestigacion">Linea de investigacion</label>
+          <select id="editLineaInvestigacion"
+                  [(ngModel)]="editModel.lineaInvestigacionId"
+                  name="editLineaInvestigacionId"
+                  (ngModelChange)="actualizarDependientesDesdeLinea()">
+            <option [ngValue]="null">Sin linea</option>
+            <option *ngFor="let linea of lineasDisponibles" [ngValue]="linea.id">
+              {{ linea.descripcion }}
+            </option>
+          </select>
+        </div>
+
+        <div class="editor-group">
+          <label for="editSublineaInvestigacion">Sublinea de investigacion</label>
+          <select id="editSublineaInvestigacion"
+                  [(ngModel)]="editModel.sublineaInvestigacionId"
+                  name="editSublineaInvestigacionId">
+            <option [ngValue]="null">Sin sublinea</option>
+            <option *ngFor="let sublinea of sublineasDisponibles" [ngValue]="sublinea.id">
+              {{ sublinea.descripcion }}
             </option>
           </select>
         </div>

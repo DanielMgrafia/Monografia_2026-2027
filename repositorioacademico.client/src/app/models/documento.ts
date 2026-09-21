@@ -13,6 +13,12 @@ export interface Documento {
   tipoDocumento?: string;
   facultadId: number;
   facultad?: string;
+  carreraId?: number | null;
+  carrera?: string;
+  lineaInvestigacionId?: number | null;
+  lineaInvestigacion?: string;
+  sublineaInvestigacionId?: number | null;
+  sublineaInvestigacion?: string;
   rutaDocumento?: string;
   tutor?: string;
   anioPublicacion?: number | null;

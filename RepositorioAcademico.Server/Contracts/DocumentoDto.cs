@@ -16,6 +16,18 @@ namespace RepositorioAcademico.Server.Contracts
 
         public string? Facultad { get; set; }
 
+        public int? CarreraId { get; set; }
+
+        public string? Carrera { get; set; }
+
+        public int? LineaInvestigacionId { get; set; }
+
+        public string? LineaInvestigacion { get; set; }
+
+        public int? SublineaInvestigacionId { get; set; }
+
+        public string? SublineaInvestigacion { get; set; }
+
         public string? RutaDocumento { get; set; }
 
         public string? Tutor { get; set; }

@@ -1,0 +1,131 @@
+<section class="roles-catalog-grid">
+  <article class="page-card form-card">
+    <div class="card-header">
+      <div>
+        <h3>Nuevo rol</h3>
+        <p>Registra roles disponibles para usuarios y permisos.</p>
+      </div>
+    </div>
+
+    <form class="form-grid" (ngSubmit)="guardarRol()">
+      <label>
+        Nombre del rol
+        <input type="text" [(ngModel)]="nuevoRol.nombre" name="nombreRolCatalogo" />
+      </label>
+
+      <label>
+        Descripcion
+        <input type="text" [(ngModel)]="nuevoRol.descripcion" name="descripcionRolCatalogo" />
+      </label>
+
+      <label>
+        Estado
+        <select [(ngModel)]="nuevoRol.estado" name="estadoRolCatalogo">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </label>
+
+      <button type="submit" class="primary-button" [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : 'Crear rol' }}
+      </button>
+    </form>
+  </article>
+
+  <article class="page-card list-card">
+    <div class="card-header">
+      <div>
+        <h3>Roles</h3>
+        <p>Actualiza el nombre, descripcion y disponibilidad del rol.</p>
+      </div>
+
+      <button type="button" class="secondary-button" (click)="cargarRoles()" [disabled]="cargando">
+        {{ cargando ? 'Actualizando...' : 'Recargar' }}
+      </button>
+    </div>
+
+    <div *ngIf="mensaje" class="message success">{{ mensaje }}</div>
+    <div *ngIf="error" class="message error">{{ error }}</div>
+
+    <div class="role-list" *ngIf="roles.length > 0; else emptyState">
+      <article class="role-card" *ngFor="let rol of roles">
+        <div class="role-header">
+          <div>
+            <strong>{{ rol.nombre }}</strong>
+            <span>{{ rol.descripcion || 'Sin descripcion adicional' }}</span>
+          </div>
+
+          <span class="state" [ngClass]="getEstadoClass(rol.estado)">{{ rol.estado }}</span>
+        </div>
+
+        <div class="role-footer">
+          <small>{{ rol.permisos.length }} permisos asignados</small>
+          <div class="role-actions">
+            <button type="button"
+                    class="secondary-button"
+                    [disabled]="procesandoRolId === rol.id"
+                    (click)="abrirEdicion(rol)">
+              Editar
+            </button>
+            <button type="button"
+                    class="danger-button"
+                    [ngClass]="getEstadoClass(rol.estado)"
+                    [disabled]="procesandoRolId === rol.id"
+                    (click)="cambiarEstado(rol)">
+              {{ procesandoRolId === rol.id ? 'Guardando...' : getToggleLabel(rol) }}
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </article>
+</section>
+
+<section class="editor-modal-backdrop" *ngIf="rolEnEdicion as rol" (click)="cancelarEdicion()">
+  <div class="editor-modal" (click)="$event.stopPropagation()">
+    <div class="editor-header">
+      <div>
+        <p>Editar rol</p>
+        <h3>{{ rol.nombre }}</h3>
+      </div>
+
+      <button type="button" class="secondary-button" (click)="cancelarEdicion()">Cerrar</button>
+    </div>
+
+    <form class="form-grid" (ngSubmit)="guardarEdicion()">
+      <label>
+        Nombre del rol
+        <input type="text" [(ngModel)]="editModel.nombre" name="editNombreRolCatalogo" />
+      </label>
+
+      <label>
+        Descripcion
+        <input type="text" [(ngModel)]="editModel.descripcion" name="editDescripcionRolCatalogo" />
+      </label>
+
+      <label>
+        Estado
+        <select [(ngModel)]="editModel.estado" name="editEstadoRolCatalogo">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </label>
+
+      <div class="editor-actions">
+        <button type="button" class="secondary-button" (click)="cancelarEdicion()" [disabled]="procesandoRolId === rol.id">
+          Cancelar
+        </button>
+        <button type="submit" class="primary-button" [disabled]="procesandoRolId === rol.id">
+          {{ procesandoRolId === rol.id ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<ng-template #emptyState>
+  <div class="empty-state">
+    <strong>No hay roles registrados.</strong>
+    <p>Crea el primer rol desde el formulario lateral.</p>
+  </div>
+</ng-template>

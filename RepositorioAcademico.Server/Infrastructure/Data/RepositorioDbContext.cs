@@ -182,6 +182,21 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                     .HasForeignKey(item => item.FacultadId)
                     .OnDelete(DeleteBehavior.Restrict);
 
+                entity.HasOne(item => item.Carrera)
+                    .WithMany()
+                    .HasForeignKey(item => item.CarreraId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(item => item.LineaInvestigacion)
+                    .WithMany()
+                    .HasForeignKey(item => item.LineaInvestigacionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(item => item.SublineaInvestigacion)
+                    .WithMany()
+                    .HasForeignKey(item => item.SublineaInvestigacionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
                 entity.HasOne(item => item.Usuario)
                     .WithMany(item => item.Documentos)
                     .HasForeignKey(item => item.UsuarioId)

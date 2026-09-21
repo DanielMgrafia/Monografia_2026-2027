@@ -16,6 +16,18 @@ namespace RepositorioAcademico.Server.Domain
 
         public Facultad? Facultad { get; set; }
 
+        public int? CarreraId { get; set; }
+
+        public Carrera? Carrera { get; set; }
+
+        public int? LineaInvestigacionId { get; set; }
+
+        public LineaInvestigacion? LineaInvestigacion { get; set; }
+
+        public int? SublineaInvestigacionId { get; set; }
+
+        public SublineaInvestigacion? SublineaInvestigacion { get; set; }
+
         public string? RutaDocumento { get; set; }
 
         public string? Tutor { get; set; }

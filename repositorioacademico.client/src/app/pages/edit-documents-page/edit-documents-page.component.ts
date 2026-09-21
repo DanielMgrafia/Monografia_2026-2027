@@ -4,8 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { Catalogo } from '../../models/catalogo';
+import { Carrera } from '../../models/carrera';
 import { Documento } from '../../models/documento';
+import { SublineaInvestigacion } from '../../models/sublinea-investigacion';
 import { CatalogosService } from '../../services/catalogos.service';
+import { CarrerasService } from '../../services/carreras.service';
 import { DocumentosService } from '../../services/documentos.service';
 
 type EstadoDocumento = 'Pendiente' | 'Publicado' | 'Rechazado';
@@ -15,6 +18,9 @@ interface DocumentoEditModel {
   autor: string;
   tipoDocumentoId: number | null;
   facultadId: number | null;
+  carreraId: number | null;
+  lineaInvestigacionId: number | null;
+  sublineaInvestigacionId: number | null;
   tutor: string;
   anioPublicacion: number | null;
   descripcion: string;
@@ -36,6 +42,9 @@ export class EditDocumentsPageComponent implements OnInit {
   documentos: Documento[] = [];
   tiposDocumento: Catalogo[] = [];
   facultades: Catalogo[] = [];
+  carreras: Carrera[] = [];
+  lineasInvestigacion: Catalogo[] = [];
+  sublineasInvestigacion: SublineaInvestigacion[] = [];
 
   filtroTexto = '';
   filtroEstado = '';
@@ -55,6 +64,34 @@ export class EditDocumentsPageComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly documentosService = inject(DocumentosService);
   private readonly catalogosService = inject(CatalogosService);
+  private readonly carrerasService = inject(CarrerasService);
+
+  get carrerasDisponibles(): Carrera[] {
+    if (this.editModel.facultadId == null) {
+      return this.carreras;
+    }
+
+    return this.carreras.filter((carrera) => carrera.facultadId === this.editModel.facultadId);
+  }
+
+  get lineasDisponibles(): Catalogo[] {
+    if (this.editModel.carreraId == null) {
+      return this.lineasInvestigacion;
+    }
+
+    const carrera = this.carreras.find((item) => item.id === this.editModel.carreraId);
+    return carrera?.lineasInvestigacion ?? [];
+  }
+
+  get sublineasDisponibles(): SublineaInvestigacion[] {
+    if (this.editModel.lineaInvestigacionId == null) {
+      return this.sublineasInvestigacion;
+    }
+
+    return this.sublineasInvestigacion.filter(
+      (sublinea) => sublinea.lineaInvestigacionId === this.editModel.lineaInvestigacionId
+    );
+  }
 
   get documentosFiltrados(): Documento[] {
     const filtroTexto = this.filtroTexto.trim().toLowerCase();
@@ -69,6 +106,9 @@ export class EditDocumentsPageComponent implements OnInit {
             documento.autor,
             documento.tipoDocumento,
             documento.facultad,
+            documento.carrera,
+            documento.lineaInvestigacion,
+            documento.sublineaInvestigacion,
             documento.estado,
             documento.tutor,
             documento.descripcion,
@@ -117,12 +157,18 @@ export class EditDocumentsPageComponent implements OnInit {
     forkJoin({
       documentos: this.documentosService.getDocumentos(),
       tiposDocumento: this.catalogosService.getTiposDocumento(),
-      facultades: this.catalogosService.getFacultades()
+      facultades: this.catalogosService.getFacultades(),
+      carreras: this.carrerasService.getCarreras(),
+      lineasInvestigacion: this.catalogosService.getLineasInvestigacion(),
+      sublineasInvestigacion: this.catalogosService.getSublineasInvestigacion()
     }).subscribe({
-      next: ({ documentos, tiposDocumento, facultades }) => {
+      next: ({ documentos, tiposDocumento, facultades, carreras, lineasInvestigacion, sublineasInvestigacion }) => {
         this.documentos = documentos;
         this.tiposDocumento = tiposDocumento;
         this.facultades = facultades;
+        this.carreras = carreras;
+        this.lineasInvestigacion = lineasInvestigacion;
+        this.sublineasInvestigacion = sublineasInvestigacion;
         this.cargando = false;
       },
       error: () => {
@@ -149,6 +195,9 @@ export class EditDocumentsPageComponent implements OnInit {
       autor: documento.autor?.trim() ?? '',
       tipoDocumentoId: documento.tipoDocumentoId,
       facultadId: documento.facultadId,
+      carreraId: documento.carreraId ?? null,
+      lineaInvestigacionId: documento.lineaInvestigacionId ?? null,
+      sublineaInvestigacionId: documento.sublineaInvestigacionId ?? null,
       tutor: documento.tutor?.trim() ?? '',
       anioPublicacion: documento.anioPublicacion ?? null,
       descripcion: documento.descripcion?.trim() ?? '',
@@ -195,6 +244,9 @@ export class EditDocumentsPageComponent implements OnInit {
       autor: this.editModel.autor.trim(),
       tipoDocumentoId: this.editModel.tipoDocumentoId,
       facultadId: this.editModel.facultadId,
+      carreraId: this.editModel.carreraId,
+      lineaInvestigacionId: this.editModel.lineaInvestigacionId,
+      sublineaInvestigacionId: this.editModel.sublineaInvestigacionId,
       tutor: this.editModel.tutor.trim(),
       anioPublicacion: this.editModel.anioPublicacion,
       descripcion: this.editModel.descripcion.trim(),
@@ -255,6 +307,9 @@ export class EditDocumentsPageComponent implements OnInit {
         autor: actualizado.autor?.trim() ?? '',
         tipoDocumentoId: actualizado.tipoDocumentoId,
         facultadId: actualizado.facultadId,
+        carreraId: actualizado.carreraId ?? null,
+        lineaInvestigacionId: actualizado.lineaInvestigacionId ?? null,
+        sublineaInvestigacionId: actualizado.sublineaInvestigacionId ?? null,
         tutor: actualizado.tutor?.trim() ?? '',
         anioPublicacion: actualizado.anioPublicacion ?? null,
         descripcion: actualizado.descripcion?.trim() ?? '',
@@ -281,6 +336,9 @@ export class EditDocumentsPageComponent implements OnInit {
       autor: '',
       tipoDocumentoId: null,
       facultadId: null,
+      carreraId: null,
+      lineaInvestigacionId: null,
+      sublineaInvestigacionId: null,
       tutor: '',
       anioPublicacion: null,
       descripcion: '',
@@ -288,5 +346,35 @@ export class EditDocumentsPageComponent implements OnInit {
       estado: 'Pendiente',
       sePuedeDescargar: true
     };
+  }
+
+  actualizarDependientesDesdeFacultad(): void {
+    if (
+      this.editModel.carreraId != null &&
+      !this.carrerasDisponibles.some((carrera) => carrera.id === this.editModel.carreraId)
+    ) {
+      this.editModel.carreraId = null;
+      this.editModel.lineaInvestigacionId = null;
+      this.editModel.sublineaInvestigacionId = null;
+    }
+  }
+
+  actualizarDependientesDesdeCarrera(): void {
+    if (
+      this.editModel.lineaInvestigacionId != null &&
+      !this.lineasDisponibles.some((linea) => linea.id === this.editModel.lineaInvestigacionId)
+    ) {
+      this.editModel.lineaInvestigacionId = null;
+      this.editModel.sublineaInvestigacionId = null;
+    }
+  }
+
+  actualizarDependientesDesdeLinea(): void {
+    if (
+      this.editModel.sublineaInvestigacionId != null &&
+      !this.sublineasDisponibles.some((sublinea) => sublinea.id === this.editModel.sublineaInvestigacionId)
+    ) {
+      this.editModel.sublineaInvestigacionId = null;
+    }
   }
 }

@@ -17,6 +17,7 @@ import { DocumentViewerPageComponent } from './pages/document-viewer-page/docume
 import { EditDocumentsPageComponent } from './pages/edit-documents-page/edit-documents-page.component';
 import { HistoryPageComponent } from './pages/history-page/history-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
+import { RoleCatalogPageComponent } from './pages/role-catalog-page/role-catalog-page.component';
 import { ReviewDocumentsPageComponent } from './pages/review-documents-page/review-documents-page.component';
 import { RolesPageComponent } from './pages/roles-page/roles-page.component';
 import { UsersPageComponent } from './pages/users-page/users-page.component';
@@ -171,6 +172,16 @@ export const appRoutes: Routes = [
           title: 'Lineas por carrera',
           description: 'Asocia lineas de investigacion a cada carrera academica.',
           permission: 'CATALOGO.GESTIONAR'
+        }
+      },
+      {
+        path: 'catalogo-roles',
+        component: RoleCatalogPageComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Roles',
+          description: 'Administra el catalogo de roles disponibles en la plataforma.',
+          permission: 'ROL.GESTIONAR'
         }
       },
       {

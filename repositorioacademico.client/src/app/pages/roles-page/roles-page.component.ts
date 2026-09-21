@@ -3,7 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Permiso, Rol } from '../../models/rol';
 import { PermisosService } from '../../services/permisos.service';
-import { CrearRolPayload, RolesService } from '../../services/roles.service';
+import { RolesService } from '../../services/roles.service';
 
 @Component({
   selector: 'app-roles-page',
@@ -19,16 +19,9 @@ export class RolesPageComponent implements OnInit {
   permisos: Permiso[] = [];
 
   cargando = false;
-  guardando = false;
   actualizandoRolId: number | null = null;
   mensaje = '';
   error = '';
-
-  readonly nuevoRol: CrearRolPayload = {
-    nombre: '',
-    descripcion: '',
-    permisoIds: []
-  };
 
   readonly permisosPorRol: Record<number, number[]> = {};
 
@@ -69,46 +62,6 @@ export class RolesPageComponent implements OnInit {
         this.cargando = false;
       }
     });
-  }
-
-  guardarRol(): void {
-    this.mensaje = '';
-    this.error = '';
-
-    if (!this.nuevoRol.nombre.trim() || this.nuevoRol.permisoIds.length === 0) {
-      this.error = 'Ingresa el nombre del rol y selecciona al menos un permiso.';
-      return;
-    }
-
-    this.guardando = true;
-
-    this.rolesService.crearRol({
-      ...this.nuevoRol,
-      nombre: this.nuevoRol.nombre.trim(),
-      descripcion: this.nuevoRol.descripcion?.trim()
-    }).subscribe({
-      next: (rol) => {
-        this.roles = [...this.roles, rol].sort((left, right) =>
-          left.nombre.localeCompare(right.nombre, 'es', { sensitivity: 'base' })
-        );
-        this.permisosPorRol[rol.id] = rol.permisos.map((permiso) => permiso.id);
-        this.nuevoRol.nombre = '';
-        this.nuevoRol.descripcion = '';
-        this.nuevoRol.permisoIds = [];
-        this.guardando = false;
-        this.mensaje = 'Rol creado correctamente.';
-      },
-      error: (response) => {
-        this.guardando = false;
-        this.error = response.error || 'No se pudo crear el rol.';
-      }
-    });
-  }
-
-  toggleNuevoPermiso(permisoId: number, checked: boolean): void {
-    this.nuevoRol.permisoIds = checked
-      ? [...new Set([...this.nuevoRol.permisoIds, permisoId])]
-      : this.nuevoRol.permisoIds.filter((item) => item !== permisoId);
   }
 
   togglePermisoRol(rolId: number, permisoId: number, checked: boolean): void {
