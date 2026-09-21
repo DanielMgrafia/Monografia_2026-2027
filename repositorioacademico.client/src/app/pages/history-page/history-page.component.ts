@@ -68,4 +68,12 @@ export class HistoryPageComponent implements OnInit {
   getActividadVacia(actividades: DocumentoActividad[]): boolean {
     return actividades.length === 0;
   }
+
+  getClasificacionPrincipal(documento: Documento): string {
+    return documento.carrera ||
+      documento.lineaInvestigacion ||
+      documento.sublineaInvestigacion ||
+      documento.tipoDocumento ||
+      'Sin clasificacion';
+  }
 }

@@ -13,7 +13,7 @@
         <input id="filtroTexto"
                type="text"
                [(ngModel)]="filtroTexto"
-               placeholder="Titulo, autor, facultad o tipo..." />
+               placeholder="Titulo, autor, carrera o tipo..." />
       </div>
 
       <div class="filter-group">
@@ -22,16 +22,6 @@
           <option [ngValue]="null">Todos</option>
           <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
             {{ tipo.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="filtroFacultad">Facultad</label>
-        <select id="filtroFacultad" [(ngModel)]="filtroFacultadId" name="filtroFacultadId">
-          <option [ngValue]="null">Todas</option>
-          <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
-            {{ facultad.descripcion }}
           </option>
         </select>
       </div>
@@ -62,7 +52,7 @@
           <th>Documento</th>
           <th>Autor</th>
           <th>Tipo</th>
-          <th>Facultad</th>
+          <th>Clasificacion</th>
           <th>Fecha</th>
           <th>Estado</th>
           <th class="text-right">Acciones</th>
@@ -77,7 +67,7 @@
           </td>
           <td>{{ documento.autor }}</td>
           <td>{{ documento.tipoDocumento }}</td>
-          <td>{{ documento.facultad }}</td>
+          <td>{{ getClasificacionPrincipal(documento) }}</td>
           <td>{{ documento.fechaSubida | date:"dd 'de' MMMM 'de' y" }}</td>
           <td>
             <span class="badge" [ngClass]="getStatusClass(documento.estado)">{{ documento.estado }}</span>
@@ -111,6 +101,6 @@
 <ng-template #emptyState>
   <div class="empty-state">
     <strong>No hay documentos pendientes que coincidan con los filtros.</strong>
-    <p>Prueba con otro rango de fechas, facultad o tipo de documento.</p>
+    <p>Prueba con otro rango de fechas o tipo de documento.</p>
   </div>
 </ng-template>

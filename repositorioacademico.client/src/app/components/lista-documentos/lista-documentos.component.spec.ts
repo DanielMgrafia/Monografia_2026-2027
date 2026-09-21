@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { convertToParamMap, ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
+import { Carrera } from '../../models/carrera';
 import { Catalogo } from '../../models/catalogo';
 import { Documento } from '../../models/documento';
 import { AuthService } from '../../services/auth.service';
 import { BibliotecaService } from '../../services/biblioteca.service';
+import { CarrerasService } from '../../services/carreras.service';
 import { CatalogosService } from '../../services/catalogos.service';
 import { DocumentosService } from '../../services/documentos.service';
 import { ListaDocumentosComponent } from './lista-documentos.component';
@@ -12,6 +14,7 @@ import { ListaDocumentosComponent } from './lista-documentos.component';
 describe('ListaDocumentosComponent', () => {
   let documentosServiceSpy: jasmine.SpyObj<DocumentosService>;
   let catalogosServiceSpy: jasmine.SpyObj<CatalogosService>;
+  let carrerasServiceSpy: jasmine.SpyObj<CarrerasService>;
   let bibliotecaServiceSpy: jasmine.SpyObj<BibliotecaService>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
@@ -23,8 +26,8 @@ describe('ListaDocumentosComponent', () => {
       autor: 'Autor Demo',
       tipoDocumentoId: 1,
       tipoDocumento: 'Tesis',
-      facultadId: 2,
-      facultad: 'Ingenieria',
+      carreraId: 2,
+      carrera: 'Ingenieria en Sistemas',
       rutaDocumento: 'archivo-demo.pdf',
       fechaSubida: new Date('2026-01-15'),
       estado: 'Publicado',
@@ -33,13 +36,27 @@ describe('ListaDocumentosComponent', () => {
     }
   ];
   const mockCatalogos: Catalogo[] = [{ id: 1, descripcion: 'Tesis' }];
+  const mockCarreras: Carrera[] = [
+    {
+      id: 2,
+      descripcion: 'Ingenieria en Sistemas',
+      areaConocimientoId: 1,
+      areaConocimiento: 'Tecnologia',
+      lineasInvestigacion: []
+    }
+  ];
 
   beforeEach(async () => {
     authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', ['hasPermission']);
     routerSpy = jasmine.createSpyObj<Router>('Router', ['createUrlTree', 'serializeUrl']);
     catalogosServiceSpy = jasmine.createSpyObj<CatalogosService>('CatalogosService', [
       'getTiposDocumento',
-      'getFacultades'
+      'getAreasConocimiento',
+      'getLineasInvestigacion',
+      'getSublineasInvestigacion'
+    ]);
+    carrerasServiceSpy = jasmine.createSpyObj<CarrerasService>('CarrerasService', [
+      'getCarreras'
     ]);
     bibliotecaServiceSpy = jasmine.createSpyObj<BibliotecaService>('BibliotecaService', [
       'getRecomendaciones',
@@ -53,7 +70,10 @@ describe('ListaDocumentosComponent', () => {
     documentosServiceSpy.getDocumentos.and.returnValue(of(mockDocumentos));
     bibliotecaServiceSpy.getRecomendaciones.and.returnValue(of([]));
     catalogosServiceSpy.getTiposDocumento.and.returnValue(of(mockCatalogos));
-    catalogosServiceSpy.getFacultades.and.returnValue(of(mockCatalogos));
+    catalogosServiceSpy.getAreasConocimiento.and.returnValue(of([]));
+    catalogosServiceSpy.getLineasInvestigacion.and.returnValue(of([]));
+    catalogosServiceSpy.getSublineasInvestigacion.and.returnValue(of([]));
+    carrerasServiceSpy.getCarreras.and.returnValue(of(mockCarreras));
     authServiceSpy.hasPermission.and.returnValue(true);
     routerSpy.createUrlTree.and.returnValue({} as never);
     routerSpy.serializeUrl.and.returnValue('/visor-documento/1');
@@ -69,6 +89,7 @@ describe('ListaDocumentosComponent', () => {
         },
         { provide: AuthService, useValue: authServiceSpy },
         { provide: BibliotecaService, useValue: bibliotecaServiceSpy },
+        { provide: CarrerasService, useValue: carrerasServiceSpy },
         { provide: CatalogosService, useValue: catalogosServiceSpy },
         { provide: Router, useValue: routerSpy },
         { provide: DocumentosService, useValue: documentosServiceSpy }
@@ -84,7 +105,7 @@ describe('ListaDocumentosComponent', () => {
 
     expect(documentosServiceSpy.getDocumentos).toHaveBeenCalled();
     expect(catalogosServiceSpy.getTiposDocumento).toHaveBeenCalled();
-    expect(catalogosServiceSpy.getFacultades).toHaveBeenCalled();
+    expect(carrerasServiceSpy.getCarreras).toHaveBeenCalled();
     expect(component.documentos).toEqual(mockDocumentos);
   });
 

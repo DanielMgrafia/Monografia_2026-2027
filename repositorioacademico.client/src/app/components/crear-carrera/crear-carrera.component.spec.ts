@@ -16,16 +16,10 @@ describe('CrearCarreraComponent', () => {
     {
       id: 1,
       descripcion: 'Ingenieria en Sistemas',
-      facultadId: 1,
-      facultad: 'Facultad de Ingenieria',
       areaConocimientoId: 1,
       areaConocimiento: 'Tecnologia',
       lineasInvestigacion: []
     }
-  ];
-
-  const mockFacultades: Catalogo[] = [
-    { id: 1, descripcion: 'Facultad de Ingenieria' }
   ];
 
   const mockAreasConocimiento: Catalogo[] = [
@@ -40,7 +34,7 @@ describe('CrearCarreraComponent', () => {
 
     catalogosServiceSpy = jasmine.createSpyObj<CatalogosService>(
       'CatalogosService',
-      ['getFacultades', 'getAreasConocimiento']
+      ['getAreasConocimiento']
     );
 
     carrerasServiceSpy.getCarreras.and.returnValue(of(mockCarreras));
@@ -48,14 +42,11 @@ describe('CrearCarreraComponent', () => {
       of({
         id: 2,
         descripcion: 'Arquitectura',
-        facultadId: 1,
-        facultad: 'Facultad de Ingenieria',
         areaConocimientoId: 1,
         areaConocimiento: 'Tecnologia',
         lineasInvestigacion: []
       })
     );
-    catalogosServiceSpy.getFacultades.and.returnValue(of(mockFacultades));
     catalogosServiceSpy.getAreasConocimiento.and.returnValue(of(mockAreasConocimiento));
 
     await TestBed.configureTestingModule({
@@ -77,23 +68,19 @@ describe('CrearCarreraComponent', () => {
 
   it('should load careers and related catalogs on init', () => {
     expect(carrerasServiceSpy.getCarreras).toHaveBeenCalled();
-    expect(catalogosServiceSpy.getFacultades).toHaveBeenCalled();
     expect(catalogosServiceSpy.getAreasConocimiento).toHaveBeenCalled();
     expect(component.carreras).toEqual(mockCarreras);
-    expect(component.facultades).toEqual(mockFacultades);
     expect(component.areasConocimiento).toEqual(mockAreasConocimiento);
   });
 
   it('should save a new career and update the list', () => {
     component.descripcion = 'Arquitectura';
-    component.facultadId = 1;
     component.areaConocimientoId = 1;
 
     component.guardarCarrera();
 
     expect(carrerasServiceSpy.crearCarrera).toHaveBeenCalledWith({
       descripcion: 'Arquitectura',
-      facultadId: 1,
       areaConocimientoId: 1
     });
     expect(component.carreras.map((carrera) => carrera.descripcion)).toEqual([

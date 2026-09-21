@@ -41,7 +41,7 @@
             <tr *ngFor="let documento of pendingDocuments()">
               <td>
                 <strong>{{ documento.titulo }}</strong>
-                <span>{{ documento.facultad }}</span>
+                <span>{{ getClasificacionPrincipal(documento) }}</span>
               </td>
               <td>{{ documento.autor }}</td>
               <td>{{ documento.tipoDocumento }}</td>
@@ -88,7 +88,7 @@
               <tr *ngFor="let documento of publishedDocuments()">
                 <td>
                   <strong>{{ documento.titulo }}</strong>
-                  <span>{{ documento.facultad }}</span>
+                  <span>{{ getClasificacionPrincipal(documento) }}</span>
                 </td>
                 <td>{{ documento.autor }}</td>
                 <td>{{ documento.tipoDocumento }}</td>
@@ -123,32 +123,7 @@
     </aside>
   </section>
 
-  <section class="catalog-grid" *ngIf="sidePanelFacultades().length > 0 || recentActivity().length > 0">
-    <article class="card" *ngIf="sidePanelFacultades().length > 0">
-      <div class="card-header">
-        <div>
-          <h3>Facultades activas</h3>
-          <p>Catalogo de facultades usado al clasificar documentos.</p>
-        </div>
-        <button class="new-btn"
-                type="button"
-                *ngIf="authService.hasPermission('CATALOGO.GESTIONAR')"
-                (click)="goTo('/facultades')">
-          Gestionar
-        </button>
-      </div>
-
-      <div class="catalog-list">
-        <div class="catalog-item" *ngFor="let facultad of sidePanelFacultades()">
-          <div>
-            <strong>{{ facultad.descripcion }}</strong>
-            <span>Visible al registrar documentos</span>
-          </div>
-          <span class="status active">Activo</span>
-        </div>
-      </div>
-    </article>
-
+  <section class="catalog-grid" *ngIf="recentActivity().length > 0">
     <article class="card activity-card" *ngIf="recentActivity().length > 0">
       <div class="card-header">
         <div>

@@ -29,7 +29,6 @@ export class DashboardHomeComponent implements OnInit {
   readonly error = signal('');
   readonly documentos = signal<Documento[]>([]);
   readonly tiposDocumento = signal<Catalogo[]>([]);
-  readonly facultades = signal<Catalogo[]>([]);
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
@@ -63,9 +62,7 @@ export class DashboardHomeComponent implements OnInit {
     const documentos = this.documentos();
     const pendientes = documentos.filter((documento) => (documento.estado ?? '') === 'Pendiente').length;
     const publicados = documentos.filter((documento) => (documento.estado ?? '') === 'Publicado').length;
-    const tiposDisponibles = this.tiposDocumento().length;
-    const facultadesDisponibles = this.facultades().length;
-    const catalogosActivos = tiposDisponibles + facultadesDisponibles;
+    const catalogosActivos = this.tiposDocumento().length;
     const cards: SummaryCard[] = [];
 
     if (this.canPublishDocuments()) {
@@ -92,7 +89,7 @@ export class DashboardHomeComponent implements OnInit {
       cards.push({
         label: 'Catalogos activos',
         value: catalogosActivos,
-        description: 'Tipos y facultades disponibles',
+        description: 'Tipos de documento disponibles',
         tone: 'info',
         icon: 'CT'
       });
@@ -103,9 +100,6 @@ export class DashboardHomeComponent implements OnInit {
 
   readonly sidePanelTipos = computed(() =>
     this.isAdministrator() ? this.tiposDocumento().slice(0, 4) : []
-  );
-  readonly sidePanelFacultades = computed(() =>
-    this.isAdministrator() ? this.facultades().slice(0, 4) : []
   );
 
   readonly recentActivity = computed(() =>
@@ -181,16 +175,22 @@ export class DashboardHomeComponent implements OnInit {
     }
   }
 
+  getClasificacionPrincipal(documento: Documento): string {
+    return documento.carrera ||
+      documento.lineaInvestigacion ||
+      documento.sublineaInvestigacion ||
+      documento.tipoDocumento ||
+      'Sin clasificacion';
+  }
+
   private loadDashboardData(): void {
     forkJoin({
       documentos: this.documentosService.getDocumentos(),
-      tiposDocumento: this.catalogosService.getTiposDocumento(),
-      facultades: this.catalogosService.getFacultades()
+      tiposDocumento: this.catalogosService.getTiposDocumento()
     }).subscribe({
-      next: ({ documentos, tiposDocumento, facultades }) => {
+      next: ({ documentos, tiposDocumento }) => {
         this.documentos.set(documentos);
         this.tiposDocumento.set(tiposDocumento);
-        this.facultades.set(facultades);
         this.loading.set(false);
       },
       error: () => {

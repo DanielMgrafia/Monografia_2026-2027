@@ -21,8 +21,6 @@ describe('CarreraLineasInvestigacionComponent', () => {
     {
       id: 1,
       descripcion: 'Ingenieria en Sistemas',
-      facultadId: 1,
-      facultad: 'Facultad de Ingenieria',
       areaConocimientoId: 1,
       areaConocimiento: 'Tecnologia',
       lineasInvestigacion: [mockLineasInvestigacion[0]]

@@ -151,6 +151,14 @@ export class DocumentViewerPageComponent implements OnInit, OnDestroy {
     return this.documento?.esFavorito ? 'Quitar de favoritos' : 'Guardar en favoritos';
   }
 
+  getClasificacionPrincipal(): string {
+    return this.documento?.carrera ||
+      this.documento?.lineaInvestigacion ||
+      this.documento?.sublineaInvestigacion ||
+      this.documento?.tipoDocumento ||
+      'Clasificacion no definida';
+  }
+
   private registrarVista(documentoId: number): void {
     this.bibliotecaService.registrarVista(documentoId).subscribe({
       error: () => {

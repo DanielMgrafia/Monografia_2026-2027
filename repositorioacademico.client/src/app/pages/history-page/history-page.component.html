@@ -16,7 +16,7 @@
     <h4>Recomendaciones para ti</h4>
     <div class="recommendations-grid">
       <article class="recommendation-item" *ngFor="let documento of recomendaciones">
-        <span class="recommendation-pill">{{ documento.facultad || 'Sin facultad' }}</span>
+        <span class="recommendation-pill">{{ getClasificacionPrincipal(documento) }}</span>
         <strong>{{ documento.titulo }}</strong>
         <p>{{ documento.descripcion || 'Sin descripcion registrada.' }}</p>
         <button type="button" class="open-button" (click)="abrirDocumento(documento)">
@@ -33,7 +33,7 @@
         <article class="history-item" *ngFor="let item of historial.favoritos">
           <div>
             <strong>{{ item.documento.titulo }}</strong>
-            <p>{{ item.documento.autor }} · {{ item.documento.facultad || 'Sin facultad' }}</p>
+            <p>{{ item.documento.autor }} · {{ getClasificacionPrincipal(item.documento) }}</p>
             <small>{{ item.fechaActividad | date:"dd/MM/y HH:mm" }}</small>
           </div>
           <button type="button" class="open-button" (click)="abrirDocumento(item.documento)">Abrir</button>
@@ -61,7 +61,7 @@
         <article class="history-item" *ngFor="let item of historial.descargas">
           <div>
             <strong>{{ item.documento.titulo }}</strong>
-            <p>{{ item.documento.autor }} · {{ item.documento.facultad || 'Sin facultad' }}</p>
+            <p>{{ item.documento.autor }} · {{ getClasificacionPrincipal(item.documento) }}</p>
             <small>{{ item.fechaActividad | date:"dd/MM/y HH:mm" }}</small>
           </div>
           <button type="button" class="open-button" (click)="abrirDocumento(item.documento)">Abrir</button>

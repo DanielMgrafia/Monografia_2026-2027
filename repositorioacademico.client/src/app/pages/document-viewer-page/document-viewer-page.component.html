@@ -31,7 +31,7 @@
   <div class="viewer-toolbar">
     <div class="meta-group">
       <span class="meta-pill">{{ documento?.tipoDocumento || 'Tipo no definido' }}</span>
-      <span class="meta-pill">{{ documento?.facultad || 'Facultad no definida' }}</span>
+      <span class="meta-pill">{{ getClasificacionPrincipal() }}</span>
       <span class="meta-pill">{{ documento?.tutor || 'Tutor no definido' }}</span>
       <span class="meta-pill">{{ documento?.anioPublicacion || 'Anio no definido' }}</span>
       <span class="meta-pill" [class.meta-pill-restricted]="!isDownloadEnabled()">
