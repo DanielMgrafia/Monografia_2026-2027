@@ -14,18 +14,15 @@ export interface ActualizarCatalogoPayload {
 })
 export class CatalogosService {
   private readonly tiposDocumentoApiUrl = 'https://localhost:7225/api/tipos-documento';
-  private readonly facultadesApiUrl = 'https://localhost:7225/api/facultades';
   private readonly areasConocimientoApiUrl = 'https://localhost:7225/api/areas-conocimiento';
   private readonly lineasInvestigacionApiUrl = 'https://localhost:7225/api/lineas-investigacion';
   private readonly sublineasInvestigacionApiUrl = 'https://localhost:7225/api/sublineas-investigacion';
   private readonly tipoDocumentoCreadoSource = new Subject<Catalogo>();
-  private readonly facultadCreadaSource = new Subject<Catalogo>();
   private readonly areaConocimientoCreadaSource = new Subject<Catalogo>();
   private readonly lineaInvestigacionCreadaSource = new Subject<Catalogo>();
   private readonly sublineaInvestigacionCreadaSource = new Subject<SublineaInvestigacion>();
 
   readonly tipoDocumentoCreado$ = this.tipoDocumentoCreadoSource.asObservable();
-  readonly facultadCreada$ = this.facultadCreadaSource.asObservable();
   readonly areaConocimientoCreada$ = this.areaConocimientoCreadaSource.asObservable();
   readonly lineaInvestigacionCreada$ = this.lineaInvestigacionCreadaSource.asObservable();
   readonly sublineaInvestigacionCreada$ = this.sublineaInvestigacionCreadaSource.asObservable();
@@ -34,12 +31,6 @@ export class CatalogosService {
 
   getTiposDocumento(incluirInactivos = false): Observable<Catalogo[]> {
     return this.http.get<Catalogo[]>(this.tiposDocumentoApiUrl, {
-      params: this.buildCatalogParams(incluirInactivos)
-    });
-  }
-
-  getFacultades(incluirInactivos = false): Observable<Catalogo[]> {
-    return this.http.get<Catalogo[]>(this.facultadesApiUrl, {
       params: this.buildCatalogParams(incluirInactivos)
     });
   }
@@ -68,12 +59,6 @@ export class CatalogosService {
       .pipe(tap((tipoDocumento) => this.tipoDocumentoCreadoSource.next(tipoDocumento)));
   }
 
-  crearFacultad(descripcion: string): Observable<Catalogo> {
-    return this.http
-      .post<Catalogo>(this.facultadesApiUrl, { descripcion })
-      .pipe(tap((facultad) => this.facultadCreadaSource.next(facultad)));
-  }
-
   crearAreaConocimiento(descripcion: string): Observable<Catalogo> {
     return this.http
       .post<Catalogo>(this.areasConocimientoApiUrl, { descripcion })
@@ -98,14 +83,6 @@ export class CatalogosService {
 
   actualizarEstadoTipoDocumento(id: number, estado: string): Observable<Catalogo> {
     return this.http.put<Catalogo>(`${this.tiposDocumentoApiUrl}/${id}/estado`, { estado });
-  }
-
-  actualizarFacultad(id: number, payload: ActualizarCatalogoPayload): Observable<Catalogo> {
-    return this.http.put<Catalogo>(`${this.facultadesApiUrl}/${id}`, payload);
-  }
-
-  actualizarEstadoFacultad(id: number, estado: string): Observable<Catalogo> {
-    return this.http.put<Catalogo>(`${this.facultadesApiUrl}/${id}/estado`, { estado });
   }
 
   actualizarAreaConocimiento(id: number, payload: ActualizarCatalogoPayload): Observable<Catalogo> {

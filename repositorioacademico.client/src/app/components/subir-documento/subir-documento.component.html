@@ -42,21 +42,6 @@
         </div>
 
         <div class="form-group">
-          <label for="facultadId">Facultad</label>
-          <select id="facultadId"
-                  name="facultadId"
-                  [(ngModel)]="facultadId"
-                  (ngModelChange)="actualizarDependientesDesdeFacultad()"
-                  [disabled]="cargandoCatalogos || facultades.length === 0"
-                  required>
-            <option [ngValue]="null">Seleccione</option>
-            <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
-              {{ facultad.descripcion }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
           <label for="carreraId">Carrera</label>
           <select id="carreraId"
                   name="carreraId"
@@ -169,7 +154,7 @@
       <div class="acciones">
         <button type="submit"
                 class="btn-subir"
-                [disabled]="cargando || cargandoCatalogos || tiposDocumento.length === 0 || facultades.length === 0">
+                [disabled]="cargando || cargandoCatalogos || tiposDocumento.length === 0">
           {{ cargando ? 'Subiendo...' : 'Guardar documento' }}
         </button>
       </div>
@@ -178,10 +163,6 @@
 
       <p *ngIf="!cargandoCatalogos && tiposDocumento.length === 0">
         No hay tipos de documento disponibles.
-      </p>
-
-      <p *ngIf="!cargandoCatalogos && facultades.length === 0">
-        No hay facultades disponibles.
       </p>
 
       <div *ngIf="mensaje" class="mensaje-exito">

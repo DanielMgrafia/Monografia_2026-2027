@@ -12,10 +12,6 @@ namespace RepositorioAcademico.Server.Contracts
 
         public string? TipoDocumento { get; set; }
 
-        public int FacultadId { get; set; }
-
-        public string? Facultad { get; set; }
-
         public int? CarreraId { get; set; }
 
         public string? Carrera { get; set; }

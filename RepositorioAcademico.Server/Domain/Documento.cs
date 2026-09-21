@@ -12,10 +12,6 @@ namespace RepositorioAcademico.Server.Domain
 
         public TipoDocumento? TipoDocumento { get; set; }
 
-        public int FacultadId { get; set; }
-
-        public Facultad? Facultad { get; set; }
-
         public int? CarreraId { get; set; }
 
         public Carrera? Carrera { get; set; }

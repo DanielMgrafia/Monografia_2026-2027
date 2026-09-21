@@ -24,7 +24,6 @@ export class SubirDocumentoComponent implements OnInit {
   titulo = '';
   autor = '';
   tipoDocumentoId: number | null = null;
-  facultadId: number | null = null;
   carreraId: number | null = null;
   lineaInvestigacionId: number | null = null;
   sublineaInvestigacionId: number | null = null;
@@ -36,7 +35,6 @@ export class SubirDocumentoComponent implements OnInit {
   archivoSeleccionado: File | null = null;
 
   tiposDocumento: Catalogo[] = [];
-  facultades: Catalogo[] = [];
   carreras: Carrera[] = [];
   lineasInvestigacion: Catalogo[] = [];
   sublineasInvestigacion: SublineaInvestigacion[] = [];
@@ -53,11 +51,7 @@ export class SubirDocumentoComponent implements OnInit {
   private readonly carrerasService = inject(CarrerasService);
 
   get carrerasDisponibles(): Carrera[] {
-    if (this.facultadId == null) {
-      return this.carreras;
-    }
-
-    return this.carreras.filter((carrera) => carrera.facultadId === this.facultadId);
+    return this.carreras;
   }
 
   get lineasDisponibles(): Catalogo[] {
@@ -92,30 +86,22 @@ export class SubirDocumentoComponent implements OnInit {
         this.cargarCatalogos({ tipoDocumentoSugeridoId: tipoDocumento.id });
       });
 
-    this.catalogosService.facultadCreada$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((facultad) => {
-        this.cargarCatalogos({ facultadSugeridaId: facultad.id });
-      });
   }
 
   cargarCatalogos(opciones?: {
     tipoDocumentoSugeridoId?: number;
-    facultadSugeridaId?: number;
   }): void {
     this.cargandoCatalogos = true;
     this.error = '';
 
     forkJoin({
       tiposDocumento: this.catalogosService.getTiposDocumento(),
-      facultades: this.catalogosService.getFacultades(),
       carreras: this.carrerasService.getCarreras(),
       lineasInvestigacion: this.catalogosService.getLineasInvestigacion(),
       sublineasInvestigacion: this.catalogosService.getSublineasInvestigacion()
     }).subscribe({
-      next: ({ tiposDocumento, facultades, carreras, lineasInvestigacion, sublineasInvestigacion }) => {
+      next: ({ tiposDocumento, carreras, lineasInvestigacion, sublineasInvestigacion }) => {
         this.tiposDocumento = tiposDocumento;
-        this.facultades = facultades;
         this.carreras = carreras;
         this.lineasInvestigacion = lineasInvestigacion;
         this.sublineasInvestigacion = sublineasInvestigacion;
@@ -127,14 +113,6 @@ export class SubirDocumentoComponent implements OnInit {
           this.tipoDocumentoId = null;
         }
 
-        if (
-          this.facultadId != null &&
-          !facultades.some((facultad) => facultad.id === this.facultadId)
-        ) {
-          this.facultadId = null;
-        }
-
-        this.actualizarDependientesDesdeFacultad();
         this.actualizarDependientesDesdeCarrera();
         this.actualizarDependientesDesdeLinea();
 
@@ -145,15 +123,6 @@ export class SubirDocumentoComponent implements OnInit {
           this.tipoDocumentoId = opciones.tipoDocumentoSugeridoId;
         } else if (this.tipoDocumentoId == null && tiposDocumento.length === 1) {
           this.tipoDocumentoId = tiposDocumento[0].id;
-        }
-
-        if (
-          opciones?.facultadSugeridaId != null &&
-          facultades.some((facultad) => facultad.id === opciones.facultadSugeridaId)
-        ) {
-          this.facultadId = opciones.facultadSugeridaId;
-        } else if (this.facultadId == null && facultades.length === 1) {
-          this.facultadId = facultades[0].id;
         }
 
         this.cargandoCatalogos = false;
@@ -198,7 +167,6 @@ export class SubirDocumentoComponent implements OnInit {
       !this.titulo.trim() ||
       !this.autor.trim() ||
       this.tipoDocumentoId == null ||
-      this.facultadId == null ||
       !this.tutor.trim() ||
       this.anioPublicacion == null ||
       !this.descripcion.trim() ||
@@ -224,7 +192,6 @@ export class SubirDocumentoComponent implements OnInit {
     formData.append('titulo', this.titulo.trim());
     formData.append('autor', this.autor.trim());
     formData.append('tipoDocumentoId', this.tipoDocumentoId.toString());
-    formData.append('facultadId', this.facultadId.toString());
     if (this.carreraId != null) {
       formData.append('carreraId', this.carreraId.toString());
     }
@@ -259,7 +226,6 @@ export class SubirDocumentoComponent implements OnInit {
     this.titulo = '';
     this.autor = '';
     this.tipoDocumentoId = null;
-    this.facultadId = null;
     this.carreraId = null;
     this.lineaInvestigacionId = null;
     this.sublineaInvestigacionId = null;
@@ -271,17 +237,6 @@ export class SubirDocumentoComponent implements OnInit {
     this.archivoSeleccionado = null;
     if (this.archivoInput) {
       this.archivoInput.nativeElement.value = '';
-    }
-  }
-
-  actualizarDependientesDesdeFacultad(): void {
-    if (
-      this.carreraId != null &&
-      !this.carrerasDisponibles.some((carrera) => carrera.id === this.carreraId)
-    ) {
-      this.carreraId = null;
-      this.lineaInvestigacionId = null;
-      this.sublineaInvestigacionId = null;
     }
   }
 

@@ -110,7 +110,6 @@ namespace RepositorioAcademico.Server.Controllers
 
             var validacionCatalogos = await ValidarCatalogosAsync(
                 request.TipoDocumentoId,
-                request.FacultadId,
                 request.CarreraId,
                 request.LineaInvestigacionId,
                 request.SublineaInvestigacionId);
@@ -131,7 +130,6 @@ namespace RepositorioAcademico.Server.Controllers
                 Titulo = titulo,
                 Autor = autor,
                 TipoDocumentoId = request.TipoDocumentoId,
-                FacultadId = request.FacultadId,
                 CarreraId = request.CarreraId,
                 LineaInvestigacionId = request.LineaInvestigacionId,
                 SublineaInvestigacionId = request.SublineaInvestigacionId,
@@ -217,7 +215,6 @@ namespace RepositorioAcademico.Server.Controllers
 
             var validacionCatalogos = await ValidarCatalogosAsync(
                 request.TipoDocumentoId,
-                request.FacultadId,
                 request.CarreraId,
                 request.LineaInvestigacionId,
                 request.SublineaInvestigacionId);
@@ -245,7 +242,6 @@ namespace RepositorioAcademico.Server.Controllers
                 Titulo = titulo,
                 Autor = autor,
                 TipoDocumentoId = request.TipoDocumentoId,
-                FacultadId = request.FacultadId,
                 CarreraId = request.CarreraId,
                 LineaInvestigacionId = request.LineaInvestigacionId,
                 SublineaInvestigacionId = request.SublineaInvestigacionId,
@@ -330,7 +326,6 @@ namespace RepositorioAcademico.Server.Controllers
             string? titulo,
             string? autor,
             int? tipoDocumentoId,
-            int? facultadId,
             int? carreraId,
             int? lineaInvestigacionId,
             int? sublineaInvestigacionId,
@@ -367,11 +362,6 @@ namespace RepositorioAcademico.Server.Controllers
             if (tipoDocumentoId.HasValue)
             {
                 query = query.Where(documento => documento.TipoDocumentoId == tipoDocumentoId.Value);
-            }
-
-            if (facultadId.HasValue)
-            {
-                query = query.Where(documento => documento.FacultadId == facultadId.Value);
             }
 
             if (carreraId.HasValue)
@@ -506,7 +496,6 @@ namespace RepositorioAcademico.Server.Controllers
 
             var validacionCatalogos = await ValidarCatalogosAsync(
                 request.TipoDocumentoId,
-                request.FacultadId,
                 request.CarreraId,
                 request.LineaInvestigacionId,
                 request.SublineaInvestigacionId);
@@ -524,7 +513,6 @@ namespace RepositorioAcademico.Server.Controllers
             documento.Titulo = titulo;
             documento.Autor = autor;
             documento.TipoDocumentoId = request.TipoDocumentoId;
-            documento.FacultadId = request.FacultadId;
             documento.CarreraId = request.CarreraId;
             documento.LineaInvestigacionId = request.LineaInvestigacionId;
             documento.SublineaInvestigacionId = request.SublineaInvestigacionId;
@@ -572,7 +560,6 @@ namespace RepositorioAcademico.Server.Controllers
 
             return ConstruirConsultaDocumentosVisiblesEntidad()
                 .Include(documento => documento.TipoDocumento)
-                .Include(documento => documento.Facultad)
                 .Include(documento => documento.Carrera)
                 .Include(documento => documento.LineaInvestigacion)
                 .Include(documento => documento.SublineaInvestigacion)
@@ -584,8 +571,6 @@ namespace RepositorioAcademico.Server.Controllers
                     Autor = documento.Autor,
                     TipoDocumentoId = documento.TipoDocumentoId,
                     TipoDocumento = documento.TipoDocumento != null ? documento.TipoDocumento.Descripcion : null,
-                    FacultadId = documento.FacultadId,
-                    Facultad = documento.Facultad != null ? documento.Facultad.Descripcion : null,
                     CarreraId = documento.CarreraId,
                     Carrera = documento.Carrera != null ? documento.Carrera.Descripcion : null,
                     LineaInvestigacionId = documento.LineaInvestigacionId,
@@ -638,7 +623,6 @@ namespace RepositorioAcademico.Server.Controllers
 
         private async Task<ActionResult?> ValidarCatalogosAsync(
             int tipoDocumentoId,
-            int facultadId,
             int? carreraId,
             int? lineaInvestigacionId,
             int? sublineaInvestigacionId)
@@ -651,16 +635,6 @@ namespace RepositorioAcademico.Server.Controllers
             if (!tipoDocumentoExiste)
             {
                 return BadRequest("El tipo de documento seleccionado no existe o esta inactivo.");
-            }
-
-            var facultadExiste = await _context.Facultades
-                .AnyAsync(item =>
-                    item.Id == facultadId &&
-                    (item.Estado == null || item.Estado == "Activo"));
-
-            if (!facultadExiste)
-            {
-                return BadRequest("La facultad seleccionada no existe o esta inactiva.");
             }
 
             Carrera? carrera = null;
@@ -677,10 +651,6 @@ namespace RepositorioAcademico.Server.Controllers
                     return BadRequest("La carrera seleccionada no existe o esta inactiva.");
                 }
 
-                if (carrera.FacultadId != facultadId)
-                {
-                    return BadRequest("La carrera seleccionada no pertenece a la facultad indicada.");
-                }
             }
 
             if (lineaInvestigacionId.HasValue)

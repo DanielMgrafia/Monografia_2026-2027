@@ -20,11 +20,9 @@ type EstadoDocumento = 'Pendiente' | 'Publicado' | 'Rechazado';
 export class ReviewDocumentsPageComponent implements OnInit {
   documentos: Documento[] = [];
   tiposDocumento: Catalogo[] = [];
-  facultades: Catalogo[] = [];
 
   filtroTexto = '';
   filtroTipoDocumentoId: number | null = null;
-  filtroFacultadId: number | null = null;
   filtroFechaDesde = '';
   filtroFechaHasta = '';
 
@@ -50,7 +48,9 @@ export class ReviewDocumentsPageComponent implements OnInit {
             documento.titulo,
             documento.autor,
             documento.tipoDocumento,
-            documento.facultad
+            documento.carrera,
+            documento.lineaInvestigacion,
+            documento.sublineaInvestigacion
           ].some((valor) => valor?.toLowerCase().includes(filtroTexto));
 
           if (!coincideTexto) {
@@ -59,10 +59,6 @@ export class ReviewDocumentsPageComponent implements OnInit {
         }
 
         if (this.filtroTipoDocumentoId != null && documento.tipoDocumentoId !== this.filtroTipoDocumentoId) {
-          return false;
-        }
-
-        if (this.filtroFacultadId != null && documento.facultadId !== this.filtroFacultadId) {
           return false;
         }
 
@@ -90,13 +86,11 @@ export class ReviewDocumentsPageComponent implements OnInit {
 
     forkJoin({
       documentos: this.documentosService.getDocumentos(),
-      tiposDocumento: this.catalogosService.getTiposDocumento(),
-      facultades: this.catalogosService.getFacultades()
+      tiposDocumento: this.catalogosService.getTiposDocumento()
     }).subscribe({
-      next: ({ documentos, tiposDocumento, facultades }) => {
+      next: ({ documentos, tiposDocumento }) => {
         this.documentos = documentos;
         this.tiposDocumento = tiposDocumento;
-        this.facultades = facultades;
         this.cargando = false;
       },
       error: () => {
@@ -137,7 +131,6 @@ export class ReviewDocumentsPageComponent implements OnInit {
   limpiarFiltros(): void {
     this.filtroTexto = '';
     this.filtroTipoDocumentoId = null;
-    this.filtroFacultadId = null;
     this.filtroFechaDesde = '';
     this.filtroFechaHasta = '';
   }
@@ -151,5 +144,13 @@ export class ReviewDocumentsPageComponent implements OnInit {
       default:
         return 'pending';
     }
+  }
+
+  getClasificacionPrincipal(documento: Documento): string {
+    return documento.carrera ||
+      documento.lineaInvestigacion ||
+      documento.sublineaInvestigacion ||
+      documento.tipoDocumento ||
+      'Sin clasificacion';
   }
 }

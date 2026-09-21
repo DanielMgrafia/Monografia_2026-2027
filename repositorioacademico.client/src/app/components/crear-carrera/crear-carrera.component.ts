@@ -18,16 +18,13 @@ type EstadoCatalogo = 'Activo' | 'Inactivo';
 })
 export class CrearCarreraComponent implements OnInit {
   descripcion = '';
-  facultadId: number | null = null;
   areaConocimientoId: number | null = null;
   carreraEnEdicion: Carrera | null = null;
   editDescripcion = '';
-  editFacultadId: number | null = null;
   editAreaConocimientoId: number | null = null;
   editEstado: EstadoCatalogo = 'Activo';
 
   carreras: Carrera[] = [];
-  facultades: Catalogo[] = [];
   areasConocimiento: Catalogo[] = [];
 
   cargando = false;
@@ -49,12 +46,10 @@ export class CrearCarreraComponent implements OnInit {
 
     forkJoin({
       carreras: this.carrerasService.getCarreras(true),
-      facultades: this.catalogosService.getFacultades(true),
       areasConocimiento: this.catalogosService.getAreasConocimiento(true)
     }).subscribe({
-      next: ({ carreras, facultades, areasConocimiento }) => {
+      next: ({ carreras, areasConocimiento }) => {
         this.carreras = this.ordenarCarreras(carreras);
-        this.facultades = this.ordenarCatalogo(facultades);
         this.areasConocimiento = this.ordenarCatalogo(areasConocimiento);
         this.cargando = false;
       },
@@ -70,8 +65,8 @@ export class CrearCarreraComponent implements OnInit {
     this.mensaje = '';
     this.error = '';
 
-    if (!descripcion || this.facultadId == null || this.areaConocimientoId == null) {
-      this.error = 'Completa la carrera, facultad y area de conocimiento.';
+    if (!descripcion || this.areaConocimientoId == null) {
+      this.error = 'Completa la carrera y el area de conocimiento.';
       return;
     }
 
@@ -79,20 +74,18 @@ export class CrearCarreraComponent implements OnInit {
 
     this.carrerasService.crearCarrera({
       descripcion,
-      facultadId: this.facultadId,
       areaConocimientoId: this.areaConocimientoId
     }).subscribe({
       next: (carrera) => {
         this.carreras = this.ordenarCarreras([...this.carreras, carrera]);
         this.descripcion = '';
-        this.facultadId = null;
         this.areaConocimientoId = null;
         this.mensaje = 'Carrera guardada correctamente.';
         this.guardando = false;
       },
       error: (response) => {
         this.error = response.status === 409
-          ? 'Ya existe una carrera con esa descripcion en la facultad seleccionada.'
+          ? 'Ya existe una carrera con esa descripcion.'
           : response.error || 'No se pudo guardar la carrera.';
         this.guardando = false;
       }
@@ -104,7 +97,6 @@ export class CrearCarreraComponent implements OnInit {
     this.error = '';
     this.carreraEnEdicion = carrera;
     this.editDescripcion = carrera.descripcion;
-    this.editFacultadId = carrera.facultadId;
     this.editAreaConocimientoId = carrera.areaConocimientoId;
     this.editEstado = this.normalizarEstado(carrera.estado);
   }
@@ -112,7 +104,6 @@ export class CrearCarreraComponent implements OnInit {
   cancelarEdicion(): void {
     this.carreraEnEdicion = null;
     this.editDescripcion = '';
-    this.editFacultadId = null;
     this.editAreaConocimientoId = null;
     this.editEstado = 'Activo';
   }
@@ -123,8 +114,8 @@ export class CrearCarreraComponent implements OnInit {
     }
 
     const descripcion = this.editDescripcion.trim();
-    if (!descripcion || this.editFacultadId == null || this.editAreaConocimientoId == null) {
-      this.error = 'Completa la carrera, facultad y area de conocimiento.';
+    if (!descripcion || this.editAreaConocimientoId == null) {
+      this.error = 'Completa la carrera y el area de conocimiento.';
       return;
     }
 
@@ -134,7 +125,6 @@ export class CrearCarreraComponent implements OnInit {
 
     this.carrerasService.actualizarCarrera(this.carreraEnEdicion.id, {
       descripcion,
-      facultadId: this.editFacultadId,
       areaConocimientoId: this.editAreaConocimientoId,
       estado: this.editEstado
     }).subscribe({
@@ -147,7 +137,7 @@ export class CrearCarreraComponent implements OnInit {
       error: (response) => {
         this.procesandoId = null;
         this.error = response.status === 409
-          ? 'Ya existe una carrera con esa descripcion en la facultad seleccionada.'
+          ? 'Ya existe una carrera con esa descripcion.'
           : response.error || 'No se pudo actualizar la carrera.';
       }
     });
@@ -170,10 +160,6 @@ export class CrearCarreraComponent implements OnInit {
         this.error = response.error || 'No se pudo actualizar el estado de la carrera.';
       }
     });
-  }
-
-  get facultadesActivas(): Catalogo[] {
-    return this.facultades.filter((facultad) => this.normalizarEstado(facultad.estado) === 'Activo');
   }
 
   get areasConocimientoActivas(): Catalogo[] {

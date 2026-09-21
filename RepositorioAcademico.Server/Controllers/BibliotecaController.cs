@@ -204,11 +204,6 @@ namespace RepositorioAcademico.Server.Controllers
                 .Select(documento => documento!.Id)
                 .ToHashSet();
 
-            var facultadesPreferidas = historialDocumentos
-                .Where(documento => documento != null)
-                .Select(documento => documento!.FacultadId)
-                .ToHashSet();
-
             var palabrasPreferidas = historialDocumentos
                 .SelectMany(documento => SepararPalabras(documento?.PalabrasClave))
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -222,7 +217,7 @@ namespace RepositorioAcademico.Server.Controllers
                 return Ok(Array.Empty<DocumentoDto>());
             }
 
-            if (facultadesPreferidas.Count == 0 && palabrasPreferidas.Count == 0)
+            if (palabrasPreferidas.Count == 0)
             {
                 return Ok(candidatos
                     .OrderByDescending(documento => documento.FechaSubida)
@@ -234,10 +229,8 @@ namespace RepositorioAcademico.Server.Controllers
                 .Select(documento => new
                 {
                     Documento = documento,
-                    Puntaje =
-                        (facultadesPreferidas.Contains(documento.FacultadId) ? 5 : 0) +
-                        (SepararPalabras(documento.PalabrasClave)
-                            .Count(palabra => palabrasPreferidas.Contains(palabra)) * 2)
+                    Puntaje = SepararPalabras(documento.PalabrasClave)
+                        .Count(palabra => palabrasPreferidas.Contains(palabra)) * 2
                 })
                 .Where(item => item.Puntaje > 0)
                 .OrderByDescending(item => item.Puntaje)
@@ -281,7 +274,6 @@ namespace RepositorioAcademico.Server.Controllers
         {
             return ConstruirConsultaDocumentosVisiblesEntidad()
                 .Include(documento => documento.TipoDocumento)
-                .Include(documento => documento.Facultad)
                 .Include(documento => documento.Usuario)
                 .Select(documento => new DocumentoDto
                 {
@@ -290,8 +282,6 @@ namespace RepositorioAcademico.Server.Controllers
                     Autor = documento.Autor,
                     TipoDocumentoId = documento.TipoDocumentoId,
                     TipoDocumento = documento.TipoDocumento != null ? documento.TipoDocumento.Descripcion : null,
-                    FacultadId = documento.FacultadId,
-                    Facultad = documento.Facultad != null ? documento.Facultad.Descripcion : null,
                     RutaDocumento = documento.RutaDocumento,
                     Tutor = documento.Tutor,
                     AnioPublicacion = documento.AnioPublicacion,

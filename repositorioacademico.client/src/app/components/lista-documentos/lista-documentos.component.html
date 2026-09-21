@@ -25,13 +25,13 @@
     <div class="recommendations-header">
       <div>
         <h4>Recomendaciones inteligentes</h4>
-        <p>Documentos sugeridos segun tu facultad de interes, palabras clave e historial de uso.</p>
+        <p>Documentos sugeridos segun tus palabras clave, carrera e historial de uso.</p>
       </div>
     </div>
 
     <div class="recommendations-grid">
       <article class="recommendation-item" *ngFor="let doc of recomendaciones">
-        <span class="recommendation-pill">{{ doc.facultad || 'Sin facultad' }}</span>
+        <span class="recommendation-pill">{{ getClasificacionPrincipal(doc) }}</span>
         <strong>{{ doc.titulo }}</strong>
         <p>{{ doc.descripcion || 'Sin descripcion registrada.' }}</p>
         <small>{{ doc.autor }} · {{ doc.tipoDocumento }} · {{ doc.anioPublicacion || 'Anio no definido' }}</small>
@@ -56,7 +56,7 @@
           <th>Documento</th>
           <th>Autor</th>
           <th>Tipo</th>
-          <th>Facultad</th>
+          <th>Clasificacion</th>
           <th>Fecha</th>
           <th>Descarga</th>
           <th class="text-center">Accion</th>
@@ -71,7 +71,7 @@
           </td>
           <td>{{ doc.autor }}</td>
           <td>{{ doc.tipoDocumento }}</td>
-          <td>{{ doc.facultad }}</td>
+          <td>{{ getClasificacionPrincipal(doc) }}</td>
           <td>{{ doc.fechaSubida | date:"dd 'de' MMMM 'de' y" }}</td>
           <td>
             <span class="badge" [ngClass]="puedeDescargar(doc) ? 'published' : 'restricted'">
@@ -112,19 +112,6 @@
           <option [ngValue]="null">Todos</option>
           <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
             {{ tipo.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="filtroFacultadRepositorio">Facultad</label>
-        <select id="filtroFacultadRepositorio"
-                [(ngModel)]="filtroFacultadId"
-                name="filtroFacultadIdRepositorio"
-                (ngModelChange)="actualizarDependientesDesdeFacultad()">
-          <option [ngValue]="null">Todas</option>
-          <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
-            {{ facultad.descripcion }}
           </option>
         </select>
       </div>

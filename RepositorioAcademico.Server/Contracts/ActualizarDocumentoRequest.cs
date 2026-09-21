@@ -8,8 +8,6 @@ namespace RepositorioAcademico.Server.Contracts
 
         public int TipoDocumentoId { get; set; }
 
-        public int FacultadId { get; set; }
-
         public int? CarreraId { get; set; }
 
         public int? LineaInvestigacionId { get; set; }

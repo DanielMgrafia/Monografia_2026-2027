@@ -14,8 +14,6 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
 
         public DbSet<TipoDocumento> TiposDocumento { get; set; }
 
-        public DbSet<Facultad> Facultades { get; set; }
-
         public DbSet<AreaConocimiento> AreasConocimiento { get; set; }
 
         public DbSet<LineaInvestigacion> LineasInvestigacion { get; set; }
@@ -50,16 +48,6 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
             const string passwordHashSemilla = "100000.pXNersvxrQkQJwCgdjOmBw==.R3lKdXVfKoq45g4VJKg0ZswpiAHqMqrq7VqFvBKyvyA=";
 
             modelBuilder.Entity<TipoDocumento>(entity =>
-            {
-                entity.Property(item => item.Descripcion)
-                    .HasMaxLength(150)
-                    .IsRequired();
-
-                entity.Property(item => item.Estado)
-                    .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<Facultad>(entity =>
             {
                 entity.Property(item => item.Descripcion)
                     .HasMaxLength(150)
@@ -112,11 +100,6 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
 
                 entity.Property(item => item.Estado)
                     .HasMaxLength(50);
-
-                entity.HasOne(item => item.Facultad)
-                    .WithMany(item => item.Carreras)
-                    .HasForeignKey(item => item.FacultadId)
-                    .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(item => item.AreaConocimiento)
                     .WithMany(item => item.Carreras)
@@ -175,11 +158,6 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 entity.HasOne(item => item.TipoDocumento)
                     .WithMany(item => item.Documentos)
                     .HasForeignKey(item => item.TipoDocumentoId)
-                    .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(item => item.Facultad)
-                    .WithMany(item => item.Documentos)
-                    .HasForeignKey(item => item.FacultadId)
                     .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(item => item.Carrera)
@@ -365,7 +343,7 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 new Permiso { Id = 2, Codigo = "REPOSITORIO.VER", Descripcion = "Visualizar el repositorio academico", Estado = "Activo" },
                 new Permiso { Id = 3, Codigo = "DOCUMENTO.SUBIR", Descripcion = "Subir nuevos documentos", Estado = "Activo" },
                 new Permiso { Id = 4, Codigo = "DOCUMENTO.PUBLICAR", Descripcion = "Publicar o revisar documentos pendientes", Estado = "Activo" },
-                new Permiso { Id = 5, Codigo = "CATALOGO.GESTIONAR", Descripcion = "Gestionar facultades y tipos de documento", Estado = "Activo" },
+                new Permiso { Id = 5, Codigo = "CATALOGO.GESTIONAR", Descripcion = "Gestionar catalogos academicos", Estado = "Activo" },
                 new Permiso { Id = 6, Codigo = "USUARIO.GESTIONAR", Descripcion = "Crear y administrar usuarios", Estado = "Activo" },
                 new Permiso { Id = 7, Codigo = "ROL.GESTIONAR", Descripcion = "Crear y administrar roles", Estado = "Activo" },
                 new Permiso { Id = 8, Codigo = "DOCUMENTO.DESCARGAR", Descripcion = "Descargar documentos autorizados", Estado = "Activo" }

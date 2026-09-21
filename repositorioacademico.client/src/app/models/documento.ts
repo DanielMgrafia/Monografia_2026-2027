@@ -11,8 +11,6 @@ export interface Documento {
   autor?: string;
   tipoDocumentoId: number;
   tipoDocumento?: string;
-  facultadId: number;
-  facultad?: string;
   carreraId?: number | null;
   carrera?: string;
   lineaInvestigacionId?: number | null;

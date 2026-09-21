@@ -6,7 +6,6 @@ import { DashboardLayoutComponent } from './layouts/dashboard-layout/dashboard-l
 import { CarreraLineasInvestigacionComponent } from './components/carrera-lineas-investigacion/carrera-lineas-investigacion.component';
 import { CrearAreaConocimientoComponent } from './components/crear-area-conocimiento/crear-area-conocimiento.component';
 import { CrearCarreraComponent } from './components/crear-carrera/crear-carrera.component';
-import { CrearFacultadComponent } from './components/crear-facultad/crear-facultad.component';
 import { CrearLineaInvestigacionComponent } from './components/crear-linea-investigacion/crear-linea-investigacion.component';
 import { CrearSublineaInvestigacionComponent } from './components/crear-sublinea-investigacion/crear-sublinea-investigacion.component';
 import { CrearTipoDocumentoComponent } from './components/crear-tipo-documento/crear-tipo-documento.component';
@@ -115,16 +114,6 @@ export const appRoutes: Routes = [
         }
       },
       {
-        path: 'facultades',
-        component: CrearFacultadComponent,
-        canActivate: [permissionGuard],
-        data: {
-          title: 'Facultades',
-          description: 'Administra el catalogo de facultades del sistema.',
-          permission: 'CATALOGO.GESTIONAR'
-        }
-      },
-      {
         path: 'areas-conocimiento',
         component: CrearAreaConocimientoComponent,
         canActivate: [permissionGuard],
@@ -160,7 +149,7 @@ export const appRoutes: Routes = [
         canActivate: [permissionGuard],
         data: {
           title: 'Carreras',
-          description: 'Administra carreras asociadas a facultades y areas de conocimiento.',
+          description: 'Administra carreras asociadas a areas de conocimiento.',
           permission: 'CATALOGO.GESTIONAR'
         }
       },

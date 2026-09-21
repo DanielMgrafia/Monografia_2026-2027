@@ -17,7 +17,6 @@ interface DocumentoEditModel {
   titulo: string;
   autor: string;
   tipoDocumentoId: number | null;
-  facultadId: number | null;
   carreraId: number | null;
   lineaInvestigacionId: number | null;
   sublineaInvestigacionId: number | null;
@@ -41,7 +40,6 @@ export class EditDocumentsPageComponent implements OnInit {
 
   documentos: Documento[] = [];
   tiposDocumento: Catalogo[] = [];
-  facultades: Catalogo[] = [];
   carreras: Carrera[] = [];
   lineasInvestigacion: Catalogo[] = [];
   sublineasInvestigacion: SublineaInvestigacion[] = [];
@@ -49,7 +47,6 @@ export class EditDocumentsPageComponent implements OnInit {
   filtroTexto = '';
   filtroEstado = '';
   filtroTipoDocumentoId: number | null = null;
-  filtroFacultadId: number | null = null;
   filtroFechaDesde = '';
   filtroFechaHasta = '';
 
@@ -67,11 +64,7 @@ export class EditDocumentsPageComponent implements OnInit {
   private readonly carrerasService = inject(CarrerasService);
 
   get carrerasDisponibles(): Carrera[] {
-    if (this.editModel.facultadId == null) {
-      return this.carreras;
-    }
-
-    return this.carreras.filter((carrera) => carrera.facultadId === this.editModel.facultadId);
+    return this.carreras;
   }
 
   get lineasDisponibles(): Catalogo[] {
@@ -105,7 +98,6 @@ export class EditDocumentsPageComponent implements OnInit {
             documento.titulo,
             documento.autor,
             documento.tipoDocumento,
-            documento.facultad,
             documento.carrera,
             documento.lineaInvestigacion,
             documento.sublineaInvestigacion,
@@ -125,10 +117,6 @@ export class EditDocumentsPageComponent implements OnInit {
         }
 
         if (this.filtroTipoDocumentoId != null && documento.tipoDocumentoId !== this.filtroTipoDocumentoId) {
-          return false;
-        }
-
-        if (this.filtroFacultadId != null && documento.facultadId !== this.filtroFacultadId) {
           return false;
         }
 
@@ -157,15 +145,13 @@ export class EditDocumentsPageComponent implements OnInit {
     forkJoin({
       documentos: this.documentosService.getDocumentos(),
       tiposDocumento: this.catalogosService.getTiposDocumento(),
-      facultades: this.catalogosService.getFacultades(),
       carreras: this.carrerasService.getCarreras(),
       lineasInvestigacion: this.catalogosService.getLineasInvestigacion(),
       sublineasInvestigacion: this.catalogosService.getSublineasInvestigacion()
     }).subscribe({
-      next: ({ documentos, tiposDocumento, facultades, carreras, lineasInvestigacion, sublineasInvestigacion }) => {
+      next: ({ documentos, tiposDocumento, carreras, lineasInvestigacion, sublineasInvestigacion }) => {
         this.documentos = documentos;
         this.tiposDocumento = tiposDocumento;
-        this.facultades = facultades;
         this.carreras = carreras;
         this.lineasInvestigacion = lineasInvestigacion;
         this.sublineasInvestigacion = sublineasInvestigacion;
@@ -194,7 +180,6 @@ export class EditDocumentsPageComponent implements OnInit {
       titulo: documento.titulo?.trim() ?? '',
       autor: documento.autor?.trim() ?? '',
       tipoDocumentoId: documento.tipoDocumentoId,
-      facultadId: documento.facultadId,
       carreraId: documento.carreraId ?? null,
       lineaInvestigacionId: documento.lineaInvestigacionId ?? null,
       sublineaInvestigacionId: documento.sublineaInvestigacionId ?? null,
@@ -232,8 +217,8 @@ export class EditDocumentsPageComponent implements OnInit {
       return;
     }
 
-    if (this.editModel.tipoDocumentoId == null || this.editModel.facultadId == null) {
-      this.error = 'Debes seleccionar facultad y tipo de documento.';
+    if (this.editModel.tipoDocumentoId == null) {
+      this.error = 'Debes seleccionar el tipo de documento.';
       return;
     }
 
@@ -243,7 +228,6 @@ export class EditDocumentsPageComponent implements OnInit {
       titulo: this.editModel.titulo.trim(),
       autor: this.editModel.autor.trim(),
       tipoDocumentoId: this.editModel.tipoDocumentoId,
-      facultadId: this.editModel.facultadId,
       carreraId: this.editModel.carreraId,
       lineaInvestigacionId: this.editModel.lineaInvestigacionId,
       sublineaInvestigacionId: this.editModel.sublineaInvestigacionId,
@@ -271,7 +255,6 @@ export class EditDocumentsPageComponent implements OnInit {
     this.filtroTexto = '';
     this.filtroEstado = '';
     this.filtroTipoDocumentoId = null;
-    this.filtroFacultadId = null;
     this.filtroFechaDesde = '';
     this.filtroFechaHasta = '';
   }
@@ -306,7 +289,6 @@ export class EditDocumentsPageComponent implements OnInit {
         titulo: actualizado.titulo?.trim() ?? '',
         autor: actualizado.autor?.trim() ?? '',
         tipoDocumentoId: actualizado.tipoDocumentoId,
-        facultadId: actualizado.facultadId,
         carreraId: actualizado.carreraId ?? null,
         lineaInvestigacionId: actualizado.lineaInvestigacionId ?? null,
         sublineaInvestigacionId: actualizado.sublineaInvestigacionId ?? null,
@@ -335,7 +317,6 @@ export class EditDocumentsPageComponent implements OnInit {
       titulo: '',
       autor: '',
       tipoDocumentoId: null,
-      facultadId: null,
       carreraId: null,
       lineaInvestigacionId: null,
       sublineaInvestigacionId: null,
@@ -346,17 +327,6 @@ export class EditDocumentsPageComponent implements OnInit {
       estado: 'Pendiente',
       sePuedeDescargar: true
     };
-  }
-
-  actualizarDependientesDesdeFacultad(): void {
-    if (
-      this.editModel.carreraId != null &&
-      !this.carrerasDisponibles.some((carrera) => carrera.id === this.editModel.carreraId)
-    ) {
-      this.editModel.carreraId = null;
-      this.editModel.lineaInvestigacionId = null;
-      this.editModel.sublineaInvestigacionId = null;
-    }
   }
 
   actualizarDependientesDesdeCarrera(): void {
@@ -376,5 +346,13 @@ export class EditDocumentsPageComponent implements OnInit {
     ) {
       this.editModel.sublineaInvestigacionId = null;
     }
+  }
+
+  getClasificacionPrincipal(documento: Documento): string {
+    return documento.carrera ||
+      documento.lineaInvestigacion ||
+      documento.sublineaInvestigacion ||
+      documento.tipoDocumento ||
+      'Sin clasificacion';
   }
 }

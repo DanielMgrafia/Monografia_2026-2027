@@ -24,7 +24,6 @@ export class ListaDocumentosComponent implements OnInit {
   documentos: Documento[] = [];
   recomendaciones: Documento[] = [];
   tiposDocumento: Catalogo[] = [];
-  facultades: Catalogo[] = [];
   areasConocimiento: Catalogo[] = [];
   lineasInvestigacion: Catalogo[] = [];
   sublineasInvestigacion: SublineaInvestigacion[] = [];
@@ -32,7 +31,6 @@ export class ListaDocumentosComponent implements OnInit {
 
   filtroTexto = '';
   filtroTipoDocumentoId: number | null = null;
-  filtroFacultadId: number | null = null;
   filtroAreaConocimientoId: number | null = null;
   filtroCarreraId: number | null = null;
   filtroLineaInvestigacionId: number | null = null;
@@ -55,10 +53,6 @@ export class ListaDocumentosComponent implements OnInit {
 
   get carrerasFiltradas(): Carrera[] {
     return this.carreras.filter((carrera) => {
-      if (this.filtroFacultadId != null && carrera.facultadId !== this.filtroFacultadId) {
-        return false;
-      }
-
       if (this.filtroAreaConocimientoId != null && carrera.areaConocimientoId !== this.filtroAreaConocimientoId) {
         return false;
       }
@@ -89,7 +83,6 @@ export class ListaDocumentosComponent implements OnInit {
   get filtrosActivos(): number {
     return [
       this.filtroTipoDocumentoId,
-      this.filtroFacultadId,
       this.filtroAreaConocimientoId,
       this.filtroCarreraId,
       this.filtroLineaInvestigacionId,
@@ -112,7 +105,6 @@ export class ListaDocumentosComponent implements OnInit {
             documento.titulo,
             documento.autor,
             documento.tipoDocumento,
-            documento.facultad,
             documento.carrera,
             documento.lineaInvestigacion,
             documento.sublineaInvestigacion,
@@ -127,10 +119,6 @@ export class ListaDocumentosComponent implements OnInit {
         }
 
         if (this.filtroTipoDocumentoId != null && documento.tipoDocumentoId !== this.filtroTipoDocumentoId) {
-          return false;
-        }
-
-        if (this.filtroFacultadId != null && documento.facultadId !== this.filtroFacultadId) {
           return false;
         }
 
@@ -188,7 +176,6 @@ export class ListaDocumentosComponent implements OnInit {
       documentos: this.documentosService.getDocumentos(),
       recomendaciones: this.bibliotecaService.getRecomendaciones(),
       tiposDocumento: this.catalogosService.getTiposDocumento(),
-      facultades: this.catalogosService.getFacultades(),
       areasConocimiento: this.catalogosService.getAreasConocimiento(),
       lineasInvestigacion: this.catalogosService.getLineasInvestigacion(),
       sublineasInvestigacion: this.catalogosService.getSublineasInvestigacion(),
@@ -198,7 +185,6 @@ export class ListaDocumentosComponent implements OnInit {
         documentos,
         recomendaciones,
         tiposDocumento,
-        facultades,
         areasConocimiento,
         lineasInvestigacion,
         sublineasInvestigacion,
@@ -207,7 +193,6 @@ export class ListaDocumentosComponent implements OnInit {
         this.documentos = documentos;
         this.recomendaciones = recomendaciones;
         this.tiposDocumento = tiposDocumento;
-        this.facultades = facultades;
         this.areasConocimiento = areasConocimiento;
         this.lineasInvestigacion = lineasInvestigacion;
         this.sublineasInvestigacion = sublineasInvestigacion;
@@ -224,7 +209,6 @@ export class ListaDocumentosComponent implements OnInit {
   limpiarFiltros(): void {
     this.filtroTexto = '';
     this.filtroTipoDocumentoId = null;
-    this.filtroFacultadId = null;
     this.filtroAreaConocimientoId = null;
     this.filtroCarreraId = null;
     this.filtroLineaInvestigacionId = null;
@@ -241,7 +225,7 @@ export class ListaDocumentosComponent implements OnInit {
     this.filtrosAbiertos = false;
   }
 
-  actualizarDependientesDesdeFacultad(): void {
+  actualizarDependientesDesdeArea(): void {
     if (
       this.filtroCarreraId != null &&
       !this.carrerasFiltradas.some((carrera) => carrera.id === this.filtroCarreraId)
@@ -250,10 +234,6 @@ export class ListaDocumentosComponent implements OnInit {
       this.filtroLineaInvestigacionId = null;
       this.filtroSublineaInvestigacionId = null;
     }
-  }
-
-  actualizarDependientesDesdeArea(): void {
-    this.actualizarDependientesDesdeFacultad();
   }
 
   actualizarDependientesDesdeCarrera(): void {
@@ -326,5 +306,13 @@ export class ListaDocumentosComponent implements OnInit {
     }
 
     return documento.esFavorito ? 'Quitar favorito' : 'Guardar favorito';
+  }
+
+  getClasificacionPrincipal(documento: Documento): string {
+    return documento.carrera ||
+      documento.lineaInvestigacion ||
+      documento.sublineaInvestigacion ||
+      documento.tipoDocumento ||
+      'Sin clasificacion';
   }
 }

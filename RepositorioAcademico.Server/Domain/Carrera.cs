@@ -4,10 +4,6 @@ namespace RepositorioAcademico.Server.Domain
     {
         public int Id { get; set; }
 
-        public int FacultadId { get; set; }
-
-        public Facultad? Facultad { get; set; }
-
         public int AreaConocimientoId { get; set; }
 
         public AreaConocimiento? AreaConocimiento { get; set; }

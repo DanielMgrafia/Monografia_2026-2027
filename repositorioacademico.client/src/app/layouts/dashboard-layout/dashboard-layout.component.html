@@ -45,17 +45,6 @@
       </div>
     </nav>
 
-    <div class="admin-card">
-      <div class="admin-card-icon">GO</div>
-      <div class="admin-card-content">
-        <h3>Accion rapida</h3>
-        <p>Accede a la tarea principal permitida por tu perfil actual.</p>
-        <button type="button" [routerLink]="getPrimaryActionRoute()" (click)="handleNavigationSelection()">
-          {{ getPrimaryActionLabel() }}
-        </button>
-      </div>
-    </div>
-
     <div class="sidebar-footer" *ngIf="currentUser() as user">
       <div class="footer-icon">{{ getInitials() }}</div>
       <div class="footer-text">

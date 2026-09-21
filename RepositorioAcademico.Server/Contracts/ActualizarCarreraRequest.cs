@@ -8,8 +8,6 @@ namespace RepositorioAcademico.Server.Contracts
         [StringLength(150, ErrorMessage = "La descripcion no puede exceder 150 caracteres.")]
         public string Descripcion { get; set; } = string.Empty;
 
-        public int FacultadId { get; set; }
-
         public int AreaConocimientoId { get; set; }
 
         [StringLength(50, ErrorMessage = "El estado no puede exceder 50 caracteres.")]

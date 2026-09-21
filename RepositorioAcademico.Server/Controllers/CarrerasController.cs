@@ -30,8 +30,6 @@ namespace RepositorioAcademico.Server.Controllers
             {
                 query = query.Where(item =>
                     (item.Estado == null || item.Estado == "Activo") &&
-                    item.Facultad != null &&
-                    (item.Facultad.Estado == null || item.Facultad.Estado == "Activo") &&
                     item.AreaConocimiento != null &&
                     (item.AreaConocimiento.Estado == null || item.AreaConocimiento.Estado == "Activo"));
             }
@@ -67,18 +65,18 @@ namespace RepositorioAcademico.Server.Controllers
                 return BadRequest("La descripcion es obligatoria.");
             }
 
-            var validacionCatalogos = await ValidarCatalogosAsync(request.FacultadId, request.AreaConocimientoId);
+            var validacionCatalogos = await ValidarAreaConocimientoAsync(request.AreaConocimientoId);
             if (validacionCatalogos is not null)
             {
                 return validacionCatalogos;
             }
 
             var existeCarrera = await _context.Carreras
-                .AnyAsync(item => item.FacultadId == request.FacultadId && item.Descripcion == descripcion);
+                .AnyAsync(item => item.Descripcion == descripcion);
 
             if (existeCarrera)
             {
-                return Conflict("Ya existe una carrera con esa descripcion en la facultad seleccionada.");
+                return Conflict("Ya existe una carrera con esa descripcion.");
             }
 
             var estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim();
@@ -90,7 +88,6 @@ namespace RepositorioAcademico.Server.Controllers
             var carrera = new Carrera
             {
                 Descripcion = descripcion,
-                FacultadId = request.FacultadId,
                 AreaConocimientoId = request.AreaConocimientoId,
                 Estado = estado
             };
@@ -122,7 +119,7 @@ namespace RepositorioAcademico.Server.Controllers
                 return BadRequest("El estado solicitado no es valido.");
             }
 
-            var validacionCatalogos = await ValidarCatalogosAsync(request.FacultadId, request.AreaConocimientoId);
+            var validacionCatalogos = await ValidarAreaConocimientoAsync(request.AreaConocimientoId);
             if (validacionCatalogos is not null)
             {
                 return validacionCatalogos;
@@ -137,16 +134,14 @@ namespace RepositorioAcademico.Server.Controllers
             var existeCarrera = await _context.Carreras
                 .AnyAsync(item =>
                     item.Id != id &&
-                    item.FacultadId == request.FacultadId &&
                     item.Descripcion == descripcion);
 
             if (existeCarrera)
             {
-                return Conflict("Ya existe una carrera con esa descripcion en la facultad seleccionada.");
+                return Conflict("Ya existe una carrera con esa descripcion.");
             }
 
             carrera.Descripcion = descripcion;
-            carrera.FacultadId = request.FacultadId;
             carrera.AreaConocimientoId = request.AreaConocimientoId;
             carrera.Estado = estado;
 
@@ -178,7 +173,7 @@ namespace RepositorioAcademico.Server.Controllers
 
             if (string.Equals(estado, "Activo", StringComparison.OrdinalIgnoreCase))
             {
-                var validacionCatalogos = await ValidarCatalogosAsync(carrera.FacultadId, carrera.AreaConocimientoId);
+                var validacionCatalogos = await ValidarAreaConocimientoAsync(carrera.AreaConocimientoId);
                 if (validacionCatalogos is not null)
                 {
                     return validacionCatalogos;
@@ -264,22 +259,13 @@ namespace RepositorioAcademico.Server.Controllers
         {
             return _context.Carreras
                 .AsNoTracking()
-                .Include(item => item.Facultad)
                 .Include(item => item.AreaConocimiento)
                 .Include(item => item.CarreraLineasInvestigacion)
                 .ThenInclude(item => item.LineaInvestigacion);
         }
 
-        private async Task<ActionResult?> ValidarCatalogosAsync(int facultadId, int areaConocimientoId)
+        private async Task<ActionResult?> ValidarAreaConocimientoAsync(int areaConocimientoId)
         {
-            var facultadExiste = await _context.Facultades
-                .AnyAsync(item => item.Id == facultadId && (item.Estado == null || item.Estado == "Activo"));
-
-            if (!facultadExiste)
-            {
-                return BadRequest("La facultad seleccionada no existe o esta inactiva.");
-            }
-
             var areaConocimientoExiste = await _context.AreasConocimiento
                 .AnyAsync(item => item.Id == areaConocimientoId && (item.Estado == null || item.Estado == "Activo"));
 
@@ -298,8 +284,6 @@ namespace RepositorioAcademico.Server.Controllers
                 Id = carrera.Id,
                 Descripcion = carrera.Descripcion,
                 Estado = carrera.Estado,
-                FacultadId = carrera.FacultadId,
-                Facultad = carrera.Facultad?.Descripcion,
                 AreaConocimientoId = carrera.AreaConocimientoId,
                 AreaConocimiento = carrera.AreaConocimiento?.Descripcion,
                 LineasInvestigacion = carrera.CarreraLineasInvestigacion

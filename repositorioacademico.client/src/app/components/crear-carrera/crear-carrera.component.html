@@ -17,19 +17,6 @@
       </div>
 
       <div class="form-group">
-        <label for="facultadCarrera">Facultad</label>
-        <select id="facultadCarrera"
-                name="facultadCarrera"
-                [(ngModel)]="facultadId"
-                required>
-          <option [ngValue]="null">Selecciona una facultad</option>
-          <option *ngFor="let facultad of facultadesActivas" [ngValue]="facultad.id">
-            {{ facultad.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
         <label for="areaCarrera">Area de conocimiento</label>
         <select id="areaCarrera"
                 name="areaCarrera"
@@ -61,7 +48,7 @@
       <div class="lista-header">
         <div>
           <h3>Carreras registradas</h3>
-          <p>Listado vinculado con facultades y areas de conocimiento.</p>
+          <p>Listado vinculado con areas de conocimiento.</p>
         </div>
 
         <button type="button"
@@ -82,7 +69,7 @@
 
           <div class="catalogo-info">
             <strong>{{ carrera.descripcion }}</strong>
-            <small>{{ carrera.facultad || 'Sin facultad' }} · {{ carrera.areaConocimiento || 'Sin area' }}</small>
+            <small>{{ carrera.areaConocimiento || 'Sin area' }}</small>
           </div>
 
           <div class="item-actions">
@@ -110,7 +97,7 @@
 
       <div *ngIf="!cargando && carreras.length === 0" class="lista-vacia">
         <strong>No hay carreras registradas</strong>
-        <p>Agrega carreras para conectar facultades, areas y lineas de investigacion.</p>
+        <p>Agrega carreras para conectar areas y lineas de investigacion.</p>
       </div>
     </div>
   </div>
@@ -135,16 +122,6 @@
                name="editDescripcionCarrera"
                maxlength="150"
                required />
-      </label>
-
-      <label>
-        Facultad
-        <select [(ngModel)]="editFacultadId" name="editFacultadCarrera" required>
-          <option [ngValue]="null">Selecciona una facultad</option>
-          <option *ngFor="let facultad of facultadesActivas" [ngValue]="facultad.id">
-            {{ facultad.descripcion }}
-          </option>
-        </select>
       </label>
 
       <label>

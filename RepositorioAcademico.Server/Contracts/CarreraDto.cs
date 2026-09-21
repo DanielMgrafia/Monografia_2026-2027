@@ -8,10 +8,6 @@ namespace RepositorioAcademico.Server.Contracts
 
         public string? Estado { get; set; }
 
-        public int FacultadId { get; set; }
-
-        public string? Facultad { get; set; }
-
         public int AreaConocimientoId { get; set; }
 
         public string? AreaConocimiento { get; set; }

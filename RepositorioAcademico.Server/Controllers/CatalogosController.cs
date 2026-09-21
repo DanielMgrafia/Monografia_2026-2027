@@ -33,21 +33,6 @@ namespace RepositorioAcademico.Server.Controllers
                 .ToListAsync();
         }
 
-        [HttpGet("facultades")]
-        public async Task<ActionResult<IEnumerable<CatalogoDto>>> GetFacultades()
-        {
-            return await _context.Facultades
-                .AsNoTracking()
-                .Where(item => item.Estado == null || item.Estado == "Activo")
-                .OrderBy(item => item.Descripcion)
-                .Select(item => new CatalogoDto
-                {
-                    Id = item.Id,
-                    Descripcion = item.Descripcion
-                })
-                .ToListAsync();
-        }
-
         [HttpGet("areas-conocimiento")]
         public async Task<ActionResult<IEnumerable<CatalogoDto>>> GetAreasConocimiento()
         {

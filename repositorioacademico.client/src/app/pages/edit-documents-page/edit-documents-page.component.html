@@ -13,7 +13,7 @@
         <input id="filtroTextoEdicion"
                type="text"
                [(ngModel)]="filtroTexto"
-               placeholder="Titulo, autor, facultad, tutor o palabras clave..." />
+               placeholder="Titulo, autor, carrera, tutor o palabras clave..." />
       </div>
 
       <div class="filter-group">
@@ -32,16 +32,6 @@
           <option [ngValue]="null">Todos</option>
           <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
             {{ tipo.descripcion }}
-          </option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="filtroFacultadEdicion">Facultad</label>
-        <select id="filtroFacultadEdicion" [(ngModel)]="filtroFacultadId" name="filtroFacultadIdEdicion">
-          <option [ngValue]="null">Todas</option>
-          <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
-            {{ facultad.descripcion }}
           </option>
         </select>
       </div>
@@ -72,7 +62,7 @@
           <th>Documento</th>
           <th>Autor</th>
           <th>Tipo</th>
-          <th>Facultad</th>
+          <th>Clasificacion</th>
           <th>Fecha</th>
           <th>Descarga</th>
           <th>Estado</th>
@@ -88,7 +78,7 @@
           </td>
           <td>{{ documento.autor }}</td>
           <td>{{ documento.tipoDocumento }}</td>
-          <td>{{ documento.facultad }}</td>
+          <td>{{ getClasificacionPrincipal(documento) }}</td>
           <td>{{ documento.fechaSubida | date:"dd 'de' MMMM 'de' y" }}</td>
           <td>
             <span class="badge" [ngClass]="getDownloadStatusClass(documento)">
@@ -142,20 +132,6 @@
             <option [ngValue]="null">Seleccione</option>
             <option *ngFor="let tipo of tiposDocumento" [ngValue]="tipo.id">
               {{ tipo.descripcion }}
-            </option>
-          </select>
-        </div>
-
-        <div class="editor-group">
-          <label for="editFacultad">Facultad</label>
-          <select id="editFacultad"
-                  [(ngModel)]="editModel.facultadId"
-                  name="editFacultadId"
-                  (ngModelChange)="actualizarDependientesDesdeFacultad()"
-                  required>
-            <option [ngValue]="null">Seleccione</option>
-            <option *ngFor="let facultad of facultades" [ngValue]="facultad.id">
-              {{ facultad.descripcion }}
             </option>
           </select>
         </div>
@@ -259,6 +235,6 @@
 <ng-template #emptyState>
   <div class="empty-state">
     <strong>No hay documentos que coincidan con los filtros.</strong>
-    <p>Prueba con otro rango de fechas, facultad, tipo o estado.</p>
+    <p>Prueba con otro rango de fechas, tipo o estado.</p>
   </div>
 </ng-template>
