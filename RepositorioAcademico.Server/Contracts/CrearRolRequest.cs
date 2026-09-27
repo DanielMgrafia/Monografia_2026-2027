@@ -11,6 +11,9 @@ namespace RepositorioAcademico.Server.Contracts
         [StringLength(200, ErrorMessage = "La descripcion no puede exceder 200 caracteres.")]
         public string? Descripcion { get; set; }
 
+        [StringLength(200000, ErrorMessage = "El icono del rol es demasiado grande.")]
+        public string? IconoUrl { get; set; }
+
         [StringLength(50, ErrorMessage = "El estado no puede exceder 50 caracteres.")]
         public string? Estado { get; set; }
 

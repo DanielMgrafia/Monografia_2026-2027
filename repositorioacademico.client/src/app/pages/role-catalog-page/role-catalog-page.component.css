@@ -88,9 +88,85 @@
   background: #f7f9fc;
 }
 
+.icon-picker {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #e4eaf3;
+  border-radius: 14px;
+  background: #f7f9fc;
+}
+
+.icon-picker strong,
 .flag-box strong {
   color: #061b4e;
   font-size: 13px;
+}
+
+.icon-picker small {
+  color: #52627e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.icon-picker-row,
+.icon-picker-actions,
+.role-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-picker-actions {
+  flex-wrap: wrap;
+}
+
+.role-icon-preview {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 auto;
+  border: 1px solid #d8e0ec;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0a54db, #06265c);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.role-icon-preview.small {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  font-size: 12px;
+}
+
+.role-icon-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.form-grid .file-button {
+  min-height: 40px;
+  border: none;
+  border-radius: 12px;
+  padding: 0 16px;
+  background: #eef5ff;
+  color: #083b91;
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 0;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.form-grid .file-button input {
+  display: none;
 }
 
 .flag-grid {
@@ -133,6 +209,10 @@
 .secondary-button {
   background: #eef5ff;
   color: #083b91;
+}
+
+.secondary-button.compact {
+  min-height: 40px;
 }
 
 .danger-button {
@@ -295,6 +375,8 @@
   .role-footer,
   .editor-header,
   .editor-actions,
+  .icon-picker-row,
+  .icon-picker-actions,
   .role-actions {
     flex-direction: column;
     align-items: stretch;

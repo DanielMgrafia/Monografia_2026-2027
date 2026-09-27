@@ -277,6 +277,9 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 entity.Property(item => item.Descripcion)
                     .HasMaxLength(200);
 
+                entity.Property(item => item.IconoUrl)
+                    .HasMaxLength(200000);
+
                 entity.Property(item => item.Estado)
                     .HasMaxLength(50)
                     .IsRequired();

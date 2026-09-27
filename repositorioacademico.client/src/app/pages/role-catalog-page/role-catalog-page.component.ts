@@ -9,6 +9,7 @@ type EstadoRol = 'Activo' | 'Inactivo';
 interface RolForm {
   nombre: string;
   descripcion: string;
+  iconoUrl: string | null;
   estado: EstadoRol;
   esEstudiante: boolean;
   esDocente: boolean;
@@ -24,6 +25,9 @@ interface RolForm {
   styleUrls: ['./role-catalog-page.component.css']
 })
 export class RoleCatalogPageComponent implements OnInit {
+  private static readonly MAX_ICON_SIZE_BYTES = 150 * 1024;
+  private static readonly ALLOWED_ICON_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
+
   roles: Rol[] = [];
   rolEnEdicion: Rol | null = null;
 
@@ -73,6 +77,7 @@ export class RoleCatalogPageComponent implements OnInit {
     this.rolesService.crearRol({
       nombre,
       descripcion: this.nuevoRol.descripcion.trim(),
+      iconoUrl: this.nuevoRol.iconoUrl,
       estado: this.nuevoRol.estado,
       esEstudiante: this.nuevoRol.esEstudiante,
       esDocente: this.nuevoRol.esDocente,
@@ -100,6 +105,7 @@ export class RoleCatalogPageComponent implements OnInit {
     this.editModel = {
       nombre: rol.nombre,
       descripcion: rol.descripcion ?? '',
+      iconoUrl: rol.iconoUrl ?? null,
       estado: this.normalizarEstado(rol.estado),
       esEstudiante: rol.esEstudiante,
       esDocente: rol.esDocente,
@@ -131,6 +137,7 @@ export class RoleCatalogPageComponent implements OnInit {
     this.rolesService.actualizarRol(this.rolEnEdicion.id, {
       nombre,
       descripcion: this.editModel.descripcion.trim(),
+      iconoUrl: this.editModel.iconoUrl,
       estado: this.editModel.estado,
       esEstudiante: this.editModel.esEstudiante,
       esDocente: this.editModel.esDocente,
@@ -186,6 +193,62 @@ export class RoleCatalogPageComponent implements OnInit {
     ].filter((item) => item.length > 0);
   }
 
+  getInicialesRol(rol: Pick<Rol, 'nombre'> | RolForm): string {
+    const nombre = rol.nombre.trim();
+    if (!nombre) {
+      return 'RL';
+    }
+
+    const palabras = nombre.split(/\s+/).filter(Boolean);
+    return palabras
+      .slice(0, 2)
+      .map((palabra) => palabra[0])
+      .join('')
+      .toUpperCase();
+  }
+
+  seleccionarIcono(event: Event, destino: 'nuevo' | 'edicion'): void {
+    const input = event.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+
+    if (!archivo) {
+      return;
+    }
+
+    if (!RoleCatalogPageComponent.ALLOWED_ICON_TYPES.has(archivo.type)) {
+      this.error = 'El icono debe ser una imagen PNG, JPG o WEBP.';
+      input.value = '';
+      return;
+    }
+
+    if (archivo.size > RoleCatalogPageComponent.MAX_ICON_SIZE_BYTES) {
+      this.error = 'El icono no debe superar 150 KB.';
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const resultado = typeof reader.result === 'string' ? reader.result : null;
+      if (destino === 'nuevo') {
+        this.nuevoRol.iconoUrl = resultado;
+      } else {
+        this.editModel.iconoUrl = resultado;
+      }
+      this.error = '';
+    };
+    reader.readAsDataURL(archivo);
+    input.value = '';
+  }
+
+  quitarIcono(destino: 'nuevo' | 'edicion'): void {
+    if (destino === 'nuevo') {
+      this.nuevoRol.iconoUrl = null;
+    } else {
+      this.editModel.iconoUrl = null;
+    }
+  }
+
   private reemplazarRol(actualizado: Rol): void {
     this.roles = this.ordenarRoles(
       this.roles.map((rol) => rol.id === actualizado.id ? actualizado : rol)
@@ -206,6 +269,7 @@ export class RoleCatalogPageComponent implements OnInit {
     return {
       nombre: '',
       descripcion: '',
+      iconoUrl: null,
       estado,
       esEstudiante: false,
       esDocente: false,

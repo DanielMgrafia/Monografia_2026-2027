@@ -8,6 +8,8 @@ namespace RepositorioAcademico.Server.Contracts
 
         public string? Descripcion { get; set; }
 
+        public string? IconoUrl { get; set; }
+
         public string Estado { get; set; } = string.Empty;
 
         public bool EsEstudiante { get; set; }

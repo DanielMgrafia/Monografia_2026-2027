@@ -8,6 +8,8 @@ namespace RepositorioAcademico.Server.Domain
 
         public string? Descripcion { get; set; }
 
+        public string? IconoUrl { get; set; }
+
         public string Estado { get; set; } = "Activo";
 
         public bool EsEstudiante { get; set; }

@@ -4,6 +4,7 @@ export interface RolResumen {
   id: number;
   nombre: string;
   descripcion?: string | null;
+  iconoUrl?: string | null;
   estado: string;
   esEstudiante: boolean;
   esDocente: boolean;
@@ -15,6 +16,7 @@ export interface Rol {
   id: number;
   nombre: string;
   descripcion?: string | null;
+  iconoUrl?: string | null;
   estado: string;
   esEstudiante: boolean;
   esDocente: boolean;

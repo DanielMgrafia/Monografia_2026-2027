@@ -68,7 +68,12 @@
     </nav>
 
     <div class="sidebar-footer" *ngIf="currentUser() as user">
-      <div class="footer-icon">{{ getInitials() }}</div>
+      <div class="footer-icon">
+        <img *ngIf="getRoleIconUrl() as roleIcon; else footerInitials"
+             [src]="roleIcon"
+             alt="Icono del rol" />
+        <ng-template #footerInitials>{{ getInitials() }}</ng-template>
+      </div>
       <div class="footer-text">
         <strong>{{ user.nombres }} {{ user.apellidos }}</strong>
         <span>{{ user.roles.length > 0 ? user.roles[0].nombre : 'Usuario' }}</span>
@@ -106,7 +111,12 @@
                   (click)="toggleAccountMenu()"
                   [attr.aria-expanded]="accountMenuOpen()"
                   aria-haspopup="menu">
-            <div class="avatar">{{ getInitials() }}</div>
+            <div class="avatar">
+              <img *ngIf="getRoleIconUrl() as roleIcon; else triggerInitials"
+                   [src]="roleIcon"
+                   alt="Icono del rol" />
+              <ng-template #triggerInitials>{{ getInitials() }}</ng-template>
+            </div>
             <div class="account-copy">
               <strong>{{ getPrimaryRoleLabel() }}</strong>
               <span>{{ user.correo }}</span>
@@ -123,7 +133,12 @@
 
           <section class="account-dropdown" *ngIf="accountMenuOpen()">
             <header class="account-dropdown-header">
-              <div class="account-dropdown-avatar">{{ getInitials() }}</div>
+              <div class="account-dropdown-avatar">
+                <img *ngIf="getRoleIconUrl() as roleIcon; else dropdownInitials"
+                     [src]="roleIcon"
+                     alt="Icono del rol" />
+                <ng-template #dropdownInitials>{{ getInitials() }}</ng-template>
+              </div>
               <div class="account-dropdown-copy">
                 <strong>{{ user.nombres }} {{ user.apellidos }}</strong>
                 <span>{{ getPrimaryRoleLabel() }}</span>

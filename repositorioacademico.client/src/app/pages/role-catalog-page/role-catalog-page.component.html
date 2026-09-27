@@ -26,6 +26,33 @@
         </select>
       </label>
 
+      <div class="icon-picker">
+        <strong>Icono</strong>
+        <div class="icon-picker-row">
+          <div class="role-icon-preview">
+            <img *ngIf="nuevoRol.iconoUrl; else nuevoRolIniciales"
+                 [src]="nuevoRol.iconoUrl"
+                 alt="Icono del rol" />
+            <ng-template #nuevoRolIniciales>{{ getInicialesRol(nuevoRol) }}</ng-template>
+          </div>
+          <div class="icon-picker-actions">
+            <label class="file-button">
+              Cargar imagen
+              <input type="file"
+                     accept="image/png,image/jpeg,image/webp"
+                     (change)="seleccionarIcono($event, 'nuevo')" />
+            </label>
+            <button type="button"
+                    class="secondary-button compact"
+                    *ngIf="nuevoRol.iconoUrl"
+                    (click)="quitarIcono('nuevo')">
+              Quitar
+            </button>
+          </div>
+        </div>
+        <small>PNG, JPG o WEBP. Maximo 150 KB.</small>
+      </div>
+
       <div class="flag-box">
         <strong>Banderas</strong>
         <div class="flag-grid">
@@ -75,9 +102,17 @@
     <div class="role-list" *ngIf="roles.length > 0; else emptyState">
       <article class="role-card" *ngFor="let rol of roles">
         <div class="role-header">
-          <div>
-            <strong>{{ rol.nombre }}</strong>
-            <span>{{ rol.descripcion || 'Sin descripcion adicional' }}</span>
+          <div class="role-title">
+            <div class="role-icon-preview small">
+              <img *ngIf="rol.iconoUrl; else rolCardIniciales"
+                   [src]="rol.iconoUrl"
+                   alt="Icono del rol" />
+              <ng-template #rolCardIniciales>{{ getInicialesRol(rol) }}</ng-template>
+            </div>
+            <div>
+              <strong>{{ rol.nombre }}</strong>
+              <span>{{ rol.descripcion || 'Sin descripcion adicional' }}</span>
+            </div>
           </div>
 
           <span class="state" [ngClass]="getEstadoClass(rol.estado)">{{ rol.estado }}</span>
@@ -140,6 +175,33 @@
           <option value="Inactivo">Inactivo</option>
         </select>
       </label>
+
+      <div class="icon-picker">
+        <strong>Icono</strong>
+        <div class="icon-picker-row">
+          <div class="role-icon-preview">
+            <img *ngIf="editModel.iconoUrl; else editRolIniciales"
+                 [src]="editModel.iconoUrl"
+                 alt="Icono del rol" />
+            <ng-template #editRolIniciales>{{ getInicialesRol(editModel) }}</ng-template>
+          </div>
+          <div class="icon-picker-actions">
+            <label class="file-button">
+              Cargar imagen
+              <input type="file"
+                     accept="image/png,image/jpeg,image/webp"
+                     (change)="seleccionarIcono($event, 'edicion')" />
+            </label>
+            <button type="button"
+                    class="secondary-button compact"
+                    *ngIf="editModel.iconoUrl"
+                    (click)="quitarIcono('edicion')">
+              Quitar
+            </button>
+          </div>
+        </div>
+        <small>PNG, JPG o WEBP. Maximo 150 KB.</small>
+      </div>
 
       <div class="flag-box">
         <strong>Banderas</strong>

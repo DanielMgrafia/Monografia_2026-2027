@@ -14,6 +14,14 @@ namespace RepositorioAcademico.Server.Controllers
     public class RolesController : ControllerBase
     {
         private static readonly string[] EstadosPermitidos = ["Activo", "Inactivo"];
+        private static readonly string[] IconoDataUrlPermitidos =
+        [
+            "data:image/png;base64,",
+            "data:image/jpeg;base64,",
+            "data:image/jpg;base64,",
+            "data:image/webp;base64,"
+        ];
+
         private readonly RepositorioDbContext _context;
 
         public RolesController(RepositorioDbContext context)
@@ -77,6 +85,16 @@ namespace RepositorioAcademico.Server.Controllers
                 return Conflict("Ya existe un rol con ese nombre.");
             }
 
+            string? iconoUrl;
+            try
+            {
+                iconoUrl = NormalizarIconoUrl(request.IconoUrl);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
             var permisoIds = request.PermisoIds.Distinct().ToList();
             if (permisoIds.Count > 0)
             {
@@ -93,6 +111,7 @@ namespace RepositorioAcademico.Server.Controllers
             {
                 Nombre = nombre,
                 Descripcion = string.IsNullOrWhiteSpace(request.Descripcion) ? null : request.Descripcion.Trim(),
+                IconoUrl = iconoUrl,
                 Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim(),
                 EsEstudiante = request.EsEstudiante,
                 EsDocente = request.EsDocente,
@@ -161,8 +180,19 @@ namespace RepositorioAcademico.Server.Controllers
                 return Conflict("Ya existe un rol con ese nombre.");
             }
 
+            string? iconoUrl;
+            try
+            {
+                iconoUrl = NormalizarIconoUrl(request.IconoUrl);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
             rol.Nombre = nombre;
             rol.Descripcion = string.IsNullOrWhiteSpace(request.Descripcion) ? null : request.Descripcion.Trim();
+            rol.IconoUrl = iconoUrl;
             rol.Estado = estado;
             rol.EsEstudiante = request.EsEstudiante;
             rol.EsDocente = request.EsDocente;
@@ -255,6 +285,7 @@ namespace RepositorioAcademico.Server.Controllers
                 Id = rol.Id,
                 Nombre = rol.Nombre,
                 Descripcion = rol.Descripcion,
+                IconoUrl = rol.IconoUrl,
                 Estado = rol.Estado,
                 EsEstudiante = rol.EsEstudiante,
                 EsDocente = rol.EsDocente,
@@ -272,6 +303,42 @@ namespace RepositorioAcademico.Server.Controllers
                     })
                     .ToList()
             };
+        }
+
+        private static string? NormalizarIconoUrl(string? iconoUrl)
+        {
+            if (string.IsNullOrWhiteSpace(iconoUrl))
+            {
+                return null;
+            }
+
+            var valor = iconoUrl.Trim();
+            if (valor.Length > 200000)
+            {
+                throw new InvalidOperationException("El icono del rol es demasiado grande.");
+            }
+
+            if (!IconoDataUrlPermitidos.Any(prefix => valor.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new InvalidOperationException("El icono debe ser una imagen PNG, JPG o WEBP valida.");
+            }
+
+            var separador = valor.IndexOf(',');
+            if (separador < 0)
+            {
+                throw new InvalidOperationException("El icono debe ser una imagen PNG, JPG o WEBP valida.");
+            }
+
+            try
+            {
+                Convert.FromBase64String(valor[(separador + 1)..]);
+            }
+            catch (FormatException)
+            {
+                throw new InvalidOperationException("El icono debe ser una imagen PNG, JPG o WEBP valida.");
+            }
+
+            return valor;
         }
     }
 }

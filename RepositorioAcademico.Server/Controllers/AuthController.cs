@@ -181,6 +181,7 @@ namespace RepositorioAcademico.Server.Controllers
                     Id = rol.Id,
                     Nombre = rol.Nombre,
                     Descripcion = rol.Descripcion,
+                    IconoUrl = rol.IconoUrl,
                     Estado = rol.Estado,
                     EsEstudiante = rol.EsEstudiante,
                     EsDocente = rol.EsDocente,

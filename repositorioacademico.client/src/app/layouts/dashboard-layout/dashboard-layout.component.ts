@@ -209,6 +209,11 @@ export class DashboardLayoutComponent implements OnInit {
     return `${user.nombres[0] ?? ''}${user.apellidos[0] ?? ''}`.toUpperCase();
   }
 
+  getRoleIconUrl(): string | null {
+    const roles = this.currentUser()?.roles ?? [];
+    return roles.find((role) => !!role.iconoUrl)?.iconoUrl ?? null;
+  }
+
   isCatalogRouteActive(): boolean {
     return this.router.url.startsWith('/tipos-documento') ||
       this.router.url.startsWith('/areas-conocimiento') ||

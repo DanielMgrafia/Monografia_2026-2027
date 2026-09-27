@@ -6,6 +6,7 @@ import { Rol } from '../models/rol';
 export interface CrearRolPayload {
   nombre: string;
   descripcion?: string;
+  iconoUrl?: string | null;
   estado?: string;
   esEstudiante: boolean;
   esDocente: boolean;
@@ -17,6 +18,7 @@ export interface CrearRolPayload {
 export interface ActualizarRolPayload {
   nombre: string;
   descripcion?: string;
+  iconoUrl?: string | null;
   estado?: string;
   esEstudiante: boolean;
   esDocente: boolean;
