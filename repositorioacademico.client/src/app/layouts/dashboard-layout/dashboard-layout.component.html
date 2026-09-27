@@ -22,6 +22,28 @@
         <small *ngIf="item.badge != null && item.badge > 0">{{ item.badge }}</small>
       </a>
 
+      <div class="menu-group" *ngIf="userItems().length > 0">
+        <button type="button"
+                class="menu-item menu-group-toggle"
+                [class.active]="isUsersRouteActive()"
+                (click)="toggleUsersMenu()">
+          <span class="icon">US</span>
+          <span class="item-label">Usuarios</span>
+          <span class="group-arrow" *ngIf="!sidebarCollapsed()">{{ usersMenuOpen() ? 'v' : '>' }}</span>
+        </button>
+
+        <div class="submenu" *ngIf="usersMenuOpen() && !sidebarCollapsed()">
+          <a *ngFor="let item of userItems()"
+             [routerLink]="item.route"
+             routerLinkActive="active"
+             (click)="handleNavigationSelection()"
+             class="submenu-item">
+            <span class="icon">{{ item.icon }}</span>
+            <span>{{ item.label }}</span>
+          </a>
+        </div>
+      </div>
+
       <div class="menu-group" *ngIf="catalogItems().length > 0">
         <button type="button"
                 class="menu-item menu-group-toggle"

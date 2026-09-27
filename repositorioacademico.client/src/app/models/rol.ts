@@ -1,8 +1,14 @@
+export type RolFlag = 'esEstudiante' | 'esDocente' | 'esAdministrador' | 'esCargoAcademico';
+
 export interface RolResumen {
   id: number;
   nombre: string;
   descripcion?: string | null;
   estado: string;
+  esEstudiante: boolean;
+  esDocente: boolean;
+  esAdministrador: boolean;
+  esCargoAcademico: boolean;
 }
 
 export interface Rol {
@@ -10,6 +16,10 @@ export interface Rol {
   nombre: string;
   descripcion?: string | null;
   estado: string;
+  esEstudiante: boolean;
+  esDocente: boolean;
+  esAdministrador: boolean;
+  esCargoAcademico: boolean;
   permisos: Permiso[];
 }
 

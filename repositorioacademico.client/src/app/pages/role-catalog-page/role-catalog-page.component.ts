@@ -10,6 +10,10 @@ interface RolForm {
   nombre: string;
   descripcion: string;
   estado: EstadoRol;
+  esEstudiante: boolean;
+  esDocente: boolean;
+  esAdministrador: boolean;
+  esCargoAcademico: boolean;
 }
 
 @Component({
@@ -70,6 +74,10 @@ export class RoleCatalogPageComponent implements OnInit {
       nombre,
       descripcion: this.nuevoRol.descripcion.trim(),
       estado: this.nuevoRol.estado,
+      esEstudiante: this.nuevoRol.esEstudiante,
+      esDocente: this.nuevoRol.esDocente,
+      esAdministrador: this.nuevoRol.esAdministrador,
+      esCargoAcademico: this.nuevoRol.esCargoAcademico,
       permisoIds: []
     }).subscribe({
       next: (rol) => {
@@ -92,7 +100,11 @@ export class RoleCatalogPageComponent implements OnInit {
     this.editModel = {
       nombre: rol.nombre,
       descripcion: rol.descripcion ?? '',
-      estado: this.normalizarEstado(rol.estado)
+      estado: this.normalizarEstado(rol.estado),
+      esEstudiante: rol.esEstudiante,
+      esDocente: rol.esDocente,
+      esAdministrador: rol.esAdministrador,
+      esCargoAcademico: rol.esCargoAcademico
     };
   }
 
@@ -119,7 +131,11 @@ export class RoleCatalogPageComponent implements OnInit {
     this.rolesService.actualizarRol(this.rolEnEdicion.id, {
       nombre,
       descripcion: this.editModel.descripcion.trim(),
-      estado: this.editModel.estado
+      estado: this.editModel.estado,
+      esEstudiante: this.editModel.esEstudiante,
+      esDocente: this.editModel.esDocente,
+      esAdministrador: this.editModel.esAdministrador,
+      esCargoAcademico: this.editModel.esCargoAcademico
     }).subscribe({
       next: (actualizado) => {
         this.reemplazarRol(actualizado);
@@ -161,6 +177,15 @@ export class RoleCatalogPageComponent implements OnInit {
     return this.normalizarEstado(rol.estado) === 'Activo' ? 'Desactivar' : 'Activar';
   }
 
+  getBanderasRol(rol: Rol): string[] {
+    return [
+      rol.esEstudiante ? 'Estudiante' : '',
+      rol.esDocente ? 'Docente' : '',
+      rol.esAdministrador ? 'Administrador' : '',
+      rol.esCargoAcademico ? 'Cargo academico' : ''
+    ].filter((item) => item.length > 0);
+  }
+
   private reemplazarRol(actualizado: Rol): void {
     this.roles = this.ordenarRoles(
       this.roles.map((rol) => rol.id === actualizado.id ? actualizado : rol)
@@ -181,7 +206,11 @@ export class RoleCatalogPageComponent implements OnInit {
     return {
       nombre: '',
       descripcion: '',
-      estado
+      estado,
+      esEstudiante: false,
+      esDocente: false,
+      esAdministrador: false,
+      esCargoAcademico: false
     };
   }
 }

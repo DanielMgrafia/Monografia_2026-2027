@@ -1,0 +1,98 @@
+5.3 Diseño del Repositorio Digital Académico
+
+El diseño del repositorio digital académico se realizó a partir de los requerimientos funcionales y no funcionales definidos en el apartado anterior. Esta etapa permitió establecer la estructura tecnológica de la solución, la distribución de responsabilidades entre sus componentes, la organización de la información y la forma en que los usuarios interactúan con el sistema.
+
+Para el desarrollo de la solución se definió una aplicación web compuesta por un frontend desarrollado con Angular 20, un backend implementado mediante ASP.NET Core y C#, y Microsoft SQL Server para el almacenamiento estructurado de la información. Asimismo, se empleó Entity Framework Core para facilitar el acceso y la interacción entre la aplicación y la base de datos.
+
+El diseño se orientó a mantener una separación entre la interfaz de usuario, la lógica de aplicación, las reglas principales del sistema y los mecanismos de acceso a datos. Esta organización facilita la comprensión y el mantenimiento del código, y permite realizar modificaciones posteriores con menor dependencia entre los diferentes componentes.
+
+5.3.1 Arquitectura del Sistema
+
+El repositorio digital académico fue diseñado como una aplicación web bajo un modelo cliente-servidor, con una organización interna basada en la separación de responsabilidades. La solución está compuesta por un frontend desarrollado con Angular 20 y un backend implementado mediante ASP.NET Core y C#. Ambos componentes se comunican mediante solicitudes HTTP y datos en formato JSON para ejecutar las operaciones relacionadas con autenticación, gestión de usuarios, administración de catálogos académicos, control de roles y permisos, carga, revisión, consulta y descarga de documentos académicos.
+
+En el frontend, la aplicación se encuentra organizada mediante páginas, componentes, servicios, modelos, guards, interceptors y layouts. Las páginas representan las principales interfaces del sistema, entre ellas el inicio de sesión, el panel principal, el repositorio de documentos, la visualización de documentos, la revisión documental, la edición documental, el historial de biblioteca, la administración de usuarios, la gestión de roles y permisos, y la administración de catálogos académicos. Los componentes contienen elementos reutilizables relacionados con funciones como la carga de documentos, el listado de documentos, la creación y edición de tipos de documento, áreas de conocimiento, carreras, líneas de investigación y sublíneas de investigación. Los servicios centralizan las operaciones de comunicación con el backend, mientras que los guards e interceptors intervienen en el control de acceso y en el tratamiento de las solicitudes realizadas por la aplicación.
+
+El backend se encuentra implementado en el proyecto RepositorioAcademico.Server y presenta una organización mediante carpetas con responsabilidades específicas. La carpeta Controllers contiene los controladores encargados de recibir las solicitudes procedentes del frontend. La carpeta Contracts agrupa los objetos utilizados para el intercambio de información, incluyendo solicitudes de autenticación, creación y actualización de documentos, usuarios, roles, permisos, tipos de documentos, áreas de conocimiento, carreras, líneas y sublíneas de investigación, además de los objetos de transferencia de datos utilizados por el sistema.
+
+La carpeta Domain concentra las entidades principales que representan la información gestionada por el repositorio. Entre ellas se encuentran Documento, TipoDocumento, AreaConocimiento, Carrera, LineaInvestigacion, SublineaInvestigacion, Usuario, Rol y Permiso. Asimismo, se incluyen entidades destinadas a representar relaciones e interacciones del sistema, como CarreraLineaInvestigacion, DocumentoFavorito, DocumentoVista y DocumentoDescarga, además de UsuarioRol y RolPermiso, utilizadas para establecer las relaciones entre usuarios, roles y permisos.
+
+La infraestructura del sistema se encuentra organizada en la carpeta Infrastructure. Dentro de Data se implementó la clase RepositorioDbContext, basada en DbContext de Entity Framework Core, la cual centraliza el acceso a las entidades persistentes del repositorio. El contexto incluye los conjuntos correspondientes a documentos, tipos de documentos, áreas de conocimiento, carreras, líneas de investigación, sublíneas de investigación, relaciones entre carreras y líneas de investigación, usuarios, roles, permisos, relaciones entre usuarios y roles, relaciones entre roles y permisos, visualizaciones, descargas y documentos favoritos. Asimismo, el método OnModelCreating permite establecer la configuración y las relaciones necesarias entre las entidades del modelo. Por otra parte, la carpeta Security contiene los servicios relacionados con la autenticación y la protección de credenciales, mediante JwtTokenService y PasswordService.
+
+El backend también dispone de Migrations para gestionar los cambios realizados sobre la estructura de la base de datos y de Storage para almacenar los archivos digitales incorporados al repositorio. Los archivos almacenados reciben identificadores internos que permiten diferenciarlos dentro del sistema, mientras que su información descriptiva y las relaciones necesarias para su gestión se mantienen mediante las entidades correspondientes en la base de datos.
+
+En conjunto, la solución adopta una arquitectura en capas inspirada en principios de Clean Architecture, separando la interfaz de usuario, el procesamiento de solicitudes, los contratos de comunicación, las entidades del dominio y los mecanismos de infraestructura. Esta organización busca reducir el acoplamiento entre las diferentes responsabilidades del sistema y facilitar su mantenimiento y ampliación posterior.
+
+Ilustración 15
+Arquitectura general del Repositorio Digital Académico
+
+USUARIO
+↓
+FRONTEND - ANGULAR 20
+Pages | Components | Layouts | Models
+Services | Guards | Interceptors
+↓
+HTTP / JSON
+↓
+ASP.NET CORE / C# - BACKEND
+Controllers
+│
+Contracts
+Requests / DTO
+│
+Domain
+Documento | Usuario | Rol | Permiso | TipoDocumento
+AreaConocimiento | Carrera | LineaInvestigacion | SublineaInvestigacion
+DocumentoVista | DocumentoDescarga | DocumentoFavorito | ...
+↓
+Infrastructure
+Data
+RepositorioDbContext
+Security
+JwtTokenService
+PasswordService
+↓                         ↓
+BASE DE DATOS             STORAGE
+SQL Server                Archivos del repositorio
+Migrations
+
+Nota. Elaboración propia a partir de la estructura implementada en el sistema.
+
+5.3.2 Diseño de la Base de Datos
+
+La base de datos del repositorio digital académico fue diseñada a partir de las entidades necesarias para gestionar los documentos, su clasificación académica y documental, los usuarios del sistema, el control de acceso y las interacciones realizadas sobre los documentos almacenados. Para la persistencia de la información se utilizó Entity Framework Core mediante la clase RepositorioDbContext, la cual centraliza el acceso a las entidades y establece sus principales relaciones y restricciones.
+
+El modelo de datos se encuentra conformado por quince entidades principales: Documento, TipoDocumento, AreaConocimiento, Carrera, LineaInvestigacion, SublineaInvestigacion, CarreraLineaInvestigacion, Usuario, Rol, Permiso, UsuarioRol, RolPermiso, DocumentoVista, DocumentoDescarga y DocumentoFavorito. Estas entidades permiten organizar el modelo en cuatro áreas principales: gestión y clasificación documental, administración de catálogos académicos, administración de usuarios y control de acceso, e interacción de los usuarios con los documentos.
+
+La entidad Documento constituye el elemento central de la gestión documental. Cada documento se encuentra asociado con un tipo de documento, una carrera, una línea de investigación, una sublínea de investigación y el usuario relacionado con su registro en el sistema. Además de la información utilizada para identificarlo, el modelo contempla datos como título, autor, tutor, año de publicación, descripción, palabras clave, ruta del archivo, estado y la condición que determina si el documento puede ser descargado. Las relaciones con TipoDocumento, Carrera, LineaInvestigacion, SublineaInvestigacion y Usuario fueron configuradas con eliminación restringida, evitando que la eliminación de uno de estos registros provoque automáticamente la eliminación de los documentos relacionados.
+
+La clasificación académica se estructura mediante las entidades AreaConocimiento, Carrera, LineaInvestigacion y SublineaInvestigacion. Una carrera se relaciona con un área de conocimiento, mientras que una sublínea se relaciona con una línea de investigación. Además, la entidad CarreraLineaInvestigacion permite asociar carreras con líneas de investigación mediante una relación de muchos a muchos, incorporando información como el estado y la fecha de asignación. Esta organización permite representar la estructura académica utilizada para clasificar los documentos dentro del repositorio.
+
+La administración del acceso se estructura mediante las entidades Usuario, Rol y Permiso. La relación entre usuarios y roles se establece mediante UsuarioRol, mientras que RolPermiso relaciona los roles con los permisos disponibles. Ambas entidades utilizan claves primarias compuestas, permitiendo implementar relaciones de muchos a muchos. Este modelo permite asignar uno o más roles a un usuario y establecer las operaciones autorizadas para cada rol dentro del sistema.
+
+Asimismo, el modelo incorpora DocumentoVista, DocumentoDescarga y DocumentoFavorito para registrar la interacción de los usuarios con los documentos. Las dos primeras permiten registrar las visualizaciones y descargas efectuadas, junto con la fecha correspondiente. DocumentoFavorito, por su parte, permite relacionar un usuario con los documentos marcados como favoritos e incorpora una restricción única sobre la combinación de usuario y documento, evitando que un mismo documento sea registrado más de una vez como favorito por el mismo usuario.
+
+Para determinadas relaciones asociadas con vistas, descargas y favoritos se configuró eliminación en cascada. De esta manera, la eliminación del registro principal relacionado provoca la eliminación de los registros dependientes correspondientes. En contraste, las relaciones principales vinculadas con documentos, usuarios, roles, permisos y catálogos académicos utilizan restricciones de eliminación cuando es necesario conservar la integridad de las relaciones existentes.
+
+Finalmente, la estructura de la base de datos se gestiona mediante las migraciones de Entity Framework Core, permitiendo mantener correspondencia entre el modelo definido en la aplicación y el esquema utilizado para almacenar la información. La configuración también establece restricciones de longitud, campos obligatorios e índices únicos para determinados datos, como el correo y carnet de los usuarios, el nombre de los roles, el código de los permisos y la relación entre usuarios y documentos favoritos.
+
+Tabla 23
+Principales Entidades de la Base de Datos
+
+Entidad                         Función
+Documento                       Almacena la información descriptiva y de gestión de los documentos académicos.
+TipoDocumento                   Permite clasificar los documentos según su tipo.
+AreaConocimiento                Representa las áreas académicas utilizadas para organizar las carreras.
+Carrera                         Representa las carreras asociadas a un área de conocimiento.
+LineaInvestigacion              Representa las líneas de investigación utilizadas en la clasificación académica.
+SublineaInvestigacion           Representa las sublíneas asociadas a una línea de investigación.
+CarreraLineaInvestigacion       Relaciona las carreras con sus líneas de investigación correspondientes.
+Usuario                         Almacena la información de las cuentas de los usuarios.
+Rol                             Representa los roles utilizados para controlar las funciones disponibles.
+Permiso                         Define las operaciones autorizadas dentro del sistema.
+UsuarioRol                      Relaciona los usuarios con los roles asignados.
+RolPermiso                      Relaciona los roles con sus respectivos permisos.
+DocumentoVista                  Registra las visualizaciones realizadas sobre los documentos.
+DocumentoDescarga               Registra las descargas efectuadas sobre los documentos.
+DocumentoFavorito               Registra los documentos marcados como favoritos por cada usuario.
+
+La relación existente entre las entidades se presenta en la Figura 16. El modelo muestra a Documento como una de las entidades centrales de la solución, relacionada con la clasificación documental, la clasificación académica y el usuario responsable de su registro. De igual manera, las entidades asociativas permiten representar la asignación de roles y permisos, la relación entre carreras y líneas de investigación, y las diferentes interacciones de los usuarios con los documentos.

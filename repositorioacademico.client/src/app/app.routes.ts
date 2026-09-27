@@ -175,11 +175,58 @@ export const appRoutes: Routes = [
       },
       {
         path: 'usuarios',
+        pathMatch: 'full',
+        redirectTo: 'usuarios/estudiantes'
+      },
+      {
+        path: 'usuarios/estudiantes',
         component: UsersPageComponent,
         canActivate: [permissionGuard],
         data: {
-          title: 'Usuarios',
-          description: 'Crea usuarios y actualiza los roles asignados en la plataforma.',
+          title: 'Estudiantes',
+          description: 'Crea estudiantes y actualiza sus roles asignados.',
+          userRoleFlag: 'esEstudiante',
+          userCategorySingular: 'estudiante',
+          userCategoryPlural: 'estudiantes',
+          permission: 'USUARIO.GESTIONAR'
+        }
+      },
+      {
+        path: 'usuarios/docentes',
+        component: UsersPageComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Docentes',
+          description: 'Crea docentes y actualiza sus roles asignados.',
+          userRoleFlag: 'esDocente',
+          userCategorySingular: 'docente',
+          userCategoryPlural: 'docentes',
+          permission: 'USUARIO.GESTIONAR'
+        }
+      },
+      {
+        path: 'usuarios/administradores',
+        component: UsersPageComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Administradores',
+          description: 'Crea administradores y actualiza sus roles asignados.',
+          userRoleFlag: 'esAdministrador',
+          userCategorySingular: 'administrador',
+          userCategoryPlural: 'administradores',
+          permission: 'USUARIO.GESTIONAR'
+        }
+      },
+      {
+        path: 'usuarios/cargos-academicos',
+        component: UsersPageComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Cargos academicos',
+          description: 'Crea autoridades y cargos academicos, y actualiza sus roles asignados.',
+          userRoleFlag: 'esCargoAcademico',
+          userCategorySingular: 'cargo academico',
+          userCategoryPlural: 'cargos academicos',
           permission: 'USUARIO.GESTIONAR'
         }
       },

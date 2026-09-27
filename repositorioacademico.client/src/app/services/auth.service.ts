@@ -21,15 +21,16 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient) {}
 
-  login(request: LoginRequest): Observable<AuthResponse> {
+  login(request: LoginRequest, persist = true): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/login`, request)
-      .pipe(tap((response) => this.setSession(response)));
+      .pipe(tap((response) => this.setSession(response, persist)));
   }
 
   logout(): void {
     this.sessionState.set(null);
     localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
   }
 
   getToken(): string | null {
@@ -45,13 +46,17 @@ export class AuthService {
     return permissions.some((permission) => currentPermissions.has(permission));
   }
 
-  private setSession(session: AuthResponse): void {
+  private setSession(session: AuthResponse, persist: boolean): void {
     this.sessionState.set(session);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+
+    const targetStorage = persist ? localStorage : sessionStorage;
+    const staleStorage = persist ? sessionStorage : localStorage;
+    staleStorage.removeItem(STORAGE_KEY);
+    targetStorage.setItem(STORAGE_KEY, JSON.stringify(session));
   }
 
   private readStoredSession(): AuthResponse | null {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(STORAGE_KEY) ?? sessionStorage.getItem(STORAGE_KEY);
     if (!stored) {
       return null;
     }
@@ -61,12 +66,14 @@ export class AuthService {
       const expiration = new Date(session.expiraEn).getTime();
       if (Number.isNaN(expiration) || expiration <= Date.now()) {
         localStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(STORAGE_KEY);
         return null;
       }
 
       return session;
     } catch {
       localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(STORAGE_KEY);
       return null;
     }
   }

@@ -14,6 +14,14 @@ namespace RepositorioAcademico.Server.Contracts
         [StringLength(50, ErrorMessage = "El estado no puede exceder 50 caracteres.")]
         public string? Estado { get; set; }
 
+        public bool EsEstudiante { get; set; }
+
+        public bool EsDocente { get; set; }
+
+        public bool EsAdministrador { get; set; }
+
+        public bool EsCargoAcademico { get; set; }
+
         public List<int> PermisoIds { get; set; } = [];
     }
 }

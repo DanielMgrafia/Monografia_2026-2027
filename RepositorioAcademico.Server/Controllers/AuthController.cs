@@ -93,7 +93,11 @@ namespace RepositorioAcademico.Server.Controllers
                     Id = rol.Id,
                     Nombre = rol.Nombre,
                     Descripcion = rol.Descripcion,
-                    Estado = rol.Estado
+                    Estado = rol.Estado,
+                    EsEstudiante = rol.EsEstudiante,
+                    EsDocente = rol.EsDocente,
+                    EsAdministrador = rol.EsAdministrador,
+                    EsCargoAcademico = rol.EsCargoAcademico
                 }).ToList(),
                 Permisos = rolesActivos
                     .SelectMany(rol => rol.RolPermisos)

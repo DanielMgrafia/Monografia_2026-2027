@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RepositorioAcademico.Server.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using RepositorioAcademico.Server.Infrastructure.Data;
 namespace RepositorioAcademico.Server.Migrations
 {
     [DbContext(typeof(RepositorioDbContext))]
-    partial class RepositorioDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260927194109_RemoveDemoSeedLogins")]
+    partial class RemoveDemoSeedLogins
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -373,18 +376,6 @@ namespace RepositorioAcademico.Server.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<bool>("EsAdministrador")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("EsCargoAcademico")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("EsDocente")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("EsEstudiante")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Estado")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -407,10 +398,6 @@ namespace RepositorioAcademico.Server.Migrations
                         {
                             Id = 1,
                             Descripcion = "Acceso total al sistema",
-                            EsAdministrador = true,
-                            EsCargoAcademico = false,
-                            EsDocente = false,
-                            EsEstudiante = false,
                             Estado = "Activo",
                             Nombre = "Administrador"
                         },
@@ -418,10 +405,6 @@ namespace RepositorioAcademico.Server.Migrations
                         {
                             Id = 2,
                             Descripcion = "Puede ver repositorio y subir documentos",
-                            EsAdministrador = false,
-                            EsCargoAcademico = false,
-                            EsDocente = true,
-                            EsEstudiante = false,
                             Estado = "Activo",
                             Nombre = "Profesor"
                         },
@@ -429,10 +412,6 @@ namespace RepositorioAcademico.Server.Migrations
                         {
                             Id = 3,
                             Descripcion = "Solo consulta el repositorio",
-                            EsAdministrador = false,
-                            EsCargoAcademico = false,
-                            EsDocente = false,
-                            EsEstudiante = true,
                             Estado = "Activo",
                             Nombre = "Estudiante"
                         },
@@ -440,10 +419,6 @@ namespace RepositorioAcademico.Server.Migrations
                         {
                             Id = 4,
                             Descripcion = "Puede revisar y publicar documentos",
-                            EsAdministrador = false,
-                            EsCargoAcademico = true,
-                            EsDocente = false,
-                            EsEstudiante = false,
                             Estado = "Activo",
                             Nombre = "Decano"
                         },
@@ -451,10 +426,6 @@ namespace RepositorioAcademico.Server.Migrations
                         {
                             Id = 5,
                             Descripcion = "Puede revisar y publicar documentos",
-                            EsAdministrador = false,
-                            EsCargoAcademico = true,
-                            EsDocente = false,
-                            EsEstudiante = false,
                             Estado = "Activo",
                             Nombre = "Director"
                         });

@@ -14,22 +14,20 @@ import { AuthService } from '../../services/auth.service';
 export class LoginPageComponent {
   login = '';
   password = '';
+  remember = false;
+  showPassword = false;
   loading = false;
   error = '';
-
-  readonly demoAccounts = [
-    { label: 'Administrador', login: 'admin@universidad.edu', role: 'Acceso total' },
-    { label: 'Profesor', login: 'profesor@universidad.edu', role: 'Sube y consulta' },
-    { label: 'Estudiante', login: 'estudiante@universidad.edu', role: 'Consulta el repositorio' },
-    { label: 'Decano', login: 'decano@universidad.edu', role: 'Revisa y publica' }
-  ];
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  fillDemo(login: string): void {
-    this.login = login;
-    this.password = 'Acceso123*';
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  clearError(): void {
+    this.error = '';
   }
 
   submit(): void {
@@ -44,7 +42,7 @@ export class LoginPageComponent {
     this.authService.login({
       login: this.login.trim(),
       password: this.password
-    }).subscribe({
+    }, this.remember).subscribe({
       next: () => {
         this.loading = false;
         this.router.navigate(['/panel']);

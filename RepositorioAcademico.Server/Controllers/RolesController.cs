@@ -93,7 +93,11 @@ namespace RepositorioAcademico.Server.Controllers
             {
                 Nombre = nombre,
                 Descripcion = string.IsNullOrWhiteSpace(request.Descripcion) ? null : request.Descripcion.Trim(),
-                Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim()
+                Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim(),
+                EsEstudiante = request.EsEstudiante,
+                EsDocente = request.EsDocente,
+                EsAdministrador = request.EsAdministrador,
+                EsCargoAcademico = request.EsCargoAcademico
             };
 
             if (!EstadosPermitidos.Contains(rol.Estado, StringComparer.OrdinalIgnoreCase))
@@ -160,6 +164,10 @@ namespace RepositorioAcademico.Server.Controllers
             rol.Nombre = nombre;
             rol.Descripcion = string.IsNullOrWhiteSpace(request.Descripcion) ? null : request.Descripcion.Trim();
             rol.Estado = estado;
+            rol.EsEstudiante = request.EsEstudiante;
+            rol.EsDocente = request.EsDocente;
+            rol.EsAdministrador = request.EsAdministrador;
+            rol.EsCargoAcademico = request.EsCargoAcademico;
 
             await _context.SaveChangesAsync();
 
@@ -248,6 +256,10 @@ namespace RepositorioAcademico.Server.Controllers
                 Nombre = rol.Nombre,
                 Descripcion = rol.Descripcion,
                 Estado = rol.Estado,
+                EsEstudiante = rol.EsEstudiante,
+                EsDocente = rol.EsDocente,
+                EsAdministrador = rol.EsAdministrador,
+                EsCargoAcademico = rol.EsCargoAcademico,
                 Permisos = rol.RolPermisos
                     .Where(item => item.Estado == "Activo" && item.Permiso != null && item.Permiso.Estado == "Activo")
                     .OrderBy(item => item.Permiso!.Codigo)

@@ -26,6 +26,31 @@
         </select>
       </label>
 
+      <div class="flag-box">
+        <strong>Banderas</strong>
+        <div class="flag-grid">
+          <label class="flag-item">
+            <input type="checkbox" [(ngModel)]="nuevoRol.esEstudiante" name="nuevoRolEsEstudiante" />
+            <span>Estudiante</span>
+          </label>
+
+          <label class="flag-item">
+            <input type="checkbox" [(ngModel)]="nuevoRol.esDocente" name="nuevoRolEsDocente" />
+            <span>Docente</span>
+          </label>
+
+          <label class="flag-item">
+            <input type="checkbox" [(ngModel)]="nuevoRol.esAdministrador" name="nuevoRolEsAdministrador" />
+            <span>Administrador</span>
+          </label>
+
+          <label class="flag-item">
+            <input type="checkbox" [(ngModel)]="nuevoRol.esCargoAcademico" name="nuevoRolEsCargoAcademico" />
+            <span>Cargo academico</span>
+          </label>
+        </div>
+      </div>
+
       <button type="submit" class="primary-button" [disabled]="guardando">
         {{ guardando ? 'Guardando...' : 'Crear rol' }}
       </button>
@@ -56,6 +81,11 @@
           </div>
 
           <span class="state" [ngClass]="getEstadoClass(rol.estado)">{{ rol.estado }}</span>
+        </div>
+
+        <div class="flag-badges">
+          <span class="flag-badge" *ngFor="let bandera of getBanderasRol(rol)">{{ bandera }}</span>
+          <span class="flag-badge muted" *ngIf="getBanderasRol(rol).length === 0">Sin bandera</span>
         </div>
 
         <div class="role-footer">
@@ -110,6 +140,31 @@
           <option value="Inactivo">Inactivo</option>
         </select>
       </label>
+
+      <div class="flag-box">
+        <strong>Banderas</strong>
+        <div class="flag-grid">
+          <label class="flag-item">
+            <input type="checkbox" [(ngModel)]="editModel.esEstudiante" name="editRolEsEstudiante" />
+            <span>Estudiante</span>
+          </label>
+
+          <label class="flag-item">
+            <input type="checkbox" [(ngModel)]="editModel.esDocente" name="editRolEsDocente" />
+            <span>Docente</span>
+          </label>
+
+          <label class="flag-item">
+            <input type="checkbox" [(ngModel)]="editModel.esAdministrador" name="editRolEsAdministrador" />
+            <span>Administrador</span>
+          </label>
+
+          <label class="flag-item">
+            <input type="checkbox" [(ngModel)]="editModel.esCargoAcademico" name="editRolEsCargoAcademico" />
+            <span>Cargo academico</span>
+          </label>
+        </div>
+      </div>
 
       <div class="editor-actions">
         <button type="button" class="secondary-button" (click)="cancelarEdicion()" [disabled]="procesandoRolId === rol.id">

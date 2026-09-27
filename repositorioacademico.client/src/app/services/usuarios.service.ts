@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Usuario } from '../models/usuario';
+import { RolFlag } from '../models/rol';
 
 export interface CrearUsuarioPayload {
   nombres: string;
@@ -25,8 +26,9 @@ export class UsuariosService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getUsuarios(): Observable<Usuario[]> {
-    return this.http.get<Usuario[]>(this.apiUrl);
+  getUsuarios(banderaRol?: RolFlag): Observable<Usuario[]> {
+    const params = banderaRol ? { banderaRol } : undefined;
+    return this.http.get<Usuario[]>(this.apiUrl, { params });
   }
 
   crearUsuario(payload: CrearUsuarioPayload): Observable<Usuario> {

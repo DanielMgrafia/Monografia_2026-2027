@@ -7,6 +7,10 @@ export interface CrearRolPayload {
   nombre: string;
   descripcion?: string;
   estado?: string;
+  esEstudiante: boolean;
+  esDocente: boolean;
+  esAdministrador: boolean;
+  esCargoAcademico: boolean;
   permisoIds: number[];
 }
 
@@ -14,6 +18,10 @@ export interface ActualizarRolPayload {
   nombre: string;
   descripcion?: string;
   estado?: string;
+  esEstudiante: boolean;
+  esDocente: boolean;
+  esAdministrador: boolean;
+  esCargoAcademico: boolean;
 }
 
 export interface ActualizarPermisosRolPayload {

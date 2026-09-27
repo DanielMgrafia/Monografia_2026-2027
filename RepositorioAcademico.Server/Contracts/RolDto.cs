@@ -10,6 +10,14 @@ namespace RepositorioAcademico.Server.Contracts
 
         public string Estado { get; set; } = string.Empty;
 
+        public bool EsEstudiante { get; set; }
+
+        public bool EsDocente { get; set; }
+
+        public bool EsAdministrador { get; set; }
+
+        public bool EsCargoAcademico { get; set; }
+
         public List<PermisoDto> Permisos { get; set; } = [];
     }
 }

@@ -40,6 +40,7 @@ export class DashboardLayoutComponent implements OnInit {
   readonly isMobileViewport = signal(this.readIsMobileViewport());
   readonly mobileMenuOpen = signal(false);
   readonly sidebarCollapsed = signal(this.readSidebarState());
+  readonly usersMenuOpen = signal(true);
   readonly catalogMenuOpen = signal(true);
   readonly accountMenuOpen = signal(false);
   readonly profileDetailsOpen = signal(false);
@@ -66,8 +67,24 @@ export class DashboardLayoutComponent implements OnInit {
       { label: 'Repositorio', route: '/repositorio', permission: 'REPOSITORIO.VER', icon: 'RP' },
       { label: 'Mi historial', route: '/historial-biblioteca', permission: 'REPOSITORIO.VER', icon: 'HB' },
       { label: 'Subir documentos', route: '/subir-documento', permission: 'DOCUMENTO.SUBIR', icon: 'UP' },
-      { label: 'Usuarios', route: '/usuarios', permission: 'USUARIO.GESTIONAR', icon: 'US' },
       { label: 'Roles y permisos', route: '/roles', permission: 'ROL.GESTIONAR', icon: 'RL' }
+    ];
+
+    return items.filter((item) => {
+      if (!item.permission) {
+        return true;
+      }
+
+      return this.authService.hasPermission(item.permission);
+    });
+  });
+
+  readonly userItems = computed<MenuItem[]>(() => {
+    const items: MenuItem[] = [
+      { label: 'Estudiantes', route: '/usuarios/estudiantes', permission: 'USUARIO.GESTIONAR', icon: 'ES' },
+      { label: 'Docentes', route: '/usuarios/docentes', permission: 'USUARIO.GESTIONAR', icon: 'DC' },
+      { label: 'Administradores', route: '/usuarios/administradores', permission: 'USUARIO.GESTIONAR', icon: 'AD' },
+      { label: 'Cargos academicos', route: '/usuarios/cargos-academicos', permission: 'USUARIO.GESTIONAR', icon: 'CA' }
     ];
 
     return items.filter((item) => {
@@ -153,9 +170,19 @@ export class DashboardLayoutComponent implements OnInit {
     const collapsed = !this.sidebarCollapsed();
     this.sidebarCollapsed.set(collapsed);
     if (collapsed) {
+      this.usersMenuOpen.set(false);
       this.catalogMenuOpen.set(false);
     }
     localStorage.setItem(DashboardLayoutComponent.SIDEBAR_STORAGE_KEY, String(collapsed));
+  }
+
+  toggleUsersMenu(): void {
+    if (!this.isMobileViewport() && this.sidebarCollapsed()) {
+      this.sidebarCollapsed.set(false);
+      localStorage.setItem(DashboardLayoutComponent.SIDEBAR_STORAGE_KEY, 'false');
+    }
+
+    this.usersMenuOpen.set(!this.usersMenuOpen());
   }
 
   toggleCatalogMenu(): void {
@@ -190,6 +217,10 @@ export class DashboardLayoutComponent implements OnInit {
       this.router.url.startsWith('/carreras') ||
       this.router.url.startsWith('/carrera-lineas-investigacion') ||
       this.router.url.startsWith('/catalogo-roles');
+  }
+
+  isUsersRouteActive(): boolean {
+    return this.router.url.startsWith('/usuarios');
   }
 
   handleNavigationSelection(): void {

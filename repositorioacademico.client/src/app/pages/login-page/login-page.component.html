@@ -1,58 +1,120 @@
 <main class="login-page">
-  <section class="login-hero">
-    <p class="eyebrow">Repositorio academico</p>
-    <h1>Acceso por roles y permisos</h1>
-    <p class="hero-copy">
-      En Angular, el dashboard se suele manejar con un componente layout que contiene
-      el menu lateral, la barra superior y un <code>router-outlet</code> para cargar
-      las pantallas segun el rol del usuario.
-    </p>
+  <section class="login-shell">
+    <aside class="brand-panel" aria-label="Presentacion del repositorio">
+      <div class="brand-content">
+        <div class="brand-logo">
+          <div class="logo-icon">RA</div>
+          <div>
+            <h1>Repositorio</h1>
+            <span>Academico</span>
+          </div>
+        </div>
 
-    <div class="demo-card">
-      <h2>Cuentas de prueba</h2>
-      <p>Usa cualquiera de estas cuentas con la contrasena <strong>Acceso123*</strong>.</p>
+        <div class="brand-text">
+          <span class="tag">Acceso institucional</span>
+          <h2>Gestion academica segura y centralizada.</h2>
+          <p>
+            Consulta, administra y preserva documentos academicos desde una
+            plataforma preparada para estudiantes, docentes y administradores.
+          </p>
+        </div>
 
-      <div class="demo-list">
-        <button *ngFor="let account of demoAccounts"
-                type="button"
-                class="demo-item"
-                (click)="fillDemo(account.login)">
-          <strong>{{ account.label }}</strong>
-          <span>{{ account.login }}</span>
-          <small>{{ account.role }}</small>
-        </button>
+        <div class="brand-features" aria-label="Funciones principales">
+          <div class="feature">
+            <span>01</span>
+            <p>Revision y autorizacion documental</p>
+          </div>
+
+          <div class="feature">
+            <span>02</span>
+            <p>Catalogos academicos administrables</p>
+          </div>
+
+          <div class="feature">
+            <span>03</span>
+            <p>Acceso protegido por credenciales institucionales</p>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </aside>
 
-  <section class="login-panel">
-    <div class="panel-header">
-      <h2>Iniciar sesion</h2>
-      <p>Ingresa con correo institucional o numero de carnet.</p>
-    </div>
+    <section class="form-panel">
+      <div class="mobile-logo">
+        <div class="logo-icon">RA</div>
+        <div>
+          <h1>Repositorio</h1>
+          <span>Academico</span>
+        </div>
+      </div>
 
-    <form class="login-form" (ngSubmit)="submit()">
-      <label>
-        Correo o carnet
-        <input type="text"
-               [(ngModel)]="login"
-               name="login"
-               placeholder="Ej. admin@universidad.edu o ADMIN-001" />
-      </label>
+      <div class="form-card">
+        <div class="form-header">
+          <span class="small-label">Bienvenido nuevamente</span>
+          <h2>Iniciar sesion</h2>
+          <p>Ingresa con tu cuenta institucional para acceder al repositorio.</p>
+        </div>
 
-      <label>
-        Contrasena
-        <input type="password"
-               [(ngModel)]="password"
-               name="password"
-               placeholder="Ingresa tu contrasena" />
-      </label>
+        <form class="login-form" (ngSubmit)="submit()" novalidate>
+          <div class="form-group">
+            <label for="login">Correo institucional o carnet</label>
+            <div class="input-box">
+              <span class="input-icon">@</span>
+              <input type="text"
+                     id="login"
+                     [(ngModel)]="login"
+                     name="login"
+                     autocomplete="username"
+                     placeholder="admin@universidad.edu o ADMIN-001"
+                     (input)="clearError()" />
+            </div>
+          </div>
 
-      <button type="submit" [disabled]="loading">
-        {{ loading ? 'Ingresando...' : 'Entrar al dashboard' }}
-      </button>
+          <div class="form-group">
+            <label for="password">Contrasena</label>
+            <div class="input-box">
+              <span class="input-icon">PW</span>
+              <input [type]="showPassword ? 'text' : 'password'"
+                     id="password"
+                     [(ngModel)]="password"
+                     name="password"
+                     autocomplete="current-password"
+                     placeholder="Ingresa tu contrasena"
+                     (input)="clearError()" />
+              <button type="button" class="toggle-password" (click)="togglePassword()">
+                {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+              </button>
+            </div>
+          </div>
 
-      <p *ngIf="error" class="error">{{ error }}</p>
-    </form>
+          <div class="form-options">
+            <label class="remember">
+              <input type="checkbox" [(ngModel)]="remember" name="remember" />
+              <span>Recordarme</span>
+            </label>
+
+            <span class="access-note">Acceso seguro</span>
+          </div>
+
+          <button type="submit" class="login-button" [disabled]="loading">
+            {{ loading ? 'Ingresando...' : 'Ingresar al repositorio' }}
+          </button>
+
+          <p *ngIf="error" class="form-message error">{{ error }}</p>
+        </form>
+
+        <div class="security-note">
+          <span>!</span>
+          <p>
+            El registro de usuarios esta deshabilitado. Las cuentas deben ser
+            creadas y autorizadas por administracion.
+          </p>
+        </div>
+      </div>
+
+      <footer class="login-footer">
+        <span>2026 Repositorio Academico</span>
+        <span>Credenciales institucionales</span>
+      </footer>
+    </section>
   </section>
 </main>

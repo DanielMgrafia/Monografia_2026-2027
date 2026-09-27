@@ -45,7 +45,7 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             var fechaSemilla = new DateTime(2026, 4, 25, 4, 30, 0, DateTimeKind.Utc);
-            const string passwordHashSemilla = "100000.pXNersvxrQkQJwCgdjOmBw==.R3lKdXVfKoq45g4VJKg0ZswpiAHqMqrq7VqFvBKyvyA=";
+            const string adminPasswordHashSemilla = "100000.gGq3KckqT8hrhal5RTb/Zw==.mxgLFbJBzqIMxzFneDGS/QvFzB0PIhKHunf+6rnQ4dU=";
 
             modelBuilder.Entity<TipoDocumento>(entity =>
             {
@@ -350,11 +350,11 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
             );
 
             modelBuilder.Entity<Rol>().HasData(
-                new Rol { Id = 1, Nombre = "Administrador", Descripcion = "Acceso total al sistema", Estado = "Activo" },
-                new Rol { Id = 2, Nombre = "Profesor", Descripcion = "Puede ver repositorio y subir documentos", Estado = "Activo" },
-                new Rol { Id = 3, Nombre = "Estudiante", Descripcion = "Solo consulta el repositorio", Estado = "Activo" },
-                new Rol { Id = 4, Nombre = "Decano", Descripcion = "Puede revisar y publicar documentos", Estado = "Activo" },
-                new Rol { Id = 5, Nombre = "Director", Descripcion = "Puede revisar y publicar documentos", Estado = "Activo" }
+                new Rol { Id = 1, Nombre = "Administrador", Descripcion = "Acceso total al sistema", Estado = "Activo", EsAdministrador = true },
+                new Rol { Id = 2, Nombre = "Profesor", Descripcion = "Puede ver repositorio y subir documentos", Estado = "Activo", EsDocente = true },
+                new Rol { Id = 3, Nombre = "Estudiante", Descripcion = "Solo consulta el repositorio", Estado = "Activo", EsEstudiante = true },
+                new Rol { Id = 4, Nombre = "Decano", Descripcion = "Puede revisar y publicar documentos", Estado = "Activo", EsCargoAcademico = true },
+                new Rol { Id = 5, Nombre = "Director", Descripcion = "Puede revisar y publicar documentos", Estado = "Activo", EsCargoAcademico = true }
             );
 
 
@@ -396,50 +396,14 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                     Apellidos = "Sistema",
                     Correo = "admin@universidad.edu",
                     Carnet = "ADMIN-001",
-                    PasswordHash = passwordHashSemilla,
-                    Estado = "Activo",
-                    FechaCreacion = fechaSemilla
-                },
-                new Usuario
-                {
-                    Id = 2,
-                    Nombres = "Paula",
-                    Apellidos = "Docente",
-                    Correo = "profesor@universidad.edu",
-                    Carnet = "PROF-001",
-                    PasswordHash = passwordHashSemilla,
-                    Estado = "Activo",
-                    FechaCreacion = fechaSemilla
-                },
-                new Usuario
-                {
-                    Id = 3,
-                    Nombres = "Luis",
-                    Apellidos = "Estudiante",
-                    Correo = "estudiante@universidad.edu",
-                    Carnet = "EST-001",
-                    PasswordHash = passwordHashSemilla,
-                    Estado = "Activo",
-                    FechaCreacion = fechaSemilla
-                },
-                new Usuario
-                {
-                    Id = 4,
-                    Nombres = "Marta",
-                    Apellidos = "Decano",
-                    Correo = "decano@universidad.edu",
-                    Carnet = "DEC-001",
-                    PasswordHash = passwordHashSemilla,
+                    PasswordHash = adminPasswordHashSemilla,
                     Estado = "Activo",
                     FechaCreacion = fechaSemilla
                 }
             );
 
             modelBuilder.Entity<UsuarioRol>().HasData(
-                new UsuarioRol { UsuarioId = 1, RolId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
-                new UsuarioRol { UsuarioId = 2, RolId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },
-                new UsuarioRol { UsuarioId = 3, RolId = 3, Estado = "Activo", FechaAsignacion = fechaSemilla },
-                new UsuarioRol { UsuarioId = 4, RolId = 4, Estado = "Activo", FechaAsignacion = fechaSemilla }
+                new UsuarioRol { UsuarioId = 1, RolId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla }
             );
         }
     }

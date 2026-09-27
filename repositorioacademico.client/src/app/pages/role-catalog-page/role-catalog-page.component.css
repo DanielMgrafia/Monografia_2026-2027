@@ -79,6 +79,40 @@
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
+.flag-box {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #e4eaf3;
+  border-radius: 14px;
+  background: #f7f9fc;
+}
+
+.flag-box strong {
+  color: #061b4e;
+  font-size: 13px;
+}
+
+.flag-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.flag-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #263b66;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.flag-item input {
+  width: 16px;
+  height: 16px;
+  accent-color: #083b91;
+}
+
 .primary-button,
 .secondary-button,
 .danger-button {
@@ -157,6 +191,30 @@
   display: block;
   margin-bottom: 4px;
   color: #061b4e;
+}
+
+.flag-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.flag-badge {
+  display: inline-grid;
+  min-height: 28px;
+  place-items: center;
+  border-radius: 20px;
+  padding: 0 12px;
+  background: #eef5ff;
+  color: #0a54db;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.flag-badge.muted {
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .state {

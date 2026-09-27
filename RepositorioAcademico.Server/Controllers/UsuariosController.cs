@@ -23,7 +23,7 @@ namespace RepositorioAcademico.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UsuarioDto>>> GetUsuarios(bool incluirInactivos = false)
+        public async Task<ActionResult<IEnumerable<UsuarioDto>>> GetUsuarios(bool incluirInactivos = false, string? banderaRol = null)
         {
             var query = _context.Usuarios
                 .AsNoTracking()
@@ -36,6 +36,43 @@ namespace RepositorioAcademico.Server.Controllers
             if (!incluirInactivos)
             {
                 query = query.Where(item => item.Estado == "Activo");
+            }
+
+            if (!string.IsNullOrWhiteSpace(banderaRol))
+            {
+                switch (banderaRol.Trim())
+                {
+                    case "esEstudiante":
+                        query = query.Where(item => item.UsuarioRoles.Any(usuarioRol =>
+                            usuarioRol.Estado == "Activo" &&
+                            usuarioRol.Rol != null &&
+                            usuarioRol.Rol.Estado == "Activo" &&
+                            usuarioRol.Rol.EsEstudiante));
+                        break;
+                    case "esDocente":
+                        query = query.Where(item => item.UsuarioRoles.Any(usuarioRol =>
+                            usuarioRol.Estado == "Activo" &&
+                            usuarioRol.Rol != null &&
+                            usuarioRol.Rol.Estado == "Activo" &&
+                            usuarioRol.Rol.EsDocente));
+                        break;
+                    case "esAdministrador":
+                        query = query.Where(item => item.UsuarioRoles.Any(usuarioRol =>
+                            usuarioRol.Estado == "Activo" &&
+                            usuarioRol.Rol != null &&
+                            usuarioRol.Rol.Estado == "Activo" &&
+                            usuarioRol.Rol.EsAdministrador));
+                        break;
+                    case "esCargoAcademico":
+                        query = query.Where(item => item.UsuarioRoles.Any(usuarioRol =>
+                            usuarioRol.Estado == "Activo" &&
+                            usuarioRol.Rol != null &&
+                            usuarioRol.Rol.Estado == "Activo" &&
+                            usuarioRol.Rol.EsCargoAcademico));
+                        break;
+                    default:
+                        return BadRequest("La bandera de rol solicitada no es valida.");
+                }
             }
 
             var usuarios = await query
@@ -210,7 +247,11 @@ namespace RepositorioAcademico.Server.Controllers
                     Id = rol.Id,
                     Nombre = rol.Nombre,
                     Descripcion = rol.Descripcion,
-                    Estado = rol.Estado
+                    Estado = rol.Estado,
+                    EsEstudiante = rol.EsEstudiante,
+                    EsDocente = rol.EsDocente,
+                    EsAdministrador = rol.EsAdministrador,
+                    EsCargoAcademico = rol.EsCargoAcademico
                 }).ToList(),
                 Permisos = rolesActivos
                     .SelectMany(rol => rol.RolPermisos)
