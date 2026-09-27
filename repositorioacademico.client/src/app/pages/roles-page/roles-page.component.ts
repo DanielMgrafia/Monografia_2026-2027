@@ -22,6 +22,9 @@ export class RolesPageComponent implements OnInit {
   actualizandoRolId: number | null = null;
   mensaje = '';
   error = '';
+  modalError = '';
+  rolPermisosModal: Rol | null = null;
+  permisosModalSeleccionados: number[] = [];
 
   readonly permisosPorRol: Record<number, number[]> = {};
 
@@ -64,17 +67,10 @@ export class RolesPageComponent implements OnInit {
     });
   }
 
-  togglePermisoRol(rolId: number, permisoId: number, checked: boolean): void {
-    const actuales = this.permisosPorRol[rolId] ?? [];
-    this.permisosPorRol[rolId] = checked
-      ? [...new Set([...actuales, permisoId])]
-      : actuales.filter((item) => item !== permisoId);
-  }
-
   actualizarPermisos(rol: Rol): void {
-    const permisoIds = this.permisosPorRol[rol.id] ?? [];
+    const permisoIds = this.permisosModalSeleccionados;
     if (permisoIds.length === 0) {
-      this.error = 'Cada rol debe conservar al menos un permiso.';
+      this.modalError = 'Cada rol debe conservar al menos un permiso.';
       return;
     }
 
@@ -87,16 +83,41 @@ export class RolesPageComponent implements OnInit {
         this.roles = this.roles.map((item) => item.id === actualizado.id ? actualizado : item);
         this.permisosPorRol[rol.id] = actualizado.permisos.map((permiso) => permiso.id);
         this.actualizandoRolId = null;
+        this.rolPermisosModal = null;
+        this.permisosModalSeleccionados = [];
         this.mensaje = `Permisos actualizados para el rol ${actualizado.nombre}.`;
       },
       error: (response) => {
         this.actualizandoRolId = null;
-        this.error = response.error || 'No se pudieron actualizar los permisos.';
+        this.modalError = response.error || 'No se pudieron actualizar los permisos.';
       }
     });
   }
 
-  hasPermissionSelected(rolId: number, permisoId: number): boolean {
-    return (this.permisosPorRol[rolId] ?? []).includes(permisoId);
+  abrirModalPermisos(rol: Rol): void {
+    this.error = '';
+    this.modalError = '';
+    this.rolPermisosModal = rol;
+    this.permisosModalSeleccionados = [...(this.permisosPorRol[rol.id] ?? rol.permisos.map((permiso) => permiso.id))];
+  }
+
+  cerrarModalPermisos(): void {
+    if (this.actualizandoRolId !== null) {
+      return;
+    }
+
+    this.rolPermisosModal = null;
+    this.permisosModalSeleccionados = [];
+    this.modalError = '';
+  }
+
+  hasModalPermissionSelected(permisoId: number): boolean {
+    return this.permisosModalSeleccionados.includes(permisoId);
+  }
+
+  togglePermisoModal(permisoId: number, checked: boolean): void {
+    this.permisosModalSeleccionados = checked
+      ? [...new Set([...this.permisosModalSeleccionados, permisoId])]
+      : this.permisosModalSeleccionados.filter((item) => item !== permisoId);
   }
 }

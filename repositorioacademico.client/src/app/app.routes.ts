@@ -11,6 +11,7 @@ import { CrearSublineaInvestigacionComponent } from './components/crear-sublinea
 import { CrearTipoDocumentoComponent } from './components/crear-tipo-documento/crear-tipo-documento.component';
 import { ListaDocumentosComponent } from './components/lista-documentos/lista-documentos.component';
 import { SubirDocumentoComponent } from './components/subir-documento/subir-documento.component';
+import { ChangePasswordPageComponent } from './pages/change-password-page/change-password-page.component';
 import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.component';
 import { DocumentViewerPageComponent } from './pages/document-viewer-page/document-viewer-page.component';
 import { EditDocumentsPageComponent } from './pages/edit-documents-page/edit-documents-page.component';
@@ -26,6 +27,14 @@ export const appRoutes: Routes = [
     path: 'login',
     component: LoginPageComponent,
     canActivate: [guestGuard]
+  },
+  {
+    path: 'cambiar-password',
+    component: ChangePasswordPageComponent,
+    canActivate: [authGuard],
+    data: {
+      allowPasswordChange: true
+    }
   },
   {
     path: 'visor-documento/:id',

@@ -28,31 +28,60 @@
           <span class="badge" *ngFor="let permiso of rol.permisos">{{ permiso.codigo }}</span>
         </div>
 
-        <div class="selection-box">
-          <strong>Actualizar permisos</strong>
-          <div class="check-grid">
-            <label class="check-item" *ngFor="let permiso of permisos">
-              <input type="checkbox"
-                     [checked]="hasPermissionSelected(rol.id, permiso.id)"
-                     (change)="togglePermisoRol(rol.id, permiso.id, $any($event.target).checked)" />
-              <span>{{ permiso.codigo }}</span>
-            </label>
-          </div>
-        </div>
-
         <div class="role-footer">
           <small>{{ rol.permisos.length }} permisos activos</small>
           <button type="button"
                   class="primary-button"
                   [disabled]="actualizandoRolId === rol.id"
-                  (click)="actualizarPermisos(rol)">
-            {{ actualizandoRolId === rol.id ? 'Guardando...' : 'Guardar permisos' }}
+                  (click)="abrirModalPermisos(rol)">
+            {{ actualizandoRolId === rol.id ? 'Guardando...' : 'Definir permisos' }}
           </button>
         </div>
       </div>
     </div>
   </article>
 </section>
+
+<div class="modal-backdrop" *ngIf="rolPermisosModal as rol" (click)="cerrarModalPermisos()">
+  <section class="permissions-modal" role="dialog" aria-modal="true" aria-labelledby="permissionsModalTitle" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <span class="modal-kicker">Roles y permisos</span>
+        <h3 id="permissionsModalTitle">Definir permisos</h3>
+        <p>{{ rol.nombre }} · {{ rol.descripcion || 'Sin descripcion adicional' }}</p>
+      </div>
+
+      <button type="button" class="icon-button" aria-label="Cerrar" (click)="cerrarModalPermisos()">×</button>
+    </div>
+
+    <div class="selection-box modal-selection">
+      <strong>Permisos disponibles</strong>
+      <div class="check-grid">
+        <label class="check-item" *ngFor="let permiso of permisos">
+          <input type="checkbox"
+                 [checked]="hasModalPermissionSelected(permiso.id)"
+                 (change)="togglePermisoModal(permiso.id, $any($event.target).checked)" />
+          <span>{{ permiso.codigo }}</span>
+        </label>
+      </div>
+    </div>
+
+    <p *ngIf="modalError" class="message error modal-error">{{ modalError }}</p>
+
+    <div class="modal-footer">
+      <small>{{ permisosModalSeleccionados.length }} permisos seleccionados</small>
+      <div class="modal-actions">
+        <button type="button" class="secondary-button" (click)="cerrarModalPermisos()">Cancelar</button>
+        <button type="button"
+                class="primary-button"
+                [disabled]="actualizandoRolId === rol.id"
+                (click)="actualizarPermisos(rol)">
+          {{ actualizandoRolId === rol.id ? 'Guardando...' : 'Guardar permisos' }}
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
 
 <ng-template #emptyState>
   <div class="empty-state">

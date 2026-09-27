@@ -14,6 +14,12 @@ namespace RepositorioAcademico.Server.Contracts
 
         public string Estado { get; set; } = string.Empty;
 
+        public bool DebeCambiarPassword { get; set; }
+
+        public DateTime? FechaCambioPassword { get; set; }
+
+        public DateTime? PasswordTemporalExpiraEn { get; set; }
+
         public DateTime FechaCreacion { get; set; }
 
         public List<RolResumenDto> Roles { get; set; } = [];

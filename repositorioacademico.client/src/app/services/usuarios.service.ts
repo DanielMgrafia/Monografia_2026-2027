@@ -18,6 +18,12 @@ export interface ActualizarRolesUsuarioPayload {
   rolIds: number[];
 }
 
+export interface RestablecerPasswordResponse {
+  passwordTemporal: string;
+  expiraEn: string;
+  usuario: Usuario;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,5 +43,9 @@ export class UsuariosService {
 
   actualizarRoles(usuarioId: number, payload: ActualizarRolesUsuarioPayload): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.apiUrl}/${usuarioId}/roles`, payload);
+  }
+
+  restablecerPassword(usuarioId: number): Observable<RestablecerPasswordResponse> {
+    return this.http.post<RestablecerPasswordResponse>(`${this.apiUrl}/${usuarioId}/restablecer-password`, {});
   }
 }

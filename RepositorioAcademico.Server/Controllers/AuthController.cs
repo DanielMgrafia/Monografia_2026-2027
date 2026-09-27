@@ -1,3 +1,6 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RepositorioAcademico.Server.Contracts;
@@ -58,6 +61,88 @@ namespace RepositorioAcademico.Server.Controllers
                 return Unauthorized("Credenciales invalidas.");
             }
 
+            if (usuario.DebeCambiarPassword &&
+                usuario.PasswordTemporalExpiraEn.HasValue &&
+                usuario.PasswordTemporalExpiraEn.Value <= DateTime.UtcNow)
+            {
+                return Unauthorized("La contrasena temporal expiro. Solicita un nuevo restablecimiento.");
+            }
+
+            return CrearRespuestaAutenticacion(usuario);
+        }
+
+        [Authorize]
+        [HttpPost("cambiar-password")]
+        public async Task<ActionResult<AuthResponseDto>> CambiarPassword([FromBody] CambiarPasswordRequest request)
+        {
+            var usuarioIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+            if (!int.TryParse(usuarioIdClaim, out var usuarioId))
+            {
+                return Unauthorized("No se pudo identificar al usuario autenticado.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.PasswordActual) ||
+                string.IsNullOrWhiteSpace(request.NuevaPassword) ||
+                string.IsNullOrWhiteSpace(request.ConfirmarPassword))
+            {
+                return BadRequest("Debes completar todos los campos.");
+            }
+
+            if (request.NuevaPassword != request.ConfirmarPassword)
+            {
+                return BadRequest("La confirmacion de la contrasena no coincide.");
+            }
+
+            if (request.NuevaPassword.Length < 8)
+            {
+                return BadRequest("La nueva contrasena debe tener al menos 8 caracteres.");
+            }
+
+            var usuario = await _context.Usuarios
+                .Include(item => item.UsuarioRoles)
+                .ThenInclude(item => item.Rol)
+                .ThenInclude(item => item!.RolPermisos)
+                .ThenInclude(item => item.Permiso)
+                .FirstOrDefaultAsync(item => item.Id == usuarioId);
+
+            if (usuario == null || usuario.Estado != "Activo")
+            {
+                return Unauthorized("El usuario no esta disponible.");
+            }
+
+            if (usuario.DebeCambiarPassword &&
+                usuario.PasswordTemporalExpiraEn.HasValue &&
+                usuario.PasswordTemporalExpiraEn.Value <= DateTime.UtcNow)
+            {
+                return BadRequest("La contrasena temporal expiro. Solicita un nuevo restablecimiento.");
+            }
+
+            var passwordActualValida = _passwordService.VerifyPassword(request.PasswordActual, usuario.PasswordHash);
+            if (!passwordActualValida)
+            {
+                return BadRequest("La contrasena actual no es correcta.");
+            }
+
+            var nuevaPasswordRepetida = _passwordService.VerifyPassword(request.NuevaPassword, usuario.PasswordHash);
+            if (nuevaPasswordRepetida)
+            {
+                return BadRequest("La nueva contrasena debe ser diferente a la actual.");
+            }
+
+            usuario.PasswordHash = _passwordService.HashPassword(request.NuevaPassword);
+            usuario.DebeCambiarPassword = false;
+            usuario.PasswordTemporalExpiraEn = null;
+            usuario.FechaCambioPassword = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return CrearRespuestaAutenticacion(usuario);
+        }
+
+        private AuthResponseDto CrearRespuestaAutenticacion(Usuario usuario)
+        {
             var usuarioDto = MapearUsuario(usuario);
             var roles = usuarioDto.Roles.Select(item => item.Nombre);
             var permisos = usuarioDto.Permisos;
@@ -87,6 +172,9 @@ namespace RepositorioAcademico.Server.Controllers
                 Correo = usuario.Correo,
                 Carnet = usuario.Carnet,
                 Estado = usuario.Estado,
+                DebeCambiarPassword = usuario.DebeCambiarPassword,
+                FechaCambioPassword = usuario.FechaCambioPassword,
+                PasswordTemporalExpiraEn = usuario.PasswordTemporalExpiraEn,
                 FechaCreacion = usuario.FechaCreacion,
                 Roles = rolesActivos.Select(rol => new RolResumenDto
                 {

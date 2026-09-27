@@ -17,6 +17,10 @@ export const permissionGuard: CanActivateFn = (route) => {
   const router = inject(Router);
   const requiredPermissions = extractPermissions(route);
 
+  if (authService.mustChangePassword()) {
+    return router.createUrlTree(['/cambiar-password']);
+  }
+
   if (requiredPermissions.length === 0) {
     return true;
   }

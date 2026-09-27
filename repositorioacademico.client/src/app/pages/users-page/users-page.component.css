@@ -192,6 +192,18 @@
   color: #64748b;
 }
 
+.badge.warning {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.user-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -270,6 +282,37 @@
   margin: 0 0 14px;
 }
 
+.temporary-password-box {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid #d8e0ec;
+  border-radius: 16px;
+  background: #f7f9fc;
+  margin-bottom: 14px;
+}
+
+.temporary-password-box span,
+.temporary-password-box small {
+  color: #52627e;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.temporary-password-box strong {
+  color: #061b4e;
+  font-size: 24px;
+  letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
+}
+
+.modal-note {
+  color: #52627e;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
 .modal-footer {
   justify-content: space-between;
   align-items: center;
@@ -310,6 +353,7 @@
   .card-header,
   .user-header,
   .user-footer,
+  .user-actions,
   .modal-footer,
   .modal-actions {
     flex-direction: column;

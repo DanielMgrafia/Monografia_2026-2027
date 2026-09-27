@@ -254,6 +254,9 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                     .HasMaxLength(500)
                     .IsRequired();
 
+                entity.Property(item => item.DebeCambiarPassword)
+                    .HasDefaultValue(false);
+
                 entity.Property(item => item.Estado)
                     .HasMaxLength(50)
                     .IsRequired();

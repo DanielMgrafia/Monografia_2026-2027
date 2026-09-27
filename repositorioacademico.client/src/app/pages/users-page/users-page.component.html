@@ -82,16 +82,25 @@
         <div class="role-badges">
           <span class="badge" *ngFor="let rol of usuario.roles">{{ rol.nombre }}</span>
           <span class="badge muted" *ngIf="usuario.roles.length === 0">Sin roles</span>
+          <span class="badge warning" *ngIf="usuario.debeCambiarPassword">Cambio de contrasena pendiente</span>
         </div>
 
         <div class="user-footer">
           <small>{{ usuario.permisos.length }} permisos efectivos</small>
-          <button type="button"
-                  class="primary-button"
-                  [disabled]="actualizandoUsuarioId === usuario.id"
-                  (click)="abrirModalRoles(usuario)">
-            {{ actualizandoUsuarioId === usuario.id ? 'Guardando...' : 'Definir rol' }}
-          </button>
+          <div class="user-actions">
+            <button type="button"
+                    class="secondary-button"
+                    [disabled]="restableciendoUsuarioId === usuario.id"
+                    (click)="restablecerPassword(usuario)">
+              {{ restableciendoUsuarioId === usuario.id ? 'Generando...' : 'Restablecer contrasena' }}
+            </button>
+            <button type="button"
+                    class="primary-button"
+                    [disabled]="actualizandoUsuarioId === usuario.id"
+                    (click)="abrirModalRoles(usuario)">
+              {{ actualizandoUsuarioId === usuario.id ? 'Guardando...' : 'Definir rol' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -137,6 +146,38 @@
                 (click)="guardarRolesModal()">
           {{ actualizandoUsuarioId === usuario.id ? 'Guardando...' : 'Guardar roles' }}
         </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-backdrop" *ngIf="usuarioPasswordModal as usuario" (click)="cerrarModalPassword()">
+  <section class="role-modal" role="dialog" aria-modal="true" aria-labelledby="passwordModalTitle" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <span class="modal-kicker">Contrasena temporal</span>
+        <h3 id="passwordModalTitle">Restablecimiento generado</h3>
+        <p>{{ usuario.nombres }} {{ usuario.apellidos }} · {{ usuario.correo }}</p>
+      </div>
+
+      <button type="button" class="icon-button" aria-label="Cerrar" (click)="cerrarModalPassword()">×</button>
+    </div>
+
+    <div class="temporary-password-box">
+      <span>Contrasena temporal</span>
+      <strong>{{ passwordTemporal }}</strong>
+      <small>Vence: {{ formatearFecha(passwordTemporalExpiraEn) }}</small>
+    </div>
+
+    <p class="modal-note">
+      El usuario podra iniciar sesion con esta contrasena y debera cambiarla antes de usar el sistema.
+    </p>
+
+    <div class="modal-footer">
+      <small>{{ passwordCopiado ? 'Contrasena copiada.' : 'Esta clave solo se muestra en este momento.' }}</small>
+      <div class="modal-actions">
+        <button type="button" class="secondary-button" (click)="copiarPasswordTemporal()">Copiar</button>
+        <button type="button" class="primary-button" (click)="cerrarModalPassword()">Entendido</button>
       </div>
     </div>
   </section>

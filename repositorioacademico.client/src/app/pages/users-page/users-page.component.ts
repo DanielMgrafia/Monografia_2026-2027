@@ -24,11 +24,16 @@ export class UsersPageComponent implements OnInit {
   cargando = false;
   guardando = false;
   actualizandoUsuarioId: number | null = null;
+  restableciendoUsuarioId: number | null = null;
   mensaje = '';
   error = '';
   modalError = '';
   usuarioRolModal: Usuario | null = null;
   rolesModalSeleccionados: number[] = [];
+  usuarioPasswordModal: Usuario | null = null;
+  passwordTemporal = '';
+  passwordTemporalExpiraEn = '';
+  passwordCopiado = false;
   categoriaFlag: RolFlag = 'esEstudiante';
   categoriaSingular = 'estudiante';
   categoriaPlural = 'estudiantes';
@@ -189,6 +194,60 @@ export class UsersPageComponent implements OnInit {
     const rolIds = [...new Set([...rolesOcultos, ...this.rolesModalSeleccionados])];
 
     this.actualizarRoles(this.usuarioRolModal, rolIds);
+  }
+
+  restablecerPassword(usuario: Usuario): void {
+    this.restableciendoUsuarioId = usuario.id;
+    this.mensaje = '';
+    this.error = '';
+    this.passwordCopiado = false;
+
+    this.usuariosService.restablecerPassword(usuario.id).subscribe({
+      next: (response) => {
+        this.usuarios = this.usuarios.map((item) => item.id === response.usuario.id ? response.usuario : item);
+        this.rolesPorUsuario[response.usuario.id] = response.usuario.roles.map((rol) => rol.id);
+        this.usuarioPasswordModal = response.usuario;
+        this.passwordTemporal = response.passwordTemporal;
+        this.passwordTemporalExpiraEn = response.expiraEn;
+        this.restableciendoUsuarioId = null;
+      },
+      error: (response) => {
+        this.restableciendoUsuarioId = null;
+        this.error = this.obtenerMensajeError(response, 'No se pudo restablecer la contrasena.');
+      }
+    });
+  }
+
+  cerrarModalPassword(): void {
+    this.usuarioPasswordModal = null;
+    this.passwordTemporal = '';
+    this.passwordTemporalExpiraEn = '';
+    this.passwordCopiado = false;
+  }
+
+  copiarPasswordTemporal(): void {
+    if (!this.passwordTemporal || !navigator.clipboard) {
+      return;
+    }
+
+    navigator.clipboard.writeText(this.passwordTemporal)
+      .then(() => {
+        this.passwordCopiado = true;
+      })
+      .catch(() => {
+        this.passwordCopiado = false;
+      });
+  }
+
+  formatearFecha(valor: string): string {
+    if (!valor) {
+      return 'Sin fecha';
+    }
+
+    return new Intl.DateTimeFormat('es-NI', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    }).format(new Date(valor));
   }
 
   private actualizarRoles(usuario: Usuario, rolIds: number[]): void {

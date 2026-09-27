@@ -14,6 +14,12 @@ namespace RepositorioAcademico.Server.Domain
 
         public string PasswordHash { get; set; } = string.Empty;
 
+        public bool DebeCambiarPassword { get; set; }
+
+        public DateTime? FechaCambioPassword { get; set; }
+
+        public DateTime? PasswordTemporalExpiraEn { get; set; }
+
         public string Estado { get; set; } = "Activo";
 
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;

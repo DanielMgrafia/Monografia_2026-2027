@@ -10,3 +10,9 @@ export interface AuthResponse {
   expiraEn: string;
   usuario: Usuario;
 }
+
+export interface CambiarPasswordRequest {
+  passwordActual: string;
+  nuevaPassword: string;
+  confirmarPassword: string;
+}

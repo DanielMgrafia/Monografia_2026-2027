@@ -7,6 +7,9 @@ export interface Usuario {
   correo: string;
   carnet: string;
   estado: string;
+  debeCambiarPassword: boolean;
+  fechaCambioPassword?: string | null;
+  passwordTemporalExpiraEn?: string | null;
   fechaCreacion: string;
   roles: RolResumen[];
   permisos: string[];

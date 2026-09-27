@@ -43,14 +43,23 @@ export class LoginPageComponent {
       login: this.login.trim(),
       password: this.password
     }, this.remember).subscribe({
-      next: () => {
+      next: (response) => {
         this.loading = false;
-        this.router.navigate(['/panel']);
+        this.router.navigate([response.usuario.debeCambiarPassword ? '/cambiar-password' : '/panel']);
       },
-      error: () => {
+      error: (response) => {
         this.loading = false;
-        this.error = 'No se pudo iniciar sesion. Verifica tus credenciales.';
+        this.error = this.obtenerMensajeError(response) ?? 'No se pudo iniciar sesion. Verifica tus credenciales.';
       }
     });
+  }
+
+  private obtenerMensajeError(response: unknown): string | null {
+    if (typeof response === 'object' && response !== null && 'error' in response) {
+      const error = (response as { error?: unknown }).error;
+      return typeof error === 'string' && error.trim() ? error : null;
+    }
+
+    return null;
   }
 }

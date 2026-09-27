@@ -28,10 +28,12 @@ namespace RepositorioAcademico.Server.Infrastructure.Security
             var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
+                new(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new(JwtRegisteredClaimNames.UniqueName, usuario.Correo),
                 new(JwtRegisteredClaimNames.Email, usuario.Correo),
                 new("carnet", usuario.Carnet),
-                new("nombreCompleto", $"{usuario.Nombres} {usuario.Apellidos}".Trim())
+                new("nombreCompleto", $"{usuario.Nombres} {usuario.Apellidos}".Trim()),
+                new("debeCambiarPassword", usuario.DebeCambiarPassword ? "true" : "false")
             };
 
             claims.AddRange(roles.Select(rol => new Claim(ClaimTypes.Role, rol)));

@@ -25,6 +25,7 @@ describe('SubirDocumentoComponent', () => {
     correo: 'admin@universidad.edu',
     carnet: 'ADMIN-001',
     estado: 'Activo',
+    debeCambiarPassword: false,
     fechaCreacion: new Date().toISOString(),
     roles: [],
     permisos: []

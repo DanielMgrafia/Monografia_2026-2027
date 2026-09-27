@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -146,6 +147,9 @@ namespace RepositorioAcademico.Server.Controllers
                 Correo = correo,
                 Carnet = carnet,
                 PasswordHash = _passwordService.HashPassword(request.Password),
+                DebeCambiarPassword = false,
+                FechaCambioPassword = DateTime.UtcNow,
+                PasswordTemporalExpiraEn = null,
                 Estado = string.IsNullOrWhiteSpace(request.Estado) ? "Activo" : request.Estado.Trim(),
                 FechaCreacion = DateTime.UtcNow
             };
@@ -225,6 +229,43 @@ namespace RepositorioAcademico.Server.Controllers
             return MapearUsuario(usuario);
         }
 
+        [HttpPost("{id:int}/restablecer-password")]
+        public async Task<ActionResult<RestablecerPasswordResponseDto>> RestablecerPassword(int id)
+        {
+            var usuario = await _context.Usuarios
+                .Include(item => item.UsuarioRoles)
+                .ThenInclude(item => item.Rol)
+                .ThenInclude(item => item!.RolPermisos)
+                .ThenInclude(item => item.Permiso)
+                .FirstOrDefaultAsync(item => item.Id == id);
+
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            if (usuario.Estado != "Activo")
+            {
+                return BadRequest("Solo se puede restablecer la contrasena de usuarios activos.");
+            }
+
+            var passwordTemporal = GenerarPasswordTemporal();
+            var expiraEn = DateTime.UtcNow.AddHours(24);
+
+            usuario.PasswordHash = _passwordService.HashPassword(passwordTemporal);
+            usuario.DebeCambiarPassword = true;
+            usuario.PasswordTemporalExpiraEn = expiraEn;
+
+            await _context.SaveChangesAsync();
+
+            return new RestablecerPasswordResponseDto
+            {
+                PasswordTemporal = passwordTemporal,
+                ExpiraEn = expiraEn,
+                Usuario = MapearUsuario(usuario)
+            };
+        }
+
         private static UsuarioDto MapearUsuario(Usuario usuario)
         {
             var rolesActivos = usuario.UsuarioRoles
@@ -241,6 +282,9 @@ namespace RepositorioAcademico.Server.Controllers
                 Correo = usuario.Correo,
                 Carnet = usuario.Carnet,
                 Estado = usuario.Estado,
+                DebeCambiarPassword = usuario.DebeCambiarPassword,
+                FechaCambioPassword = usuario.FechaCambioPassword,
+                PasswordTemporalExpiraEn = usuario.PasswordTemporalExpiraEn,
                 FechaCreacion = usuario.FechaCreacion,
                 Roles = rolesActivos.Select(rol => new RolResumenDto
                 {
@@ -261,6 +305,21 @@ namespace RepositorioAcademico.Server.Controllers
                     .OrderBy(item => item)
                     .ToList()
             };
+        }
+
+        private static string GenerarPasswordTemporal()
+        {
+            const string caracteres = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+            Span<byte> bytes = stackalloc byte[12];
+            RandomNumberGenerator.Fill(bytes);
+
+            var resultado = new char[12];
+            for (var index = 0; index < resultado.Length; index++)
+            {
+                resultado[index] = caracteres[bytes[index] % caracteres.Length];
+            }
+
+            return $"Tmp-{new string(resultado)}";
         }
     }
 }

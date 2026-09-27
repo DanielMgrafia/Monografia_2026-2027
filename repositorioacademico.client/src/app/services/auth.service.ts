@@ -1,7 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, LoginRequest } from '../models/auth';
+import { AuthResponse, CambiarPasswordRequest, LoginRequest } from '../models/auth';
 import { Usuario } from '../models/usuario';
 
 const STORAGE_KEY = 'repositorio-academico-auth';
@@ -18,12 +18,21 @@ export class AuthService {
   readonly permissions = computed(() => new Set(this.currentUser()?.permisos ?? []));
   readonly roles = computed(() => this.currentUser()?.roles ?? []);
   readonly isAuthenticated = computed(() => this.sessionState() !== null);
+  readonly mustChangePassword = computed(() => this.currentUser()?.debeCambiarPassword === true);
 
   constructor(private readonly http: HttpClient) {}
 
   login(request: LoginRequest, persist = true): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/login`, request)
+      .pipe(tap((response) => this.setSession(response, persist)));
+  }
+
+  cambiarPassword(request: CambiarPasswordRequest): Observable<AuthResponse> {
+    const persist = localStorage.getItem(STORAGE_KEY) !== null;
+
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/cambiar-password`, request)
       .pipe(tap((response) => this.setSession(response, persist)));
   }
 
