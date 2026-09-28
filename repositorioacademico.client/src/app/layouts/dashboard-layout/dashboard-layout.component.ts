@@ -44,8 +44,8 @@ export class DashboardLayoutComponent implements OnInit {
   readonly isMobileViewport = signal(this.readIsMobileViewport());
   readonly mobileMenuOpen = signal(false);
   readonly sidebarCollapsed = signal(this.readSidebarState());
-  readonly usersMenuOpen = signal(true);
-  readonly catalogMenuOpen = signal(true);
+  readonly usersMenuOpen = signal(false);
+  readonly catalogMenuOpen = signal(false);
   readonly accountMenuOpen = signal(false);
   readonly profileDetailsOpen = signal(false);
   readonly pendingCount = signal(0);
