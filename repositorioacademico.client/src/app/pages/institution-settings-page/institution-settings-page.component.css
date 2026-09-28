@@ -38,6 +38,12 @@
   gap: 16px;
 }
 
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
 .form-grid label,
 .logo-picker {
   display: grid;
@@ -234,7 +240,8 @@
 }
 
 .preview-copy span,
-.preview-vision strong {
+.preview-vision strong,
+.preview-contact strong {
   color: #bfe3ff;
   font-size: 12px;
   font-weight: 900;
@@ -250,11 +257,19 @@
   line-height: 1.55;
 }
 
-.preview-vision {
+.preview-vision,
+.preview-contact {
   display: grid;
   gap: 8px;
   padding-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.preview-contact span {
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 13px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 1080px) {
@@ -267,9 +282,14 @@
   .card-header,
   .logo-picker-row,
   .logo-actions,
+  .contact-grid,
   .form-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .contact-grid {
+    display: flex;
   }
 
   .primary-button,

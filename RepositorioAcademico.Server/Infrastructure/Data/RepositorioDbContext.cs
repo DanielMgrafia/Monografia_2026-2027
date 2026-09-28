@@ -139,6 +139,12 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 entity.Property(item => item.LogoUrl)
                     .HasMaxLength(200000);
 
+                entity.Property(item => item.Telefono)
+                    .HasMaxLength(50);
+
+                entity.Property(item => item.Email)
+                    .HasMaxLength(150);
+
                 entity.Property(item => item.Mision)
                     .HasMaxLength(2000);
 

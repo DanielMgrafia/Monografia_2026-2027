@@ -11,7 +11,19 @@
     <div class="hero-copy">
       <span class="eyebrow">Repositorio institucional</span>
       <h1>{{ getInstitutionName() }}</h1>
-      <p *ngIf="getMission()">{{ getMission() }}</p>
+      <div class="hero-carousel" *ngIf="activeInstitutionSlide() as slide">
+        <span>{{ slide.label }}</span>
+        <p>{{ slide.text }}</p>
+
+        <div class="hero-carousel-dots" *ngIf="institutionSlides().length > 1" aria-label="Mision y vision institucional">
+          <button type="button"
+                  *ngFor="let item of institutionSlides(); let index = index"
+                  [class.active]="index === activeInstitutionSlideIndex()"
+                  [attr.aria-label]="'Ver ' + item.label"
+                  (click)="setInstitutionSlide(index)">
+          </button>
+        </div>
+      </div>
 
       <div class="hero-actions">
         <a *ngIf="canViewRepository()" routerLink="/repositorio" class="primary-link">Explorar repositorio</a>
@@ -104,34 +116,31 @@
     </div>
   </section>
 
-  <section class="institution-section" *ngIf="getMission() || getVision()">
-    <div class="institution-panel">
-      <div class="institution-intro">
-        <span class="eyebrow">Identidad institucional</span>
-        <div class="institution-heading">
-          <div class="institution-logo">
-            <img *ngIf="getInstitutionLogoUrl() as logoUrl; else institutionLogoFallback"
-                 [src]="logoUrl"
-                 alt="Logo institucional" />
-            <ng-template #institutionLogoFallback>{{ getInstitutionInitials() }}</ng-template>
-          </div>
-          <h2>{{ getInstitutionName() }}</h2>
-        </div>
+  <footer class="site-footer">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img *ngIf="getInstitutionLogoUrl() as logoUrl; else footerLogoFallback"
+             [src]="logoUrl"
+             alt="Logo institucional" />
+        <ng-template #footerLogoFallback>{{ getInstitutionInitials() }}</ng-template>
       </div>
-
-      <div class="institution-values">
-        <article class="institution-card mission-card" *ngIf="getMission()">
-          <span>Mision</span>
-          <p>{{ getMission() }}</p>
-        </article>
-
-        <article class="institution-card vision-card" *ngIf="getVision()">
-          <span>Vision</span>
-          <p>{{ getVision() }}</p>
-        </article>
+      <div>
+        <strong>{{ getInstitutionName() }}</strong>
+        <span>Repositorio academico</span>
       </div>
     </div>
-  </section>
+
+    <div class="footer-contact" *ngIf="getInstitutionPhone() || getInstitutionEmail()">
+      <a *ngIf="getInstitutionPhone()"
+         [href]="'tel:' + getInstitutionPhone()">
+        {{ getInstitutionPhone() }}
+      </a>
+      <a *ngIf="getInstitutionEmail()"
+         [href]="'mailto:' + getInstitutionEmail()">
+        {{ getInstitutionEmail() }}
+      </a>
+    </div>
+  </footer>
 </ng-container>
 
 <ng-template #loadingState>

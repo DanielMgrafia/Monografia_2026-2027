@@ -31,6 +31,11 @@ interface ProcessStep {
   description: string;
 }
 
+interface InstitutionSlide {
+  label: string;
+  text: string;
+}
+
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
@@ -44,7 +49,9 @@ export class DashboardHomeComponent implements OnInit {
   readonly documentos = signal<Documento[]>([]);
   readonly tiposDocumento = signal<Catalogo[]>([]);
   readonly configuracionInstitucion = signal<ConfiguracionInstitucion | null>(null);
+  readonly activeInstitutionSlideIndex = signal(0);
 
+  private carouselTimer: ReturnType<typeof setInterval> | null = null;
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   readonly authService = inject(AuthService);
@@ -173,9 +180,35 @@ export class DashboardHomeComponent implements OnInit {
     return total > 0 ? values.filter((stat) => stat.count > 0).slice(0, 8) : values.slice(0, 6);
   });
 
+  readonly institutionSlides = computed<InstitutionSlide[]>(() => {
+    const slides: InstitutionSlide[] = [];
+    const mision = this.getMission();
+    const vision = this.getVision();
+
+    if (mision) {
+      slides.push({ label: 'Mision institucional', text: mision });
+    }
+
+    if (vision) {
+      slides.push({ label: 'Vision institucional', text: vision });
+    }
+
+    return slides;
+  });
+
+  readonly activeInstitutionSlide = computed<InstitutionSlide | null>(() => {
+    const slides = this.institutionSlides();
+    if (slides.length === 0) {
+      return null;
+    }
+
+    return slides[this.activeInstitutionSlideIndex() % slides.length];
+  });
+
   ngOnInit(): void {
     this.loadDashboardData();
     this.loadInstitutionConfig();
+    this.destroyRef.onDestroy(() => this.clearCarouselTimer());
 
     this.documentosService.documentosActualizados$
       .pipe(
@@ -193,6 +226,11 @@ export class DashboardHomeComponent implements OnInit {
     );
 
     window.open(url, '_blank');
+  }
+
+  setInstitutionSlide(index: number): void {
+    this.activeInstitutionSlideIndex.set(index);
+    this.resetInstitutionCarousel();
   }
 
   getInstitutionName(): string {
@@ -214,6 +252,14 @@ export class DashboardHomeComponent implements OnInit {
 
   getVision(): string {
     return this.configuracionInstitucion()?.vision?.trim() || '';
+  }
+
+  getInstitutionPhone(): string {
+    return this.configuracionInstitucion()?.telefono?.trim() || '';
+  }
+
+  getInstitutionEmail(): string {
+    return this.configuracionInstitucion()?.email?.trim() || '';
   }
 
   getStatusClass(status?: string): string {
@@ -272,9 +318,49 @@ export class DashboardHomeComponent implements OnInit {
     this.institucionService.getConfiguracion()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (configuracion) => this.configuracionInstitucion.set(configuracion),
-        error: () => this.configuracionInstitucion.set(null)
+        next: (configuracion) => {
+          this.configuracionInstitucion.set(configuracion);
+          this.resetInstitutionCarousel();
+        },
+        error: () => {
+          this.configuracionInstitucion.set(null);
+          this.resetInstitutionCarousel();
+        }
       });
+  }
+
+  private resetInstitutionCarousel(): void {
+    this.clearCarouselTimer();
+
+    const slides = this.institutionSlides();
+    if (slides.length === 0) {
+      this.activeInstitutionSlideIndex.set(0);
+      return;
+    }
+
+    if (this.activeInstitutionSlideIndex() >= slides.length) {
+      this.activeInstitutionSlideIndex.set(0);
+    }
+
+    if (slides.length > 1) {
+      this.carouselTimer = setInterval(() => {
+        const currentSlides = this.institutionSlides();
+        if (currentSlides.length <= 1) {
+          this.clearCarouselTimer();
+          this.activeInstitutionSlideIndex.set(0);
+          return;
+        }
+
+        this.activeInstitutionSlideIndex.update((index) => (index + 1) % currentSlides.length);
+      }, 6500);
+    }
+  }
+
+  private clearCarouselTimer(): void {
+    if (this.carouselTimer) {
+      clearInterval(this.carouselTimer);
+      this.carouselTimer = null;
+    }
   }
 
   private getInitials(value: string): string {

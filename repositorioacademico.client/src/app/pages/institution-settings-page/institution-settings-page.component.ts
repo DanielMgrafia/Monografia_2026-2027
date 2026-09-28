@@ -7,6 +7,8 @@ import { InstitucionService } from '../../services/institucion.service';
 interface InstitucionForm {
   nombreInstitucion: string;
   logoUrl: string | null;
+  telefono: string;
+  email: string;
   mision: string;
   vision: string;
 }
@@ -46,6 +48,8 @@ export class InstitutionSettingsPageComponent implements OnInit {
         this.form = {
           nombreInstitucion: configuracion.nombreInstitucion ?? '',
           logoUrl: configuracion.logoUrl ?? null,
+          telefono: configuracion.telefono ?? '',
+          email: configuracion.email ?? '',
           mision: configuracion.mision ?? '',
           vision: configuracion.vision ?? ''
         };
@@ -66,6 +70,8 @@ export class InstitutionSettingsPageComponent implements OnInit {
     this.institucionService.guardarConfiguracion({
       nombreInstitucion: this.normalizarTexto(this.form.nombreInstitucion),
       logoUrl: this.form.logoUrl,
+      telefono: this.normalizarTexto(this.form.telefono),
+      email: this.normalizarEmail(this.form.email),
       mision: this.normalizarTexto(this.form.mision),
       vision: this.normalizarTexto(this.form.vision)
     }).subscribe({
@@ -74,6 +80,8 @@ export class InstitutionSettingsPageComponent implements OnInit {
         this.form = {
           nombreInstitucion: configuracion.nombreInstitucion ?? '',
           logoUrl: configuracion.logoUrl ?? null,
+          telefono: configuracion.telefono ?? '',
+          email: configuracion.email ?? '',
           mision: configuracion.mision ?? '',
           vision: configuracion.vision ?? ''
         };
@@ -139,6 +147,8 @@ export class InstitutionSettingsPageComponent implements OnInit {
     return {
       nombreInstitucion: '',
       logoUrl: null,
+      telefono: '',
+      email: '',
       mision: '',
       vision: ''
     };
@@ -146,6 +156,11 @@ export class InstitutionSettingsPageComponent implements OnInit {
 
   private normalizarTexto(valor: string): string | null {
     const texto = valor.trim();
+    return texto ? texto : null;
+  }
+
+  private normalizarEmail(valor: string): string | null {
+    const texto = valor.trim().toLowerCase();
     return texto ? texto : null;
   }
 

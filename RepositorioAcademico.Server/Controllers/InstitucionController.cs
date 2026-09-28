@@ -68,6 +68,8 @@ namespace RepositorioAcademico.Server.Controllers
 
             configuracion.NombreInstitucion = NormalizarTexto(request.NombreInstitucion);
             configuracion.LogoUrl = logoUrl;
+            configuracion.Telefono = NormalizarTexto(request.Telefono);
+            configuracion.Email = NormalizarEmail(request.Email);
             configuracion.Mision = NormalizarTexto(request.Mision);
             configuracion.Vision = NormalizarTexto(request.Vision);
             configuracion.FechaActualizacion = DateTime.UtcNow;
@@ -84,6 +86,8 @@ namespace RepositorioAcademico.Server.Controllers
                 Id = 0,
                 NombreInstitucion = null,
                 LogoUrl = null,
+                Telefono = null,
+                Email = null,
                 Mision = null,
                 Vision = null,
                 FechaActualizacion = null
@@ -97,6 +101,8 @@ namespace RepositorioAcademico.Server.Controllers
                 Id = configuracion.Id,
                 NombreInstitucion = configuracion.NombreInstitucion,
                 LogoUrl = configuracion.LogoUrl,
+                Telefono = configuracion.Telefono,
+                Email = configuracion.Email,
                 Mision = configuracion.Mision,
                 Vision = configuracion.Vision,
                 FechaActualizacion = configuracion.FechaActualizacion
@@ -106,6 +112,11 @@ namespace RepositorioAcademico.Server.Controllers
         private static string? NormalizarTexto(string? valor)
         {
             return string.IsNullOrWhiteSpace(valor) ? null : valor.Trim();
+        }
+
+        private static string? NormalizarEmail(string? valor)
+        {
+            return string.IsNullOrWhiteSpace(valor) ? null : valor.Trim().ToLowerInvariant();
         }
 
         private static string? NormalizarLogoUrl(string? logoUrl)

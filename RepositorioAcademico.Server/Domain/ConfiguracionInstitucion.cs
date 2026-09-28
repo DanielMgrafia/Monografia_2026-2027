@@ -8,6 +8,10 @@ namespace RepositorioAcademico.Server.Domain
 
         public string? LogoUrl { get; set; }
 
+        public string? Telefono { get; set; }
+
+        public string? Email { get; set; }
+
         public string? Mision { get; set; }
 
         public string? Vision { get; set; }

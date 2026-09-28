@@ -53,6 +53,26 @@
         <small>PNG, JPG o WEBP. Maximo 150 KB.</small>
       </div>
 
+      <div class="contact-grid">
+        <label>
+          Telefono
+          <input type="tel"
+                 [(ngModel)]="form.telefono"
+                 name="telefono"
+                 maxlength="50"
+                 placeholder="Telefono institucional" />
+        </label>
+
+        <label>
+          Email
+          <input type="email"
+                 [(ngModel)]="form.email"
+                 name="email"
+                 maxlength="150"
+                 placeholder="correo@universidad.edu" />
+        </label>
+      </div>
+
       <label>
         Mision
         <textarea [(ngModel)]="form.mision"
@@ -110,6 +130,12 @@
       <div class="preview-vision" *ngIf="form.vision.trim()">
         <strong>Vision</strong>
         <p>{{ form.vision }}</p>
+      </div>
+
+      <div class="preview-contact" *ngIf="form.telefono.trim() || form.email.trim()">
+        <strong>Contacto</strong>
+        <span *ngIf="form.telefono.trim()">{{ form.telefono }}</span>
+        <span *ngIf="form.email.trim()">{{ form.email }}</span>
       </div>
     </div>
   </aside>
