@@ -11,7 +11,7 @@
     <div class="hero-copy">
       <span class="eyebrow">Repositorio institucional</span>
       <h1>{{ getInstitutionName() }}</h1>
-      <p>{{ getMission() }}</p>
+      <p *ngIf="getMission()">{{ getMission() }}</p>
 
       <div class="hero-actions">
         <a *ngIf="canViewRepository()" routerLink="/repositorio" class="primary-link">Explorar repositorio</a>
@@ -31,20 +31,6 @@
         <span>documentos publicados</span>
       </div>
     </div>
-  </section>
-
-  <section class="services-grid" *ngIf="portalCards().length > 0">
-    <article class="service-card" *ngFor="let card of portalCards()">
-      <div class="service-icon">{{ card.icon }}</div>
-      <h2>{{ card.title }}</h2>
-      <p>{{ card.description }}</p>
-      <button *ngIf="card.route as route"
-              type="button"
-              class="service-link"
-              (click)="goTo(route)">
-        Saber mas
-      </button>
-    </article>
   </section>
 
   <section class="reports-section">
@@ -118,21 +104,33 @@
     </div>
   </section>
 
-  <section class="institution-section">
-    <div>
-      <span class="eyebrow">Identidad institucional</span>
-      <h2>{{ getInstitutionName() }}</h2>
+  <section class="institution-section" *ngIf="getMission() || getVision()">
+    <div class="institution-panel">
+      <div class="institution-intro">
+        <span class="eyebrow">Identidad institucional</span>
+        <div class="institution-heading">
+          <div class="institution-logo">
+            <img *ngIf="getInstitutionLogoUrl() as logoUrl; else institutionLogoFallback"
+                 [src]="logoUrl"
+                 alt="Logo institucional" />
+            <ng-template #institutionLogoFallback>{{ getInstitutionInitials() }}</ng-template>
+          </div>
+          <h2>{{ getInstitutionName() }}</h2>
+        </div>
+      </div>
+
+      <div class="institution-values">
+        <article class="institution-card mission-card" *ngIf="getMission()">
+          <span>Mision</span>
+          <p>{{ getMission() }}</p>
+        </article>
+
+        <article class="institution-card vision-card" *ngIf="getVision()">
+          <span>Vision</span>
+          <p>{{ getVision() }}</p>
+        </article>
+      </div>
     </div>
-
-    <article>
-      <span>Mision</span>
-      <p>{{ getMission() }}</p>
-    </article>
-
-    <article>
-      <span>Vision</span>
-      <p>{{ getVision() }}</p>
-    </article>
   </section>
 </ng-container>
 

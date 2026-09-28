@@ -11,13 +11,6 @@ import { CatalogosService } from '../../services/catalogos.service';
 import { DocumentosService } from '../../services/documentos.service';
 import { InstitucionService } from '../../services/institucion.service';
 
-interface PortalCard {
-  title: string;
-  description: string;
-  icon: string;
-  route?: string;
-}
-
 interface MetricCard {
   label: string;
   value: number;
@@ -90,7 +83,6 @@ export class DashboardHomeComponent implements OnInit {
   readonly canViewRepository = computed(() => this.authService.hasPermission('REPOSITORIO.VER'));
   readonly canPublishDocuments = computed(() => this.authService.hasPermission('DOCUMENTO.PUBLICAR'));
   readonly canUploadDocuments = computed(() => this.authService.hasPermission('DOCUMENTO.SUBIR'));
-  readonly canManageInstitution = computed(() => this.authService.hasPermission('INSTITUCION.PARAMETRIZAR'));
 
   readonly publishedDocuments = computed(() =>
     this.documentos()
@@ -138,51 +130,6 @@ export class DashboardHomeComponent implements OnInit {
     }
 
     return cards;
-  });
-
-  readonly portalCards = computed<PortalCard[]>(() => {
-    const cards: PortalCard[] = [
-      {
-        title: 'Novedades',
-        description: 'Ultimas incorporaciones visibles en el repositorio academico.',
-        icon: 'NV',
-        route: this.canViewRepository() ? '/repositorio' : undefined
-      },
-      {
-        title: 'Estadisticas',
-        description: 'Resumen de documentos agrupados por tipo y estado.',
-        icon: 'ST'
-      }
-    ];
-
-    if (this.canUploadDocuments()) {
-      cards.push({
-        title: 'Autoarchivo',
-        description: 'Registra tesis, monografias, articulos u otros documentos academicos.',
-        icon: 'UP',
-        route: '/subir-documento'
-      });
-    }
-
-    if (this.canPublishDocuments()) {
-      cards.push({
-        title: 'Revision documental',
-        description: 'Evalua solicitudes pendientes antes de publicarlas.',
-        icon: 'RV',
-        route: '/revision-documental'
-      });
-    }
-
-    if (this.canManageInstitution()) {
-      cards.push({
-        title: 'Parametros',
-        description: 'Actualiza nombre, logo, mision y vision institucional.',
-        icon: 'IN',
-        route: '/parametros-institucion'
-      });
-    }
-
-    return cards.slice(0, 4);
   });
 
   readonly documentTypeStats = computed<TypeStat[]>(() => {
@@ -240,10 +187,6 @@ export class DashboardHomeComponent implements OnInit {
       });
   }
 
-  goTo(route: string): void {
-    this.router.navigate([route]);
-  }
-
   openDocumentViewer(documento: Documento): void {
     const url = this.router.serializeUrl(
       this.router.createUrlTree(['/visor-documento', documento.id])
@@ -261,14 +204,16 @@ export class DashboardHomeComponent implements OnInit {
     return logoUrl ? logoUrl : null;
   }
 
+  getInstitutionInitials(): string {
+    return this.getInitials(this.getInstitutionName());
+  }
+
   getMission(): string {
-    return this.configuracionInstitucion()?.mision?.trim() ||
-      'Facilitar el acceso, preservacion y difusion de la produccion academica institucional.';
+    return this.configuracionInstitucion()?.mision?.trim() || '';
   }
 
   getVision(): string {
-    return this.configuracionInstitucion()?.vision?.trim() ||
-      'Ser un punto de consulta confiable para investigadores, docentes y estudiantes.';
+    return this.configuracionInstitucion()?.vision?.trim() || '';
   }
 
   getStatusClass(status?: string): string {
