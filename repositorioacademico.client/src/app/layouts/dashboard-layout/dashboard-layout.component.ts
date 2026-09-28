@@ -2,6 +2,32 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  LucideBookUser,
+  LucideBriefcaseBusiness,
+  LucideChevronDown,
+  LucideChevronRight,
+  LucideClipboardCheck,
+  LucideFilePenLine,
+  LucideFileText,
+  LucideFileUp,
+  LucideFolderCog,
+  LucideGitBranch,
+  LucideGitFork,
+  LucideGraduationCap,
+  LucideHistory,
+  type LucideIcon,
+  LucideLayoutDashboard,
+  LucideLibraryBig,
+  LucideRoute,
+  LucideSchool,
+  LucideShieldCheck,
+  LucideShapes,
+  LucideUniversity,
+  LucideUserCog,
+  LucideUsersRound,
+  LucideDynamicIcon
+} from '@lucide/angular';
 import { filter, merge, of, switchMap } from 'rxjs';
 import { ConfiguracionInstitucion } from '../../models/configuracion-institucion';
 import { AuthService } from '../../services/auth.service';
@@ -12,7 +38,7 @@ interface MenuItem {
   label: string;
   route: string;
   permission?: string;
-  icon: string;
+  icon: LucideIcon;
   badge?: number;
 }
 
@@ -24,7 +50,7 @@ interface ProfileField {
 @Component({
   selector: 'app-dashboard-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, LucideDynamicIcon],
   templateUrl: './dashboard-layout.component.html',
   styleUrls: ['./dashboard-layout.component.css']
 })
@@ -51,27 +77,31 @@ export class DashboardLayoutComponent implements OnInit {
   readonly pendingCount = signal(0);
   readonly pageTitle = signal('Panel administrativo');
   readonly pageDescription = signal('Gestion centralizada del repositorio academico.');
+  readonly usersGroupIcon = LucideUsersRound;
+  readonly catalogGroupIcon = LucideFolderCog;
+  readonly chevronDownIcon = LucideChevronDown;
+  readonly chevronRightIcon = LucideChevronRight;
 
   readonly menuItems = computed<MenuItem[]>(() => {
     const items: MenuItem[] = [
-      { label: 'Panel principal', route: '/panel', icon: 'DB' },
+      { label: 'Panel principal', route: '/panel', icon: LucideLayoutDashboard },
       {
         label: 'Revision documental',
         route: '/revision-documental',
         permission: 'DOCUMENTO.PUBLICAR',
-        icon: 'RV',
+        icon: LucideClipboardCheck,
         badge: this.pendingCount()
       },
       {
         label: 'Edicion documental',
         route: '/edicion-documental',
         permission: 'DOCUMENTO.PUBLICAR',
-        icon: 'ED'
+        icon: LucideFilePenLine
       },
-      { label: 'Repositorio', route: '/repositorio', permission: 'REPOSITORIO.VER', icon: 'RP' },
-      { label: 'Mi historial', route: '/historial-biblioteca', permission: 'REPOSITORIO.VER', icon: 'HB' },
-      { label: 'Subir documentos', route: '/subir-documento', permission: 'DOCUMENTO.SUBIR', icon: 'UP' },
-      { label: 'Roles y permisos', route: '/roles', permission: 'ROL.GESTIONAR', icon: 'RL' }
+      { label: 'Repositorio', route: '/repositorio', permission: 'REPOSITORIO.VER', icon: LucideLibraryBig },
+      { label: 'Mi historial', route: '/historial-biblioteca', permission: 'REPOSITORIO.VER', icon: LucideHistory },
+      { label: 'Subir documentos', route: '/subir-documento', permission: 'DOCUMENTO.SUBIR', icon: LucideFileUp },
+      { label: 'Roles y permisos', route: '/roles', permission: 'ROL.GESTIONAR', icon: LucideShieldCheck }
     ];
 
     return items.filter((item) => {
@@ -85,10 +115,25 @@ export class DashboardLayoutComponent implements OnInit {
 
   readonly userItems = computed<MenuItem[]>(() => {
     const items: MenuItem[] = [
-      { label: 'Estudiantes', route: '/usuarios/estudiantes', permission: 'USUARIO.GESTIONAR', icon: 'ES' },
-      { label: 'Docentes', route: '/usuarios/docentes', permission: 'USUARIO.GESTIONAR', icon: 'DC' },
-      { label: 'Administradores', route: '/usuarios/administradores', permission: 'USUARIO.GESTIONAR', icon: 'AD' },
-      { label: 'Cargos academicos', route: '/usuarios/cargos-academicos', permission: 'USUARIO.GESTIONAR', icon: 'CA' }
+      {
+        label: 'Estudiantes',
+        route: '/usuarios/estudiantes',
+        permission: 'USUARIO.GESTIONAR',
+        icon: LucideGraduationCap
+      },
+      { label: 'Docentes', route: '/usuarios/docentes', permission: 'USUARIO.GESTIONAR', icon: LucideBookUser },
+      {
+        label: 'Administradores',
+        route: '/usuarios/administradores',
+        permission: 'USUARIO.GESTIONAR',
+        icon: LucideUserCog
+      },
+      {
+        label: 'Cargos academicos',
+        route: '/usuarios/cargos-academicos',
+        permission: 'USUARIO.GESTIONAR',
+        icon: LucideBriefcaseBusiness
+      }
     ];
 
     return items.filter((item) => {
@@ -102,18 +147,33 @@ export class DashboardLayoutComponent implements OnInit {
 
   readonly catalogItems = computed<MenuItem[]>(() => {
     const items: MenuItem[] = [
-      { label: 'Tipos de documento', route: '/tipos-documento', permission: 'CATALOGO.GESTIONAR', icon: 'TD' },
-      { label: 'Areas de conocimiento', route: '/areas-conocimiento', permission: 'CATALOGO.GESTIONAR', icon: 'AC' },
-      { label: 'Lineas de investigacion', route: '/lineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'LI' },
-      { label: 'Sublineas de investigacion', route: '/sublineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'SI' },
-      { label: 'Carreras', route: '/carreras', permission: 'CATALOGO.GESTIONAR', icon: 'CR' },
-      { label: 'Lineas por carrera', route: '/carrera-lineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'CL' },
-      { label: 'Roles', route: '/catalogo-roles', permission: 'ROL.GESTIONAR', icon: 'RL' },
+      { label: 'Tipos de documento', route: '/tipos-documento', permission: 'CATALOGO.GESTIONAR', icon: LucideFileText },
+      { label: 'Areas de conocimiento', route: '/areas-conocimiento', permission: 'CATALOGO.GESTIONAR', icon: LucideShapes },
+      {
+        label: 'Lineas de investigacion',
+        route: '/lineas-investigacion',
+        permission: 'CATALOGO.GESTIONAR',
+        icon: LucideGitBranch
+      },
+      {
+        label: 'Sublineas de investigacion',
+        route: '/sublineas-investigacion',
+        permission: 'CATALOGO.GESTIONAR',
+        icon: LucideGitFork
+      },
+      { label: 'Carreras', route: '/carreras', permission: 'CATALOGO.GESTIONAR', icon: LucideSchool },
+      {
+        label: 'Lineas por carrera',
+        route: '/carrera-lineas-investigacion',
+        permission: 'CATALOGO.GESTIONAR',
+        icon: LucideRoute
+      },
+      { label: 'Roles', route: '/catalogo-roles', permission: 'ROL.GESTIONAR', icon: LucideShieldCheck },
       {
         label: 'Institucion',
         route: '/parametros-institucion',
         permission: 'INSTITUCION.PARAMETRIZAR',
-        icon: 'IN'
+        icon: LucideUniversity
       }
     ];
 

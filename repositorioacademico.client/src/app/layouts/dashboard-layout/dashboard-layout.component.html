@@ -22,7 +22,12 @@
          routerLinkActive="active"
          (click)="handleNavigationSelection()"
          class="menu-item">
-        <span class="icon">{{ item.icon }}</span>
+        <span class="icon">
+          <svg [lucideIcon]="item.icon"
+               [size]="17"
+               [strokeWidth]="2.25"
+               aria-hidden="true"></svg>
+        </span>
         <span class="item-label">{{ item.label }}</span>
         <small *ngIf="item.badge != null && item.badge > 0">{{ item.badge }}</small>
       </a>
@@ -32,9 +37,19 @@
                 class="menu-item menu-group-toggle"
                 [class.active]="isUsersRouteActive()"
                 (click)="toggleUsersMenu()">
-          <span class="icon">US</span>
+          <span class="icon">
+            <svg [lucideIcon]="usersGroupIcon"
+                 [size]="17"
+                 [strokeWidth]="2.25"
+                 aria-hidden="true"></svg>
+          </span>
           <span class="item-label">Usuarios</span>
-          <span class="group-arrow" *ngIf="!sidebarCollapsed()">{{ usersMenuOpen() ? 'v' : '>' }}</span>
+          <span class="group-arrow" *ngIf="!sidebarCollapsed()">
+            <svg [lucideIcon]="usersMenuOpen() ? chevronDownIcon : chevronRightIcon"
+                 [size]="16"
+                 [strokeWidth]="2.4"
+                 aria-hidden="true"></svg>
+          </span>
         </button>
 
         <div class="submenu" *ngIf="usersMenuOpen() && !sidebarCollapsed()">
@@ -43,7 +58,12 @@
              routerLinkActive="active"
              (click)="handleNavigationSelection()"
              class="submenu-item">
-            <span class="icon">{{ item.icon }}</span>
+            <span class="icon">
+              <svg [lucideIcon]="item.icon"
+                   [size]="15"
+                   [strokeWidth]="2.25"
+                   aria-hidden="true"></svg>
+            </span>
             <span>{{ item.label }}</span>
           </a>
         </div>
@@ -54,9 +74,19 @@
                 class="menu-item menu-group-toggle"
                 [class.active]="isCatalogRouteActive()"
                 (click)="toggleCatalogMenu()">
-          <span class="icon">CT</span>
+          <span class="icon">
+            <svg [lucideIcon]="catalogGroupIcon"
+                 [size]="17"
+                 [strokeWidth]="2.25"
+                 aria-hidden="true"></svg>
+          </span>
           <span class="item-label">Catalogos</span>
-          <span class="group-arrow" *ngIf="!sidebarCollapsed()">{{ catalogMenuOpen() ? 'v' : '>' }}</span>
+          <span class="group-arrow" *ngIf="!sidebarCollapsed()">
+            <svg [lucideIcon]="catalogMenuOpen() ? chevronDownIcon : chevronRightIcon"
+                 [size]="16"
+                 [strokeWidth]="2.4"
+                 aria-hidden="true"></svg>
+          </span>
         </button>
 
         <div class="submenu" *ngIf="catalogMenuOpen() && !sidebarCollapsed()">
@@ -65,7 +95,12 @@
              routerLinkActive="active"
              (click)="handleNavigationSelection()"
              class="submenu-item">
-            <span class="icon">{{ item.icon }}</span>
+            <span class="icon">
+              <svg [lucideIcon]="item.icon"
+                   [size]="15"
+                   [strokeWidth]="2.25"
+                   aria-hidden="true"></svg>
+            </span>
             <span>{{ item.label }}</span>
           </a>
         </div>
