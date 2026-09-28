@@ -16,6 +16,7 @@ import { DashboardHomeComponent } from './pages/dashboard-home/dashboard-home.co
 import { DocumentViewerPageComponent } from './pages/document-viewer-page/document-viewer-page.component';
 import { EditDocumentsPageComponent } from './pages/edit-documents-page/edit-documents-page.component';
 import { HistoryPageComponent } from './pages/history-page/history-page.component';
+import { InstitutionSettingsPageComponent } from './pages/institution-settings-page/institution-settings-page.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
 import { RoleCatalogPageComponent } from './pages/role-catalog-page/role-catalog-page.component';
 import { ReviewDocumentsPageComponent } from './pages/review-documents-page/review-documents-page.component';
@@ -180,6 +181,16 @@ export const appRoutes: Routes = [
           title: 'Roles',
           description: 'Administra el catalogo de roles disponibles en la plataforma.',
           permission: 'ROL.GESTIONAR'
+        }
+      },
+      {
+        path: 'parametros-institucion',
+        component: InstitutionSettingsPageComponent,
+        canActivate: [permissionGuard],
+        data: {
+          title: 'Parametros institucionales',
+          description: 'Configura el nombre, logo, mision y vision de la institucion.',
+          permission: 'INSTITUCION.PARAMETRIZAR'
         }
       },
       {

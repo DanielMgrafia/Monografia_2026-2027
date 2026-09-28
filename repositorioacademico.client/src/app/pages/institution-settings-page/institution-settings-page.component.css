@@ -1,0 +1,281 @@
+.institution-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  gap: 18px;
+}
+
+.page-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  padding: 24px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.card-header h3 {
+  color: #061b4e;
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.card-header p,
+.form-actions small,
+.logo-picker small {
+  color: #52627e;
+  font-size: 13px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.form-grid label,
+.logo-picker {
+  display: grid;
+  gap: 8px;
+  color: #061b4e;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.form-grid input,
+.form-grid textarea {
+  width: 100%;
+  border: 1px solid #d8e0ec;
+  border-radius: 12px;
+  outline: none;
+  color: #0f172a;
+  background: #ffffff;
+  font: inherit;
+}
+
+.form-grid input {
+  height: 44px;
+  padding: 0 14px;
+}
+
+.form-grid textarea {
+  resize: vertical;
+  min-height: 110px;
+  padding: 12px 14px;
+  line-height: 1.5;
+}
+
+.form-grid input:focus,
+.form-grid textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.logo-picker {
+  padding: 14px;
+  border: 1px solid #e4eaf3;
+  border-radius: 14px;
+  background: #f7f9fc;
+}
+
+.logo-picker-row,
+.logo-actions,
+.form-actions,
+.preview-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-actions {
+  flex-wrap: wrap;
+}
+
+.logo-preview,
+.preview-logo-icon {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #d8e0ec;
+  background: linear-gradient(135deg, #0a54db, #06265c);
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.logo-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  font-size: 18px;
+}
+
+.preview-logo-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  font-size: 18px;
+}
+
+.logo-preview img,
+.preview-logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.file-button {
+  min-height: 40px;
+  border: none;
+  border-radius: 12px;
+  padding: 0 16px;
+  background: #eef5ff;
+  color: #083b91;
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.file-button input {
+  display: none;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 40px;
+  border: none;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primary-button {
+  height: 44px;
+  background: #083b91;
+  color: #ffffff;
+}
+
+.secondary-button {
+  background: #eef5ff;
+  color: #083b91;
+}
+
+.secondary-button.compact {
+  min-height: 40px;
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+.message {
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.message.success {
+  background: #e8f7f2;
+  color: #157b68;
+}
+
+.message.error {
+  background: #ffe9e7;
+  color: #c8332b;
+}
+
+.form-actions {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-preview {
+  display: grid;
+  gap: 20px;
+  padding: 22px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #06265c, #0a54db);
+  color: #ffffff;
+}
+
+.preview-logo strong,
+.preview-logo span {
+  display: block;
+}
+
+.preview-logo strong {
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.preview-logo span {
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.preview-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.preview-copy span,
+.preview-vision strong {
+  color: #bfe3ff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.preview-copy p,
+.preview-vision p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.preview-vision {
+  display: grid;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 1080px) {
+  .institution-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .card-header,
+  .logo-picker-row,
+  .logo-actions,
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .file-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

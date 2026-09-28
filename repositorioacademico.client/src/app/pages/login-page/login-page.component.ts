@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ConfiguracionInstitucion } from '../../models/configuracion-institucion';
 import { AuthService } from '../../services/auth.service';
+import { InstitucionService } from '../../services/institucion.service';
 
 @Component({
   selector: 'app-login-page',
@@ -11,7 +13,8 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
 })
-export class LoginPageComponent {
+export class LoginPageComponent implements OnInit {
+  configuracion: ConfiguracionInstitucion | null = null;
   login = '';
   password = '';
   remember = false;
@@ -20,7 +23,16 @@ export class LoginPageComponent {
   error = '';
 
   private readonly authService = inject(AuthService);
+  private readonly institucionService = inject(InstitucionService);
   private readonly router = inject(Router);
+
+  ngOnInit(): void {
+    this.institucionService.getConfiguracion().subscribe({
+      next: (configuracion) => {
+        this.configuracion = configuracion;
+      }
+    });
+  }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -28,6 +40,23 @@ export class LoginPageComponent {
 
   clearError(): void {
     this.error = '';
+  }
+
+  getLogoUrl(): string | null {
+    return this.configuracion?.logoUrl ?? null;
+  }
+
+  getNombreInstitucion(): string {
+    return this.configuracion?.nombreInstitucion?.trim() || 'Repositorio Academico';
+  }
+
+  getMision(): string {
+    return this.configuracion?.mision?.trim() ||
+      'Consulta, administra y preserva documentos academicos desde una plataforma preparada para estudiantes, docentes y administradores.';
+  }
+
+  getVision(): string | null {
+    return this.configuracion?.vision?.trim() || null;
   }
 
   submit(): void {

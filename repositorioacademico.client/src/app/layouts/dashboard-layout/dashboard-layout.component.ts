@@ -3,8 +3,10 @@ import { Component, DestroyRef, HostListener, OnInit, computed, inject, signal }
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, merge, of, switchMap } from 'rxjs';
+import { ConfiguracionInstitucion } from '../../models/configuracion-institucion';
 import { AuthService } from '../../services/auth.service';
 import { DocumentosService } from '../../services/documentos.service';
+import { InstitucionService } from '../../services/institucion.service';
 
 interface MenuItem {
   label: string;
@@ -35,8 +37,10 @@ export class DashboardLayoutComponent implements OnInit {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   private readonly documentosService = inject(DocumentosService);
+  private readonly institucionService = inject(InstitucionService);
 
   readonly currentUser = this.authService.currentUser;
+  readonly configuracionInstitucion = signal<ConfiguracionInstitucion | null>(null);
   readonly isMobileViewport = signal(this.readIsMobileViewport());
   readonly mobileMenuOpen = signal(false);
   readonly sidebarCollapsed = signal(this.readSidebarState());
@@ -104,7 +108,13 @@ export class DashboardLayoutComponent implements OnInit {
       { label: 'Sublineas de investigacion', route: '/sublineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'SI' },
       { label: 'Carreras', route: '/carreras', permission: 'CATALOGO.GESTIONAR', icon: 'CR' },
       { label: 'Lineas por carrera', route: '/carrera-lineas-investigacion', permission: 'CATALOGO.GESTIONAR', icon: 'CL' },
-      { label: 'Roles', route: '/catalogo-roles', permission: 'ROL.GESTIONAR', icon: 'RL' }
+      { label: 'Roles', route: '/catalogo-roles', permission: 'ROL.GESTIONAR', icon: 'RL' },
+      {
+        label: 'Institucion',
+        route: '/parametros-institucion',
+        permission: 'INSTITUCION.PARAMETRIZAR',
+        icon: 'IN'
+      }
     ];
 
     return items.filter((item) => {
@@ -133,6 +143,7 @@ export class DashboardLayoutComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.cargarConfiguracionInstitucion();
     this.syncPageMetadata();
     this.router.events
       .pipe(
@@ -214,6 +225,20 @@ export class DashboardLayoutComponent implements OnInit {
     return roles.find((role) => !!role.iconoUrl)?.iconoUrl ?? null;
   }
 
+  getInstitutionLogoUrl(): string | null {
+    const logoUrl = this.configuracionInstitucion()?.logoUrl?.trim();
+    return logoUrl ? logoUrl : null;
+  }
+
+  getInstitutionName(): string {
+    const nombreInstitucion = this.configuracionInstitucion()?.nombreInstitucion?.trim();
+    return nombreInstitucion || 'Repositorio';
+  }
+
+  getInstitutionSubtitle(): string {
+    return this.configuracionInstitucion()?.nombreInstitucion?.trim() ? 'Repositorio academico' : 'Dashboard';
+  }
+
   isCatalogRouteActive(): boolean {
     return this.router.url.startsWith('/tipos-documento') ||
       this.router.url.startsWith('/areas-conocimiento') ||
@@ -221,7 +246,8 @@ export class DashboardLayoutComponent implements OnInit {
       this.router.url.startsWith('/sublineas-investigacion') ||
       this.router.url.startsWith('/carreras') ||
       this.router.url.startsWith('/carrera-lineas-investigacion') ||
-      this.router.url.startsWith('/catalogo-roles');
+      this.router.url.startsWith('/catalogo-roles') ||
+      this.router.url.startsWith('/parametros-institucion');
   }
 
   isUsersRouteActive(): boolean {
@@ -302,6 +328,15 @@ export class DashboardLayoutComponent implements OnInit {
     this.pageDescription.set(
       route?.snapshot.data['description'] ?? 'Gestion centralizada del repositorio academico.'
     );
+  }
+
+  private cargarConfiguracionInstitucion(): void {
+    this.institucionService.getConfiguracion()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (configuracion) => this.configuracionInstitucion.set(configuracion),
+        error: () => this.configuracionInstitucion.set(null)
+      });
   }
 
   private readSidebarState(): boolean {

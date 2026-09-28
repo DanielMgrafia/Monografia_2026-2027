@@ -93,14 +93,21 @@
   color: var(--white);
   font-size: 18px;
   font-weight: 900;
+  overflow: hidden;
+}
+
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .brand-logo h1,
 .mobile-logo h1 {
-  font-size: 26px;
-  line-height: 1;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  max-width: 360px;
+  font-size: 24px;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
 }
 
 .brand-logo span,

@@ -1,0 +1,116 @@
+<section class="institution-grid">
+  <article class="page-card form-card">
+    <div class="card-header">
+      <div>
+        <h3>Parametros de la institucion</h3>
+        <p>Define los datos generales que se muestran en la experiencia de acceso.</p>
+      </div>
+
+      <button type="button" class="secondary-button" (click)="cargarConfiguracion()" [disabled]="cargando">
+        {{ cargando ? 'Actualizando...' : 'Recargar' }}
+      </button>
+    </div>
+
+    <div *ngIf="mensaje" class="message success">{{ mensaje }}</div>
+    <div *ngIf="error" class="message error">{{ error }}</div>
+
+    <form class="form-grid" (ngSubmit)="guardarConfiguracion()">
+      <label>
+        Nombre de la universidad
+        <input type="text"
+               [(ngModel)]="form.nombreInstitucion"
+               name="nombreInstitucion"
+               maxlength="200"
+               placeholder="Nombre oficial de la institucion" />
+      </label>
+
+      <div class="logo-picker">
+        <strong>Logo institucional</strong>
+        <div class="logo-picker-row">
+          <div class="logo-preview">
+            <img *ngIf="form.logoUrl; else logoFallback"
+                 [src]="form.logoUrl"
+                 alt="Logo institucional" />
+            <ng-template #logoFallback>RA</ng-template>
+          </div>
+
+          <div class="logo-actions">
+            <label class="file-button">
+              Cargar imagen
+              <input type="file"
+                     accept="image/png,image/jpeg,image/webp"
+                     (change)="seleccionarLogo($event)" />
+            </label>
+
+            <button type="button"
+                    class="secondary-button compact"
+                    *ngIf="form.logoUrl"
+                    (click)="quitarLogo()">
+              Quitar
+            </button>
+          </div>
+        </div>
+        <small>PNG, JPG o WEBP. Maximo 150 KB.</small>
+      </div>
+
+      <label>
+        Mision
+        <textarea [(ngModel)]="form.mision"
+                  name="mision"
+                  maxlength="2000"
+                  rows="5"
+                  placeholder="Mision institucional"></textarea>
+      </label>
+
+      <label>
+        Vision
+        <textarea [(ngModel)]="form.vision"
+                  name="vision"
+                  maxlength="2000"
+                  rows="5"
+                  placeholder="Vision institucional"></textarea>
+      </label>
+
+      <div class="form-actions">
+        <small>Ultima actualizacion: {{ getFechaActualizacion() }}</small>
+        <button type="submit" class="primary-button" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : 'Guardar parametros' }}
+        </button>
+      </div>
+    </form>
+  </article>
+
+  <aside class="page-card preview-card">
+    <div class="card-header">
+      <div>
+        <h3>Vista previa</h3>
+        <p>Asi se usara el logo en el inicio de sesion.</p>
+      </div>
+    </div>
+
+    <div class="login-preview">
+      <div class="preview-logo">
+        <div class="preview-logo-icon">
+          <img *ngIf="form.logoUrl; else previewFallback"
+               [src]="form.logoUrl"
+               alt="Logo institucional" />
+          <ng-template #previewFallback>RA</ng-template>
+        </div>
+        <div>
+          <strong>{{ getNombreVistaPrevia() }}</strong>
+          <span>Repositorio academico</span>
+        </div>
+      </div>
+
+      <div class="preview-copy">
+        <span>Acceso institucional</span>
+        <p>{{ form.mision || 'Consulta, administra y preserva documentos academicos desde una plataforma institucional.' }}</p>
+      </div>
+
+      <div class="preview-vision" *ngIf="form.vision.trim()">
+        <strong>Vision</strong>
+        <p>{{ form.vision }}</p>
+      </div>
+    </div>
+  </aside>
+</section>

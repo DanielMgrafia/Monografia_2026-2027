@@ -24,6 +24,8 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
 
         public DbSet<CarreraLineaInvestigacion> CarreraLineasInvestigacion { get; set; }
 
+        public DbSet<ConfiguracionInstitucion> ConfiguracionesInstitucion { get; set; }
+
         public DbSet<Usuario> Usuarios { get; set; }
 
         public DbSet<Rol> Roles { get; set; }
@@ -127,6 +129,24 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                     .WithMany(item => item.CarreraLineasInvestigacion)
                     .HasForeignKey(item => item.LineaInvestigacionId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<ConfiguracionInstitucion>(entity =>
+            {
+                entity.Property(item => item.NombreInstitucion)
+                    .HasMaxLength(200);
+
+                entity.Property(item => item.LogoUrl)
+                    .HasMaxLength(200000);
+
+                entity.Property(item => item.Mision)
+                    .HasMaxLength(2000);
+
+                entity.Property(item => item.Vision)
+                    .HasMaxLength(2000);
+
+                entity.Property(item => item.FechaActualizacion)
+                    .IsRequired();
             });
 
             modelBuilder.Entity<Documento>(entity =>
@@ -352,7 +372,8 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 new Permiso { Id = 5, Codigo = "CATALOGO.GESTIONAR", Descripcion = "Gestionar catalogos academicos", Estado = "Activo" },
                 new Permiso { Id = 6, Codigo = "USUARIO.GESTIONAR", Descripcion = "Crear y administrar usuarios", Estado = "Activo" },
                 new Permiso { Id = 7, Codigo = "ROL.GESTIONAR", Descripcion = "Crear y administrar roles", Estado = "Activo" },
-                new Permiso { Id = 8, Codigo = "DOCUMENTO.DESCARGAR", Descripcion = "Descargar documentos autorizados", Estado = "Activo" }
+                new Permiso { Id = 8, Codigo = "DOCUMENTO.DESCARGAR", Descripcion = "Descargar documentos autorizados", Estado = "Activo" },
+                new Permiso { Id = 9, Codigo = "INSTITUCION.PARAMETRIZAR", Descripcion = "Configurar datos institucionales", Estado = "Activo" }
             );
 
             modelBuilder.Entity<Rol>().HasData(
@@ -373,6 +394,7 @@ namespace RepositorioAcademico.Server.Infrastructure.Data
                 new RolPermiso { RolId = 1, PermisoId = 6, Estado = "Activo", FechaAsignacion = fechaSemilla },
                 new RolPermiso { RolId = 1, PermisoId = 7, Estado = "Activo", FechaAsignacion = fechaSemilla },
                 new RolPermiso { RolId = 1, PermisoId = 8, Estado = "Activo", FechaAsignacion = fechaSemilla },
+                new RolPermiso { RolId = 1, PermisoId = 9, Estado = "Activo", FechaAsignacion = fechaSemilla },
 
                 new RolPermiso { RolId = 2, PermisoId = 1, Estado = "Activo", FechaAsignacion = fechaSemilla },
                 new RolPermiso { RolId = 2, PermisoId = 2, Estado = "Activo", FechaAsignacion = fechaSemilla },

@@ -7,6 +7,7 @@ namespace RepositorioAcademico.Server.Infrastructure.Security
         public const string GestionarUsuarios = "USUARIO.GESTIONAR";
         public const string GestionarRoles = "ROL.GESTIONAR";
         public const string GestionarCatalogos = "CATALOGO.GESTIONAR";
+        public const string ParametrizarInstitucion = "INSTITUCION.PARAMETRIZAR";
         public const string ConsultarRolesAdministrativos = "ROLES.CONSULTAR_ADMIN";
 
         public static void Configure(AuthorizationOptions options)
@@ -19,6 +20,9 @@ namespace RepositorioAcademico.Server.Infrastructure.Security
 
             options.AddPolicy(GestionarCatalogos, policy =>
                 policy.RequireClaim("permission", GestionarCatalogos));
+
+            options.AddPolicy(ParametrizarInstitucion, policy =>
+                policy.RequireClaim("permission", ParametrizarInstitucion));
 
             options.AddPolicy(ConsultarRolesAdministrativos, policy =>
                 policy.RequireAssertion(context =>

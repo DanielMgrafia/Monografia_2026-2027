@@ -3,19 +3,24 @@
     <aside class="brand-panel" aria-label="Presentacion del repositorio">
       <div class="brand-content">
         <div class="brand-logo">
-          <div class="logo-icon">RA</div>
+          <div class="logo-icon">
+            <img *ngIf="getLogoUrl() as logoUrl; else brandLogoFallback"
+                 [src]="logoUrl"
+                 alt="Logo institucional" />
+            <ng-template #brandLogoFallback>RA</ng-template>
+          </div>
           <div>
-            <h1>Repositorio</h1>
-            <span>Academico</span>
+            <h1>{{ getNombreInstitucion() }}</h1>
+            <span>Repositorio academico</span>
           </div>
         </div>
 
         <div class="brand-text">
           <span class="tag">Acceso institucional</span>
-          <h2>Gestion academica segura y centralizada.</h2>
-          <p>
-            Consulta, administra y preserva documentos academicos desde una
-            plataforma preparada para estudiantes, docentes y administradores.
+          <h2>{{ getNombreInstitucion() }}</h2>
+          <p>{{ getMision() }}</p>
+          <p class="brand-vision" *ngIf="getVision() as vision">
+            <strong>Vision:</strong> {{ vision }}
           </p>
         </div>
 
@@ -40,10 +45,15 @@
 
     <section class="form-panel">
       <div class="mobile-logo">
-        <div class="logo-icon">RA</div>
+        <div class="logo-icon">
+          <img *ngIf="getLogoUrl() as logoUrl; else mobileLogoFallback"
+               [src]="logoUrl"
+               alt="Logo institucional" />
+          <ng-template #mobileLogoFallback>RA</ng-template>
+        </div>
         <div>
-          <h1>Repositorio</h1>
-          <span>Academico</span>
+          <h1>{{ getNombreInstitucion() }}</h1>
+          <span>Repositorio academico</span>
         </div>
       </div>
 
@@ -112,7 +122,7 @@
       </div>
 
       <footer class="login-footer">
-        <span>2026 Repositorio Academico</span>
+        <span>2026 {{ getNombreInstitucion() }}</span>
         <span>Credenciales institucionales</span>
       </footer>
     </section>

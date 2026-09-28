@@ -4,10 +4,15 @@
      [class.mobile-menu-open]="mobileMenuOpen()">
   <aside class="sidebar">
     <div class="logo-box">
-      <div class="logo-icon">RA</div>
+      <div class="logo-icon">
+        <img *ngIf="getInstitutionLogoUrl() as logoUrl; else dashboardLogoFallback"
+             [src]="logoUrl"
+             alt="Logo institucional" />
+        <ng-template #dashboardLogoFallback>RA</ng-template>
+      </div>
       <div class="logo-text">
-        <h1>Repositorio</h1>
-        <span>Dashboard</span>
+        <h1>{{ getInstitutionName() }}</h1>
+        <span>{{ getInstitutionSubtitle() }}</span>
       </div>
     </div>
 
