@@ -2,7 +2,6 @@
 .reports-section,
 .process-section,
 .institution-section,
-.site-footer,
 .message,
 .loading-state,
 .empty-state {
@@ -437,12 +436,9 @@
     #061425;
 }
 
-.institution-intro .eyebrow {
-  color: #7dd3fc;
-}
-
 .institution-heading {
-  display: grid;
+  display: flex;
+  align-items: center;
   gap: 18px;
 }
 
@@ -470,9 +466,47 @@
   max-width: 520px;
   margin: 0;
   color: #ffffff;
-  font-size: clamp(24px, 3vw, 36px);
-  line-height: 1.08;
+  font-size: clamp(20px, 2.4vw, 30px);
+  line-height: 1.12;
   overflow-wrap: anywhere;
+}
+
+.institution-contact {
+  margin-top: auto;
+  display: grid;
+  gap: 10px;
+}
+
+.institution-contact > span {
+  color: #7dd3fc;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.institution-contact div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.institution-contact a {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 8px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.institution-contact a:hover {
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .institution-values {
@@ -527,89 +561,6 @@
   line-height: 1.75;
 }
 
-.site-footer {
-  margin-top: 18px;
-  padding: 24px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  background: #061425;
-  color: #ffffff;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14);
-}
-
-.footer-brand,
-.footer-contact {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.footer-logo {
-  width: 54px;
-  height: 54px;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #08245b;
-  font-size: 16px;
-  font-weight: 900;
-}
-
-.footer-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.footer-brand strong,
-.footer-brand span {
-  display: block;
-}
-
-.footer-brand strong {
-  max-width: 640px;
-  font-size: 18px;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
-}
-
-.footer-brand span {
-  margin-top: 4px;
-  color: #7dd3fc;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.footer-contact {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.footer-contact a {
-  min-height: 36px;
-  display: inline-flex;
-  align-items: center;
-  border-radius: 8px;
-  padding: 0 12px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
-  overflow-wrap: anywhere;
-}
-
-.footer-contact a:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-
 .message,
 .loading-state,
 .empty-state {
@@ -654,10 +605,6 @@
     min-height: 220px;
   }
 
-  .site-footer {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 }
 
 @media (max-width: 820px) {
@@ -690,8 +637,7 @@
   .repository-hero,
   .reports-section,
   .process-section,
-  .institution-section,
-  .site-footer {
+  .institution-section {
     padding: 20px;
   }
 
@@ -713,6 +659,16 @@
     height: 64px;
   }
 
+  .institution-heading,
+  .institution-contact div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .institution-contact a {
+    width: 100%;
+  }
+
   .hero-actions,
   .primary-link,
   .secondary-link {
@@ -721,19 +677,5 @@
 
   .hero-brand {
     align-items: flex-start;
-  }
-
-  .footer-brand,
-  .footer-contact {
-    width: 100%;
-    align-items: flex-start;
-  }
-
-  .footer-contact {
-    flex-direction: column;
-  }
-
-  .footer-contact a {
-    width: 100%;
   }
 }
