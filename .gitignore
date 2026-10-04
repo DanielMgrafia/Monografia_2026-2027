@@ -10,3 +10,4 @@ secrets.json
 bin/
 obj/
 node_modules/
+/RepositorioAcademico.Server/Storage
