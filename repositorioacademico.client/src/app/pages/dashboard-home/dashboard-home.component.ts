@@ -22,7 +22,6 @@ interface TypeStat {
   label: string;
   count: number;
   percentage: number;
-  initials: string;
 }
 
 interface ProcessStep {
@@ -142,8 +141,7 @@ export class DashboardHomeComponent implements OnInit {
         id: tipo.id,
         label: tipo.descripcion,
         count: 0,
-        percentage: 0,
-        initials: this.getInitials(tipo.descripcion)
+        percentage: 0
       });
     }
 
@@ -154,8 +152,7 @@ export class DashboardHomeComponent implements OnInit {
         id,
         label,
         count: 0,
-        percentage: 0,
-        initials: this.getInitials(label)
+        percentage: 0
       };
 
       current.count += 1;

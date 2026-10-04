@@ -49,7 +49,9 @@
 
     <div class="type-report" *ngIf="documentTypeStats().length > 0; else noTypeStats">
       <article class="type-stat" *ngFor="let stat of documentTypeStats()">
-        <div class="type-symbol">{{ stat.initials }}</div>
+        <div class="type-symbol">
+          <span aria-hidden="true"></span>
+        </div>
         <div class="type-content">
           <div class="type-heading">
             <strong>{{ stat.label }}</strong>
