@@ -104,21 +104,31 @@
   </section>
 
   <section class="institution-section" *ngIf="getMission() || getVision()">
-    <header class="section-header compact">
-      <span>Identidad institucional</span>
-      <h2>{{ getInstitutionName() }}</h2>
-    </header>
+    <div class="institution-panel">
+      <div class="institution-intro">
+        <span class="eyebrow">Identidad institucional</span>
+        <div class="institution-heading">
+          <div class="institution-logo">
+            <img *ngIf="getInstitutionLogoUrl() as logoUrl; else institutionLogoFallback"
+                 [src]="logoUrl"
+                 alt="Logo institucional" />
+            <ng-template #institutionLogoFallback>{{ getInstitutionInitials() }}</ng-template>
+          </div>
+          <h2>{{ getInstitutionName() }}</h2>
+        </div>
+      </div>
 
-    <div class="institution-values">
-      <article class="institution-card mission-card" *ngIf="getMission()">
-        <span>Mision</span>
-        <p>{{ getMission() }}</p>
-      </article>
+      <div class="institution-values">
+        <article class="institution-card mission-card" *ngIf="getMission()">
+          <span>Mision</span>
+          <p>{{ getMission() }}</p>
+        </article>
 
-      <article class="institution-card vision-card" *ngIf="getVision()">
-        <span>Vision</span>
-        <p>{{ getVision() }}</p>
-      </article>
+        <article class="institution-card vision-card" *ngIf="getVision()">
+          <span>Vision</span>
+          <p>{{ getVision() }}</p>
+        </article>
+      </div>
     </div>
   </section>
 
