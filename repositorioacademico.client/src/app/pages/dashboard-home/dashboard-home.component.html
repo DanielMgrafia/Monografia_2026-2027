@@ -11,19 +11,6 @@
     <div class="hero-copy">
       <span class="eyebrow">Repositorio institucional</span>
       <h1>{{ getInstitutionName() }}</h1>
-      <div class="hero-carousel" *ngIf="activeInstitutionSlide() as slide">
-        <span>{{ slide.label }}</span>
-        <p>{{ slide.text }}</p>
-
-        <div class="hero-carousel-dots" *ngIf="institutionSlides().length > 1" aria-label="Mision y vision institucional">
-          <button type="button"
-                  *ngFor="let item of institutionSlides(); let index = index"
-                  [class.active]="index === activeInstitutionSlideIndex()"
-                  [attr.aria-label]="'Ver ' + item.label"
-                  (click)="setInstitutionSlide(index)">
-          </button>
-        </div>
-      </div>
 
       <div class="hero-actions">
         <a *ngIf="canViewRepository()" routerLink="/repositorio" class="primary-link">Explorar repositorio</a>
@@ -112,6 +99,25 @@
                 (click)="openDocumentViewer(documento)">
           Ver documento
         </button>
+      </article>
+    </div>
+  </section>
+
+  <section class="institution-section" *ngIf="getMission() || getVision()">
+    <header class="section-header compact">
+      <span>Identidad institucional</span>
+      <h2>{{ getInstitutionName() }}</h2>
+    </header>
+
+    <div class="institution-values">
+      <article class="institution-card mission-card" *ngIf="getMission()">
+        <span>Mision</span>
+        <p>{{ getMission() }}</p>
+      </article>
+
+      <article class="institution-card vision-card" *ngIf="getVision()">
+        <span>Vision</span>
+        <p>{{ getVision() }}</p>
       </article>
     </div>
   </section>

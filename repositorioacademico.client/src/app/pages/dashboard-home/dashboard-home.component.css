@@ -1,6 +1,7 @@
 .repository-hero,
 .reports-section,
 .process-section,
+.institution-section,
 .site-footer,
 .message,
 .loading-state,
@@ -49,7 +50,7 @@
 
 .eyebrow,
 .section-header span,
-.hero-carousel > span {
+.institution-card > span {
   display: inline-flex;
   color: #2dd4bf;
   font-size: 12px;
@@ -67,43 +68,11 @@
   overflow-wrap: anywhere;
 }
 
-.hero-carousel {
-  min-height: 142px;
-  max-width: 660px;
-  margin-top: 18px;
-  padding-left: 18px;
-  border-left: 4px solid #f4b740;
-}
-
-.hero-carousel > span {
-  color: #f4b740;
-}
-
-.hero-carousel p {
+.hero-copy p {
   max-width: 630px;
-  margin: 10px 0 0;
   color: rgba(255, 255, 255, 0.88);
   font-size: 16px;
   line-height: 1.65;
-}
-
-.hero-carousel-dots {
-  display: flex;
-  gap: 8px;
-  margin-top: 18px;
-}
-
-.hero-carousel-dots button {
-  width: 30px;
-  height: 4px;
-  border: none;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.35);
-  cursor: pointer;
-}
-
-.hero-carousel-dots button.active {
-  background: #f4b740;
 }
 
 .hero-actions,
@@ -232,7 +201,8 @@
 }
 
 .reports-section,
-.process-section {
+.process-section,
+.institution-section {
   margin-top: 18px;
   padding: 28px;
   background: #ffffff;
@@ -368,7 +338,8 @@
 }
 
 .process-step p,
-.news-card p {
+.news-card p,
+.institution-card p {
   color: #52627e;
   line-height: 1.55;
 }
@@ -437,6 +408,76 @@
   flex: 1;
   margin: 8px 0 16px;
   font-size: 13px;
+}
+
+.institution-section {
+  overflow: hidden;
+}
+
+.institution-values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.institution-card {
+  position: relative;
+  min-height: 210px;
+  overflow: hidden;
+  padding: 28px;
+  border: 1px solid #e4eaf3;
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.institution-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #2dd4bf;
+}
+
+.vision-card::before {
+  background: #f4b740;
+}
+
+.institution-card::after {
+  position: absolute;
+  top: 14px;
+  right: 22px;
+  color: #edf2f7;
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.mission-card::after {
+  content: '01';
+}
+
+.vision-card::after {
+  content: '02';
+}
+
+.institution-card > span {
+  position: relative;
+  z-index: 1;
+  color: #0f766e;
+}
+
+.vision-card > span {
+  color: #9a6700;
+}
+
+.institution-card p {
+  position: relative;
+  z-index: 1;
+  margin: 18px 0 0;
+  color: #2e3b52;
+  font-size: 15px;
 }
 
 .site-footer {
@@ -584,12 +625,9 @@
   .metric-grid,
   .type-report,
   .process-grid,
-  .news-grid {
+  .news-grid,
+  .institution-values {
     grid-template-columns: 1fr;
-  }
-
-  .hero-carousel {
-    min-height: 180px;
   }
 }
 
@@ -597,6 +635,7 @@
   .repository-hero,
   .reports-section,
   .process-section,
+  .institution-section,
   .site-footer {
     padding: 20px;
   }
@@ -605,9 +644,15 @@
     font-size: 32px;
   }
 
-  .hero-carousel {
-    min-height: 210px;
-    padding-left: 14px;
+  .institution-card {
+    min-height: 190px;
+    padding: 24px;
+  }
+
+  .institution-card::after {
+    top: 14px;
+    right: 18px;
+    font-size: 54px;
   }
 
   .hero-actions,

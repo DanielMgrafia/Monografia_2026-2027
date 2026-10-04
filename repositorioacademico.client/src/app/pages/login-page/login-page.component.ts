@@ -50,15 +50,6 @@ export class LoginPageComponent implements OnInit {
     return this.configuracion?.nombreInstitucion?.trim() || 'Repositorio Academico';
   }
 
-  getMision(): string {
-    return this.configuracion?.mision?.trim() ||
-      'Consulta, administra y preserva documentos academicos desde una plataforma preparada para estudiantes, docentes y administradores.';
-  }
-
-  getVision(): string | null {
-    return this.configuracion?.vision?.trim() || null;
-  }
-
   submit(): void {
     this.error = '';
 
