@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { LucideEye, LucideEyeOff, LucideLockKeyhole, LucideMail } from '@lucide/angular';
 import { ConfiguracionInstitucion } from '../../models/configuracion-institucion';
 import { AuthService } from '../../services/auth.service';
 import { InstitucionService } from '../../services/institucion.service';
@@ -9,7 +10,7 @@ import { InstitucionService } from '../../services/institucion.service';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LucideEye, LucideEyeOff, LucideLockKeyhole, LucideMail],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
 })
@@ -47,7 +48,7 @@ export class LoginPageComponent implements OnInit {
   }
 
   getNombreInstitucion(): string {
-    return this.configuracion?.nombreInstitucion?.trim() || 'Repositorio Academico';
+    return this.configuracion?.nombreInstitucion?.trim() || 'Institucion academica';
   }
 
   submit(): void {

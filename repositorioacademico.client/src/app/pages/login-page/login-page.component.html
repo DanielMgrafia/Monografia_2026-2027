@@ -10,35 +10,15 @@
             <ng-template #brandLogoFallback>RA</ng-template>
           </div>
           <div>
-            <h1>{{ getNombreInstitucion() }}</h1>
-            <span>Repositorio academico</span>
+            <h1>Repositorio Academico</h1>
+            <span>{{ getNombreInstitucion() }}</span>
           </div>
         </div>
 
         <div class="brand-text">
           <span class="tag">Acceso institucional</span>
-          <h2>Gestion academica segura y centralizada.</h2>
-          <p>
-            Consulta, administra y preserva documentos academicos desde una
-            plataforma preparada para estudiantes, docentes y administradores.
-          </p>
-        </div>
-
-        <div class="brand-features" aria-label="Funciones principales">
-          <div class="feature">
-            <span>01</span>
-            <p>Revision y autorizacion documental</p>
-          </div>
-
-          <div class="feature">
-            <span>02</span>
-            <p>Catalogos academicos administrables</p>
-          </div>
-
-          <div class="feature">
-            <span>03</span>
-            <p>Acceso protegido por credenciales institucionales</p>
-          </div>
+          <h2>Bienvenido al repositorio</h2>
+          <p>Consulta y administra la produccion academica institucional.</p>
         </div>
       </div>
     </aside>
@@ -52,29 +32,33 @@
           <ng-template #mobileLogoFallback>RA</ng-template>
         </div>
         <div>
-          <h1>{{ getNombreInstitucion() }}</h1>
-          <span>Repositorio academico</span>
+          <h1>Repositorio Academico</h1>
+          <span>{{ getNombreInstitucion() }}</span>
         </div>
       </div>
 
       <div class="form-card">
         <div class="form-header">
-          <span class="small-label">Bienvenido nuevamente</span>
+          <span class="small-label">Inicio de sesion</span>
           <h2>Iniciar sesion</h2>
-          <p>Ingresa con tu cuenta institucional para acceder al repositorio.</p>
+          <p>Usa tu correo o carnet institucional.</p>
         </div>
 
         <form class="login-form" (ngSubmit)="submit()" novalidate>
           <div class="form-group">
-            <label for="login">Correo institucional o carnet</label>
+            <label for="login">Usuario</label>
             <div class="input-box">
-              <span class="input-icon">@</span>
+              <span class="input-icon" aria-hidden="true">
+                <svg lucideMail
+                     [size]="18"
+                     [strokeWidth]="2.25"></svg>
+              </span>
               <input type="text"
                      id="login"
                      [(ngModel)]="login"
                      name="login"
                      autocomplete="username"
-                     placeholder="admin@universidad.edu o ADMIN-001"
+                     placeholder="Correo o carnet"
                      (input)="clearError()" />
             </div>
           </div>
@@ -82,16 +66,33 @@
           <div class="form-group">
             <label for="password">Contrasena</label>
             <div class="input-box">
-              <span class="input-icon">PW</span>
+              <span class="input-icon" aria-hidden="true">
+                <svg lucideLockKeyhole
+                     [size]="18"
+                     [strokeWidth]="2.25"></svg>
+              </span>
               <input [type]="showPassword ? 'text' : 'password'"
                      id="password"
                      [(ngModel)]="password"
                      name="password"
                      autocomplete="current-password"
-                     placeholder="Ingresa tu contrasena"
+                     placeholder="Contrasena"
                      (input)="clearError()" />
-              <button type="button" class="toggle-password" (click)="togglePassword()">
-                {{ showPassword ? 'Ocultar' : 'Mostrar' }}
+              <button type="button"
+                      class="toggle-password"
+                      (click)="togglePassword()"
+                      [attr.aria-label]="showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'"
+                      [attr.title]="showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'">
+                <svg *ngIf="!showPassword"
+                     lucideEye
+                     [size]="18"
+                     [strokeWidth]="2.25"
+                     aria-hidden="true"></svg>
+                <svg *ngIf="showPassword"
+                     lucideEyeOff
+                     [size]="18"
+                     [strokeWidth]="2.25"
+                     aria-hidden="true"></svg>
               </button>
             </div>
           </div>
@@ -111,19 +112,11 @@
 
           <p *ngIf="error" class="form-message error">{{ error }}</p>
         </form>
-
-        <div class="security-note">
-          <span>!</span>
-          <p>
-            El registro de usuarios esta deshabilitado. Las cuentas deben ser
-            creadas y autorizadas por administracion.
-          </p>
-        </div>
       </div>
 
       <footer class="login-footer">
         <span>2026 {{ getNombreInstitucion() }}</span>
-        <span>Credenciales institucionales</span>
+        <span>Acceso protegido</span>
       </footer>
     </section>
   </section>
